@@ -1,0 +1,17 @@
+#pragma once
+
+#include "./tables/blockhistory.hpp"
+#include "./tables/deposits.hpp"
+#include "./tables/depusers.hpp"
+#include "./tables/events.hpp"
+#include "./tables/history.hpp"
+#include "./tables/interfaces.hpp"
+#include "./tables/markets.hpp"
+#include "./tables/ordersummary.hpp"
+#include "./tables/sellorders.hpp"
+#include "./tables/tablesummary.hpp"
+#include "./tables/tokendata.hpp"
+#include "./tables/tokenevents.hpp"
+#include "./tables/tokengroup.hpp"
+#include "./tables/tokens.hpp"
+#include "./tables/userorders.hpp"
