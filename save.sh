@@ -32,4 +32,4 @@ else
 fi
 
 git commit -m "$COMMENT"
-#git push
+git push
