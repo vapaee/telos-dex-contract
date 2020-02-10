@@ -1,5 +1,3 @@
-#pragma once
-
 #include "./tables/blockhistory.hpp"
 #include "./tables/deposits.hpp"
 #include "./tables/depusers.hpp"
@@ -9,6 +7,7 @@
 #include "./tables/markets.hpp"
 #include "./tables/ordersummary.hpp"
 #include "./tables/sellorders.hpp"
+#include "./tables/stat.hpp"
 #include "./tables/tablesummary.hpp"
 #include "./tables/tokendata.hpp"
 #include "./tables/tokenevents.hpp"

@@ -1,0 +1,1097 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "addtoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "symbol",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "precision",
+                    "type": "uint8"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "icon",
+                    "type": "string"
+                },
+                {
+                    "name": "iconlg",
+                    "type": "string"
+                },
+                {
+                    "name": "tradeable",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "addui",
+            "base": "",
+            "fields": [
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "params",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "blockhistory_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "hour",
+                    "type": "uint64"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "inverse",
+                    "type": "asset"
+                },
+                {
+                    "name": "entrance",
+                    "type": "asset"
+                },
+                {
+                    "name": "max",
+                    "type": "asset"
+                },
+                {
+                    "name": "min",
+                    "type": "asset"
+                },
+                {
+                    "name": "volume",
+                    "type": "asset"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "booksummary",
+            "base": "",
+            "fields": [
+                {
+                    "name": "total",
+                    "type": "asset"
+                },
+                {
+                    "name": "orders",
+                    "type": "int32"
+                },
+                {
+                    "name": "ascurrency",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "cancel",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "commodity",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "currency",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "orders",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "currency_stats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "max_supply",
+                    "type": "asset"
+                },
+                {
+                    "name": "issuer",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "deposits_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "amount",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "deps2earn",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ui",
+                    "type": "uint64"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "depusers_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "account",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "edittkevent",
+            "base": "",
+            "fields": [
+                {
+                    "name": "symbol",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "event",
+                    "type": "name"
+                },
+                {
+                    "name": "action",
+                    "type": "name"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "events_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "event",
+                    "type": "name"
+                },
+                {
+                    "name": "params",
+                    "type": "string"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "history_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                },
+                {
+                    "name": "buyer",
+                    "type": "name"
+                },
+                {
+                    "name": "seller",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "inverse",
+                    "type": "asset"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "payment",
+                    "type": "asset"
+                },
+                {
+                    "name": "buyfee",
+                    "type": "asset"
+                },
+                {
+                    "name": "sellfee",
+                    "type": "asset"
+                },
+                {
+                    "name": "isbuy",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "hotfix",
+            "base": "",
+            "fields": [
+                {
+                    "name": "max",
+                    "type": "int32"
+                },
+                {
+                    "name": "scope",
+                    "type": "name"
+                },
+                {
+                    "name": "q",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "interfaces_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "params",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                },
+                {
+                    "name": "state",
+                    "type": "string"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "markets_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "name",
+                    "type": "name"
+                },
+                {
+                    "name": "commodity",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "currency",
+                    "type": "symbol_code"
+                }
+            ]
+        },
+        {
+            "name": "order",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "type",
+                    "type": "name"
+                },
+                {
+                    "name": "total",
+                    "type": "asset"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "ui",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "ordersummary_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "market",
+                    "type": "uint64"
+                },
+                {
+                    "name": "sell",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "pay",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "supply",
+                    "type": "booksummary"
+                },
+                {
+                    "name": "demand",
+                    "type": "booksummary"
+                },
+                {
+                    "name": "deals",
+                    "type": "int32"
+                },
+                {
+                    "name": "blocks",
+                    "type": "int32"
+                }
+            ]
+        },
+        {
+            "name": "reg_token_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "symbol",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "group",
+                    "type": "uint64"
+                },
+                {
+                    "name": "precision",
+                    "type": "uint8"
+                },
+                {
+                    "name": "contract",
+                    "type": "name"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "icon",
+                    "type": "string"
+                },
+                {
+                    "name": "iconlg",
+                    "type": "string"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                },
+                {
+                    "name": "tradeable",
+                    "type": "bool"
+                },
+                {
+                    "name": "currency",
+                    "type": "bool"
+                },
+                {
+                    "name": "data",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "sell_order_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "ui",
+                    "type": "uint64"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "inverse",
+                    "type": "asset"
+                },
+                {
+                    "name": "total",
+                    "type": "asset"
+                },
+                {
+                    "name": "selling",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "setcurrency",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sym_code",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "is_currency",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "settokendata",
+            "base": "",
+            "fields": [
+                {
+                    "name": "symbol",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "action",
+                    "type": "name"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "text",
+                    "type": "string"
+                },
+                {
+                    "name": "link",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "swapdeposit",
+            "base": "",
+            "fields": [
+                {
+                    "name": "from",
+                    "type": "name"
+                },
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "trigger",
+                    "type": "bool"
+                },
+                {
+                    "name": "memo",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "tablesummary_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "label",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "inverse",
+                    "type": "asset"
+                },
+                {
+                    "name": "entrance",
+                    "type": "asset"
+                },
+                {
+                    "name": "max",
+                    "type": "asset"
+                },
+                {
+                    "name": "min",
+                    "type": "asset"
+                },
+                {
+                    "name": "volume",
+                    "type": "asset"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "hour",
+                    "type": "uint64"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "tokenadmin",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sym_code",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "tokendata_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "category",
+                    "type": "name"
+                },
+                {
+                    "name": "text",
+                    "type": "string"
+                },
+                {
+                    "name": "link",
+                    "type": "string"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "tokenevents_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event",
+                    "type": "name"
+                },
+                {
+                    "name": "receptor",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "tokengroup_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "bigbanner",
+                    "type": "string"
+                },
+                {
+                    "name": "currency",
+                    "type": "symbol_code"
+                }
+            ]
+        },
+        {
+            "name": "updatetoken",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sym_code",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "icon",
+                    "type": "string"
+                },
+                {
+                    "name": "iconlg",
+                    "type": "string"
+                },
+                {
+                    "name": "tradeable",
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "updateui",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ui",
+                    "type": "uint64"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "params",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "userorders_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "market",
+                    "type": "uint64"
+                },
+                {
+                    "name": "table",
+                    "type": "string"
+                },
+                {
+                    "name": "ids",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "withdraw",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "quantity",
+                    "type": "asset"
+                },
+                {
+                    "name": "ui",
+                    "type": "uint64"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "addtoken",
+            "type": "addtoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "addui",
+            "type": "addui",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cancel",
+            "type": "cancel",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "deps2earn",
+            "type": "deps2earn",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "edittkevent",
+            "type": "edittkevent",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "hotfix",
+            "type": "hotfix",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "order",
+            "type": "order",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setcurrency",
+            "type": "setcurrency",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "settokendata",
+            "type": "settokendata",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "swapdeposit",
+            "type": "swapdeposit",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "tokenadmin",
+            "type": "tokenadmin",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updatetoken",
+            "type": "updatetoken",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updateui",
+            "type": "updateui",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "withdraw",
+            "type": "withdraw",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "blockhistory",
+            "type": "blockhistory_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "deposits",
+            "type": "deposits_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "depusers",
+            "type": "depusers_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "events",
+            "type": "events_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "history",
+            "type": "history_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "interfaces",
+            "type": "interfaces_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "markets",
+            "type": "markets_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "ordersummary",
+            "type": "ordersummary_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "sellorders",
+            "type": "sell_order_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "stat",
+            "type": "currency_stats",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tablesummary",
+            "type": "tablesummary_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokendata",
+            "type": "tokendata_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokenevents",
+            "type": "tokenevents_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokengroup",
+            "type": "tokengroup_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "tokens",
+            "type": "reg_token_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "userorders",
+            "type": "userorders_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}

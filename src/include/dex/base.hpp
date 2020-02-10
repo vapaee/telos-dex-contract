@@ -6,7 +6,15 @@
 #include <eosiolib/contracts/eosio/transaction.hpp>
 #include <eosiolib/core/eosio/check.hpp>
 
-using namespace eosio;
+#include <ctype.h>
+#include <stdlib.h>
+
+namespace eosio {
+    namespace dex {
+        name contract = name("telosmaindex");
+        uint8_t internal_precision = 8;
+    }
+}
 
 
 
