@@ -3,13 +3,17 @@ Telos DEX smart contract source code
 current version: v3.6.1
 
 ## About this project  
+This *Telos DEX* project was initialy part of another bigger project called *[vapaee](https://github.com/vapaee/vapaee.io-source)*. This last one has a smart contract deployed in the *vapaeetokens* account, which implements every token-related service that will be needed for an even bigger project called [Cards & Tokens](https://cardsandtokens.com).
 
+## About the project's funds
+This project is built on top of Telos network, which has a *Worker Proposal System* (WPS) that helps fund projects somehow (and not always) related with this network. I presented a [proposal](https://vapaee.io/exchange/wp) and that consists of 4 deliveries. The last one was modified to separate the entire DEX service from the rest of my work, so that it was an independent project. This is what v3.6.0 is all about.
 
 ## About this contract  
+Vapaée DEX has its own contract called *vapaeetokens* which implements not only DEX services but also standard Token services with airdrop and staking included. After several talks with many members of the community I decided to separate de DEX part from the rest and give it away to the community. For this I created a separated contract containing only services refered to serve a DEX completely independed and managed as a DAO (using trail system).
 
 ----------------------
 
-# versions
+## versions
 
 ### v3.6.1 - UI integration
 - UI registration. UI creators can now register themselves as UI
