@@ -2,10 +2,10 @@
 #include <dex/base.hpp>
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
-#include <dex/packages/utils.hpp>
-#include <dex/packages/record.hpp>
-#include <dex/packages/market.hpp>
-#include <dex/packages/ui.hpp>
+#include <dex/modules/utils.hpp>
+#include <dex/modules/record.hpp>
+#include <dex/modules/market.hpp>
+#include <dex/modules/ui.hpp>
 
 namespace eosio {
     namespace dex {
@@ -192,15 +192,15 @@ namespace eosio {
                 tokens tokenstable(get_self(), get_self().value);
                 auto tk_ptr = tokenstable.find(quantity.symbol.code().raw());
 
+                asset amount = aux_get_real_asset(quantity);
+
                 action(
                     permission_level{get_self(),name("active")},
                     tk_ptr->contract,
                     name("transfer"),
-                    std::make_tuple(get_self(), receiver, quantity, memo)
+                    std::make_tuple(get_self(), receiver, amount, memo)
                 ).send();
-                PRINT("   transfer ", quantity.to_string(), " to ", receiver.to_string(),"\n");
-
-                // Hay que sacar de la tabla de ui cual es el account y mandarle la quantity
+                PRINT("   transfer ", amount.to_string(), " to ", receiver.to_string(),"\n");
 
                 PRINT("eosio::dex::deposit::aux_transfer_earnings_to_ui() ...\n");
             }            

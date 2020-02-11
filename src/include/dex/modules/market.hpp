@@ -2,7 +2,7 @@
 #include <dex/base.hpp>
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
-#include <dex/packages/utils.hpp>
+#include <dex/modules/utils.hpp>
 
 namespace eosio {
     namespace dex {

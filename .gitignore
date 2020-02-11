@@ -1,2 +1,6 @@
 .vscode
 src/contracts/eosio.contracts
+src/contracts/telosmaindex/telosmaindex.abi
+src/contracts/telosmaindex/telosmaindex.wasm
+src/contracts/eventhandler/eventhandler.abi
+src/contracts/eventhandler/eventhandler.wasm

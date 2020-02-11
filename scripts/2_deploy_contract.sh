@@ -25,9 +25,20 @@ fi
 
 DEX_CONTRACT_DIR=$HOME/src/contracts/telosmaindex
 
+
+echo "-------- 2_deploy_contract ---------"
+sleep 1
+
 echo "-------- telosmaindex ---------"
 cd $DEX_CONTRACT_DIR
-if [[ telosmaindex.cpp -nt telosmaindex.wasm ||
+if [[ $DEX_CONTRACT_DIR/../../include/dex/modules/deposit.hpp -nt telosmaindex.wasm  ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/exchange.hpp -nt telosmaindex.wasm ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/market.hpp -nt telosmaindex.wasm   ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/record.hpp -nt telosmaindex.wasm   ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/token.hpp -nt telosmaindex.wasm    ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/ui.hpp -nt telosmaindex.wasm       ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/utils.hpp -nt telosmaindex.wasm    ||
+      telosmaindex.cpp -nt telosmaindex.wasm ||
       telosmaindex.hpp -nt telosmaindex.wasm || 
       $force == true ]]; then
     eosio-cpp -o telosmaindex.wasm telosmaindex.cpp --abigen -I "$INCLUDE_PATH"

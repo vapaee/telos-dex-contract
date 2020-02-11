@@ -1,6 +1,9 @@
 #!/bin/bash
 HOME=/var/www/telos-dex-contract
 
+echo "-------- 3_load_tokens ---------"
+sleep 1
+
 
 if [ ! -d $HOME/src/contracts/eosio.contracts ]; then
     cd $HOME/src/contracts/

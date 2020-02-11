@@ -2,11 +2,11 @@
 #include <dex/base.hpp>
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
-#include <dex/packages/utils.hpp>
-#include <dex/packages/record.hpp>
-#include <dex/packages/market.hpp>
-#include <dex/packages/ui.hpp>
-#include <dex/packages/deposit.hpp>
+#include <dex/modules/utils.hpp>
+#include <dex/modules/record.hpp>
+#include <dex/modules/market.hpp>
+#include <dex/modules/ui.hpp>
+#include <dex/modules/deposit.hpp>
 
 namespace eosio {
     namespace dex {
@@ -341,13 +341,15 @@ namespace eosio {
                             
                         // transfer to contract fees on CNT
                         // at this moment maker_fee is still in the owner's deposits. So it must be swaped to the contract before earning it
-                        action(
-                            permission_level{get_self(),name("active")},
-                            get_self(),
-                            name("swapdeposit"),
-                            std::make_tuple(taker, get_self(), maker_fee, true, string("exchange made for ") + current_total.to_string())
-                        ).send();
-                        PRINT("     -- charge fees ", maker_fee.to_string(), " to ", maker.to_string(),"\n");
+                        if (maker_fee.amount > 0) {
+                            action(
+                                permission_level{get_self(),name("active")},
+                                get_self(),
+                                name("swapdeposit"),
+                                std::make_tuple(taker, get_self(), maker_fee, true, string("exchange made for ") + current_total.to_string())
+                            ).send();
+                            PRINT("     -- charge fees ", maker_fee.to_string(), " to ", maker.to_string(),"\n");
+                        }
                             
                         // transfer TLOS to taker (TLOS the belongs to maker but the contracxts holds them)
                         action(
@@ -360,24 +362,27 @@ namespace eosio {
 
                         // convert deposits to earnings
                         // Now the contract's deposits includes the maker_fee, so it can be transformed to ernings
-                        action(
-                            permission_level{get_self(),name("active")},
-                            get_self(),
-                            name("deps2earn"),
-                            std::make_tuple(taker_ui, taker_fee)
-                        ).send();
-                        PRINT("     -- converting fee ", maker_fee.to_string(), " to earnings\n");
+                        if (taker_fee.amount > 0) {
+                            action(
+                                permission_level{get_self(),name("active")},
+                                get_self(),
+                                name("deps2earn"),
+                                std::make_tuple(taker_ui, taker_fee)
+                            ).send();
+                            PRINT("     -- converting fee ", maker_fee.to_string(), " to earnings\n");
+                        }
 
                         // The taker_fee were already included in the contract's deposits, so no swap was needed.
                         // It can be earned directly
-                        action(
-                            permission_level{get_self(),name("active")},
-                            get_self(),
-                            name("deps2earn"),
-                            std::make_tuple(maker_ui, maker_fee)
-                        ).send();
-                        PRINT("     -- converting fee ", taker_fee.to_string(), " to earnings\n");
-
+                        if (maker_fee.amount > 0) {
+                            action(
+                                permission_level{get_self(),name("active")},
+                                get_self(),
+                                name("deps2earn"),
+                                std::make_tuple(maker_ui, maker_fee)
+                            ).send();
+                            PRINT("     -- converting fee ", taker_fee.to_string(), " to earnings\n");
+                        }
                         // saving the transaction in history
                         current_inverse = utils::inverse(current_price, current_payment.symbol);
                         // PRINT("   - current_payment: ", current_payment.to_string(), "\n");  // 1.00000000 EDNA

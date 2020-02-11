@@ -314,7 +314,7 @@ namespace eosio {
                 symbol_code sym_code = quantity.symbol.code();
                 
                 // no extension
-                if (eosio::dex::internal_precision <= precision) return quantity;
+                if (eosio::dex::internal_precision == precision) return quantity;
 
                 // extension
                 uint8_t extension = eosio::dex::internal_precision - precision;
@@ -326,18 +326,20 @@ namespace eosio {
                 return extended;
             }
             
-            asset aux_get_real_asset(const asset & quantity) {
-                asset real = quantity;
-                uint64_t amount = quantity.amount;
-                uint8_t precision = quantity.symbol.precision();
-                symbol_code sym_code = quantity.symbol.code();         
+            asset aux_get_real_asset(const asset & quantity_extended) {
+                asset real = quantity_extended;
+                uint64_t amount = quantity_extended.amount;
+                uint8_t precision = quantity_extended.symbol.precision();
+                symbol_code sym_code = quantity_extended.symbol.code();
+
+                eosio::check(eosio::dex::internal_precision == precision, create_error_id1(ERROR_AGEA_1, precision).c_str());
 
                 tokens tokenstable(get_self(), get_self().value);
-                auto tk_itr = tokenstable.find(quantity.symbol.code().raw());
+                auto tk_itr = tokenstable.find(quantity_extended.symbol.code().raw());
                 precision = tk_itr->precision;
 
                 // no extension
-                if (eosio::dex::internal_precision <= precision) return quantity;
+                if (eosio::dex::internal_precision == precision) return quantity_extended;
 
                 // extension
                 uint8_t extension = eosio::dex::internal_precision - precision;

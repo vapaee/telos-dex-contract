@@ -1,4 +1,6 @@
 #!/bin/bash
+echo "-- 6_orders --"
+sleep 1
 
 echo "-- alice sells TLOS/TLOSD --"
 cleos push action telosmaindex order '["alice", "sell", "10.00000000 TLOS", "0.04000000 TLOSD",0]' -p alice

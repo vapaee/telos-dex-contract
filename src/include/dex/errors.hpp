@@ -49,3 +49,6 @@
 
 // action_update_ui
 #define ERROR_ATETU_1 "ERR-ATETU-01: interface not found with this id: "
+
+// aux_get_real_asset
+#define ERROR_AGEA_1 "ERR-AGEA-01: precision mismatch: "

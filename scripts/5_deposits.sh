@@ -1,6 +1,8 @@
 #!/bin/bash
 
-echo "-- deposits --"
+echo "-- 5_deposits --"
+sleep 1
+
 cleos push action acornaccount transfer  '["bob",  "telosmaindex","50.0000 ACORN","deposit"]' -p bob@active
 cleos push action acornaccount transfer  '["alice","telosmaindex","1000.0000 ACORN","deposit"]' -p alice@active
 cleos push action acornaccount transfer  '["tom",  "telosmaindex","50.0000 ACORN","deposit"]' -p tom@active

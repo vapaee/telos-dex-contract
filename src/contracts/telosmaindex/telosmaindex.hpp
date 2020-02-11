@@ -1,9 +1,9 @@
 #pragma once
 #include <dex/base.hpp>
-#include <dex/packages/ui.hpp>
-#include <dex/packages/token.hpp>
-#include <dex/packages/exchange.hpp>
-#include <dex/packages/deposit.hpp>
+#include <dex/modules/ui.hpp>
+#include <dex/modules/token.hpp>
+#include <dex/modules/exchange.hpp>
+#include <dex/modules/deposit.hpp>
 #include <vapaee/dispatcher.spp>
 
 using namespace eosio;
@@ -40,7 +40,7 @@ CONTRACT telosmaindex : public eosio::contract {
             eosio::dex::token::action_add_token(contract, symbol, precision, admin);
             eosio::dex::token::action_update_token_info(symbol, title, website, brief, banner, icon, iconlg, tradeable);
         };
-        
+         
         ACTION updatetoken (const symbol_code & sym_code, string title, string website, string brief, string banner, string icon, string iconlg, bool tradeable) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.updatetoken()\n");
@@ -128,7 +128,7 @@ CONTRACT telosmaindex : public eosio::contract {
             eosio::dex::deposit::action_convert_deposits_to_earnings(ui, quantity);
         };
                 
-        // debugin ----------
+        
         AUX_DEBUG_ACTIONS (
 
             ACTION hotfix (int max, name scope, asset q) {

@@ -6,7 +6,7 @@
 
 ./1_create_accounts.sh
 
-./2_deploy_vapaeetokens.sh
+./2_deploy_contract.sh
 
 ./3_load_tokens.sh
 
