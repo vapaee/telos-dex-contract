@@ -1,4 +1,22 @@
 
+- banning a token: the token will be complete banned from the DEX. Can't be relisting unless restored by voting.
+  - que token: symbol
+
+- delisting token: is not allowed te be traded!! but is not banned, can be shown (this is up to the UI). This can be undone by voting.
+  - que token: symbol
+
+- maker fees: apply percent to taker money and give to the account of the UI maker is using
+  - cuanto: double
+
+- taker fees: apply percent to maker money and give to the account of the UI taker is using
+  - cuanto: double
+
+- set token as currency: allow people to create markets with this token as currency
+  - que token: symbol
+
+- history pruning: to release RAM people can decide to prune the oldest history entries
+  - prune hasta que fecha: date
+
 
 
 
