@@ -39,8 +39,6 @@ namespace eosio {
                 return allowed;
             }
 
-
-
             uint64_t aux_get_market_id(const symbol_code& A, const symbol_code& B) {
                 PRINT("vapaee::token::exchange::aux_get_market_id()\n");
                 PRINT(" A: ", A.to_string(), "\n");

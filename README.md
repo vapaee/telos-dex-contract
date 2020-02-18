@@ -1,5 +1,5 @@
 # telos-dex-contract
-Telos DEX smart contract source code
+Telos DEX smart contract source code   
 current version: v3.6.1
 
 ## About this project  

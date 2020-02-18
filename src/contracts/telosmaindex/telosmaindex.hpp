@@ -4,6 +4,7 @@
 #include <dex/modules/token.hpp>
 #include <dex/modules/exchange.hpp>
 #include <dex/modules/deposit.hpp>
+#include <dex/modules/dao.hpp>
 #include <vapaee/dispatcher.spp>
 
 using namespace eosio;
@@ -21,6 +22,8 @@ CONTRACT telosmaindex : public eosio::contract {
         using contract::contract;
 
     public:
+
+        // Interface Module ---------------------------------------------------------------------
         
         ACTION addui (name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail) {
             MAINTENANCE();
@@ -33,6 +36,8 @@ CONTRACT telosmaindex : public eosio::contract {
             PRINT("\nACTION telosmaindex.updateui()\n");
             eosio::dex::ui::action_update_ui(ui, admin, receiver, params, title, website, brief, banner, thumbnail);
         };
+
+        // Token Module ---------------------------------------------------------------------
         
         ACTION addtoken (name contract, const symbol_code & symbol, uint8_t precision, name admin, string title, string website, string brief, string banner, string icon, string iconlg, bool tradeable) {
             MAINTENANCE();
@@ -71,6 +76,8 @@ CONTRACT telosmaindex : public eosio::contract {
             eosio::dex::token::action_edit_token_event(symbol, event, action, contract);
         };
 
+        // Exchange Module ---------------------------------------------------------------------
+
         ACTION cancel(name owner, name type, const symbol_code & commodity, const symbol_code & currency, const std::vector<uint64_t> & orders) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.cancel()\n");
@@ -82,6 +89,8 @@ CONTRACT telosmaindex : public eosio::contract {
             PRINT("\nACTION telosmaindex.order()\n");
             eosio::dex::exchange::action_order(owner, type, total, price, ui);
         };
+
+        // Deposit Module ---------------------------------------------------------------------
 
         ACTION withdraw(name owner, const asset & quantity, uint64_t ui) {
             MAINTENANCE();
@@ -127,6 +136,31 @@ CONTRACT telosmaindex : public eosio::contract {
             PRINT("\nACTION telosmaindex.deps2earn()\n");
             eosio::dex::deposit::action_convert_deposits_to_earnings(ui, quantity);
         };
+
+        // DAO Module ---------------------------------------------------------------------
+        
+        ACTION balloton (name property, vector<string> params, name feepayer) {
+            MAINTENANCE();
+            PRINT("\nACTION telosmaindex.balloton()\n");
+            eosio::dex::dao::action_start_ballot_on(property, params, feepayer);
+        };
+
+        [[eosio::on_notify("telos.decide::broadcast")]]
+        void catch_broadcast(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
+            MAINTENANCE();
+            PRINT("\nACTION telosmaindex.balloton()\n");
+            eosio::dex::dao::handler_ballor_result(ballot_name,final_results,total_voters);
+        };
+
+
+
+        // voting? --------
+                
+        ACTION voteon (name property, uint64_t ballotid, uint8_t vote) {
+            MAINTENANCE();
+            PRINT("\nACTION telosmaindex.balloton()\n");
+            eosio::dex::dao::action_start_vote_on(property, ballotid, vote);
+        };        
                 
         
         AUX_DEBUG_ACTIONS (

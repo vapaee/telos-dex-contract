@@ -12,14 +12,14 @@ namespace eosio {
         namespace ui {
             
             void aux_assert_ui_is_valid(uint64_t ui) {
-                PRINT("vapaee::token::exchange::aux_assert_ui_is_valid()\n");
+                PRINT("eosio::dex::ui::aux_assert_ui_is_valid()\n");
                 PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
 
                 interfaces uitable(get_self(), get_self().value);
                 auto ptr = uitable.find(ui);
                 check(ptr != uitable.end(), create_error_id1(ERROR_ACUE_1, ui).c_str());
 
-                PRINT("vapaee::token::exchange::aux_assert_ui_is_valid() ...\n");
+                PRINT("eosio::dex::ui::aux_assert_ui_is_valid() ...\n");
             }
 
             void action_add_ui(name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail) {
