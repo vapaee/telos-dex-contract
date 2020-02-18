@@ -10,6 +10,57 @@ namespace eosio {
         using namespace utils;
 
         namespace dao {
+
+            const name decide = name("telos.decide");
+
+            // telos.decide table structs ------------------
+            struct config {
+                string app_name;
+                string app_version;
+                asset total_deposits;
+                map<name, asset> fees;     //ballot, treasury, archival
+                map<name, uint32_t> times; //balcooldown, minballength, forfeittime
+
+                uint64_t primary_key() const { return 0; }
+            };
+
+            typedef eosio::multi_index< "depusers"_n, config > config_table;
+
+            config aux_get_telos_decide_config() {
+                config_table configs(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
+                auto ptr = configs.begin();
+                check(ptr != configs.end(), create_error_name1(ERROR_AGTDC_1, eosio::dex::dao::decide).c_str()); 
+                return *ptr;
+            }
+
+            asset aux_get_telos_decide_ballot_fee() {
+                config configs = aux_get_telos_decide_config();
+                return configs.fees[name("ballot")];
+            }
+
+            // ---------------------------------------------
+
+            symbol_code aux_check_symbol_code_from_string(string str) {
+                symbol_code sym_code(str.c_str());
+                tokens tokens_table(get_self(), get_self().value);
+                auto ptr = tokens_table.find(sym_code.raw());
+                check(ptr != tokens_table.end(), create_error_symcode1(ERROR_ACSCFS_1, sym_code).c_str());
+                return sym_code;
+            }
+
+            double aux_check_double_from_string(string str) {
+                double value = std::stod(str.c_str());
+                check(value >= 0, create_error_double1(ERROR_ACDFS_1, value).c_str());
+                check(value <= 1, create_error_double1(ERROR_ACDFS_2, value).c_str());
+                return value;
+            }
+
+            uint32_t aux_check_integer_from_string(string str) {
+                uint32_t value = std::atoi(str.c_str());
+                uint32_t nowsec = current_time_point().sec_since_epoch();
+                check(value <= nowsec, create_error_id1(ERROR_ACIFS_1, value).c_str());
+                return value;
+            }
             
             void action_start_ballot_on (name property, vector<string> params, name feepayer) {
                 PRINT("vapaee::token::dao::action_start_ballot_on()\n");
@@ -19,12 +70,67 @@ namespace eosio {
                 }
                 PRINT(" feepayer: ", feepayer.to_string(), "\n");
 
+                require_auth(feepayer);
+
+                // validating property
+                if (
+                    property != name("bantoken")    && 
+                    property != name("delisttoken") && 
+                    property != name("makerfee")    && 
+                    property != name("takerfee")    && 
+                    property != name("setcurrency") && 
+                    property != name("historyprune")
+                ) {
+                    check(false, create_error_name1(ERROR_ASBO_1, property).c_str());
+                }
+
+
+                // validating params
+                if (property == name("bantoken")    || 
+                    property == name("delisttoken") || 
+                    property == name("setcurrency")
+                ) {
+                    string param1 = params[0];
+                    symbol_code sym_code = aux_check_symbol_code_from_string(param1);
+                }
+
+                if (property == name("makerfee")    || 
+                    property == name("takerfee")
+                ) {
+                    string param1 = params[0];
+                    double value = aux_check_double_from_string(param1);
+                }
+
+                if (property == name("historyprune")
+                ) {
+                    string param1 = params[0];
+                    uint32_t value = aux_check_integer_from_string(param1);
+                }
+
+                // find out what is the ballot fee
+                asset ballot_fee = aux_get_telos_decide_ballot_fee();
+                check(ballot_fee.symbol.code() == eosio::dex::SYS_TKN_CODE, create_error_asset2(ERROR_ASBO_2, ballot_fee, ballot_fee).c_str());
+
+                // convert to internal 8 decimal representation
+                asset extended = aux_extend_asset(ballot_fee);
+                
+                // charge feepayer for the fees to pay telos.decide ballot service
+                eosio::dex::deposit::aux_substract_deposits(feepayer, extended, feepayer);
+
+                action(
+                    permission_level{get_self(),name("active")},
+                    eosio::dex::SYS_TKN_CONTRACT,
+                    name("transfer"),
+                    std::make_tuple(get_self(), eosio::dex::dao::decide, ballot_fee, string("deposit"))
+                ).send();    
+
+
                 // TODO: 
-                // - validar el property
-                // - validar los params
-                // - averiguar en telos.decide:config cuanto es el fee por ballot
-                // - descontar de los depósitos de feepayer el fee de un ballot
-                // - mandar los fondos (TLOS) a telos.decide a nombre de este contrato
+                // + validar el property
+                // + validar los params
+                // + averiguar en telos.decide:config cuanto es el fee por ballot
+                // + descontar de los depósitos de feepayer el fee de un ballot
+                // + mandar los fondos (TLOS) a telos.decide a nombre de este contrato
                 // - crear un ballot y de algún modo recuperar una referencia a ese ballot (un ballotid?)
                 // - openvote para ese ballot?
                 // - guardar localmente que se ha iniciado un ballot -> guardar la invocación y el ballotid
@@ -48,15 +154,6 @@ namespace eosio {
                 // https://github.com/telosnetwork/telos-decide/tree/master/contracts/decide
 
                 PRINT("eosio::dex::dao::handler_ballor_result() ...\n");
-            }
-
-            void action_start_vote_on (name property, uint64_t ballotid, uint8_t vote) {
-                PRINT("eosio::dex::dao::action_start_vote_on()\n");
-                PRINT(" property: ", property.to_string(), "\n");
-                PRINT(" ballotid: ", std::to_string((unsigned long)ballotid), "\n");
-                PRINT(" vote: ", std::to_string(vote), "\n");
-
-                PRINT("eosio::dex::dao::action_start_vote_on() ...\n");
             }
             
         };     

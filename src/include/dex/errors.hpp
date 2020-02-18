@@ -52,3 +52,24 @@
 
 // aux_get_real_asset
 #define ERROR_AGEA_1 "ERR-AGEA-01: precision mismatch: "
+
+
+// DAO Module ------------------------
+
+// action_start_ballot_on
+#define ERROR_ASBO_1 "ERR-ASBO-01: unknown property: "
+#define ERROR_ASBO_2 "ERR-ASBO-02: telos.decide fee symbol_code and system symbol_code does not match?: "
+
+
+// aux_check_symbol_code_from_string
+#define ERROR_ACSCFS_1 "ERR-ACSCFS-01: This token is not registered: "
+
+// aux_check_double_from_string
+#define ERROR_ACDFS_1 "ERR-ACDFS-01: Fee can not be negative: "
+#define ERROR_ACDFS_2 "ERR-ACDFS-02: Fee can not higher than 1: "
+
+// aux_check_integer_from_string
+#define ERROR_ACIFS_1 "ERR-ACIFS-02: Cant prune future records: "
+
+// aux_get_telos_decide_config
+#define ERROR_AGTDC_1 "ERR-AGTDC-02: Cant prune future records: "

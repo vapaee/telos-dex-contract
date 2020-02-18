@@ -152,16 +152,8 @@ CONTRACT telosmaindex : public eosio::contract {
             eosio::dex::dao::handler_ballor_result(ballot_name,final_results,total_voters);
         };
 
+        
 
-
-        // voting? --------
-                
-        ACTION voteon (name property, uint64_t ballotid, uint8_t vote) {
-            MAINTENANCE();
-            PRINT("\nACTION telosmaindex.balloton()\n");
-            eosio::dex::dao::action_start_vote_on(property, ballotid, vote);
-        };        
-                
         
         AUX_DEBUG_ACTIONS (
 

@@ -21,6 +21,10 @@ namespace eosio {
                 return string(text) + " [" + std::to_string((unsigned long) id ) + "]";
             }
 
+            inline string create_error_double1(const char * text, const double value) {
+                return string(text) + " [" + std::to_string( value ) + "]";
+            }
+
             inline string create_error_symcode1(const char * text, const symbol_code & sym1) {
                 return string(text) + " [" + sym1.to_string() + "]";
             }

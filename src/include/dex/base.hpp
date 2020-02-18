@@ -11,8 +11,10 @@
 
 namespace eosio {
     namespace dex {
-        name contract = name("telosmaindex");
-        uint8_t internal_precision = 8;
+        name contract               = name("telosmaindex");
+        symbol_code SYS_TKN_CODE    = symbol_code("TLOS");
+        name SYS_TKN_CONTRACT       = name("eosio.token");
+        uint8_t internal_precision  = 8;
     }
 }
 

@@ -906,24 +906,6 @@
             ]
         },
         {
-            "name": "voteon",
-            "base": "",
-            "fields": [
-                {
-                    "name": "property",
-                    "type": "name"
-                },
-                {
-                    "name": "ballotid",
-                    "type": "uint64"
-                },
-                {
-                    "name": "vote",
-                    "type": "uint8"
-                }
-            ]
-        },
-        {
             "name": "withdraw",
             "base": "",
             "fields": [
@@ -1011,11 +993,6 @@
         {
             "name": "updateui",
             "type": "updateui",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "voteon",
-            "type": "voteon",
             "ricardian_contract": ""
         },
         {
