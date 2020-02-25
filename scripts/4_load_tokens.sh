@@ -1,35 +1,12 @@
 #!/bin/bash
 HOME=/var/www/telos-dex-contract
 
-echo "-------- 3_load_tokens ---------"
+echo "-------- 4_load_tokens ---------"
 sleep 1
 
-
-if [ ! -d $HOME/src/contracts/eosio.contracts ]; then
-    cd $HOME/src/contracts/
-    echo "Cloning eosio.contracts (eosio.trail & eosio.token)"
-    git clone https://github.com/Telos-Foundation/eosio.contracts.git
-else
-    echo "$HOME/src/contracts/eosio.contracts OK!"
-fi
-
-
-# eosio.token
-echo "-------- eosio.trail (Voting system) ---------"
-cd $HOME/src/contracts/eosio.contracts/contracts/eosio.trail
-if [[ src/eosio.trail.cpp -nt eosio.trail.wasm ]]; then
-    eosio-cpp -o eosio.trail.wasm src/eosio.trail.cpp --abigen -I include
-fi
-cleos set contract eosio.trail $PWD -p eosio.trail@active
-
-echo "-------- eosio.token (standar token) ---------"
-cd $HOME/src/contracts/eosio.contracts/contracts/eosio.token
-if [[ src/eosio.token.cpp -nt eosio.token.wasm ]]; then
-    eosio-cpp -o eosio.token.wasm src/eosio.token.cpp --abigen -I include
-fi
+cd $HOME/src/contracts/telos.contracts/contracts/eosio.token
 
 echo "-------- eosio.token (TLOS) ---------"
-cleos set contract eosio.token $PWD -p eosio.token@active
 cleos set contract eosio.token $PWD -p eosio.token@active
 cleos push action eosio.token create '[ "telosmaindex", "1000000000.0000 TLOS"]' -p eosio.token@active
 cleos push action eosio.token create '[ "telosmaindex", "1000000000.0000 TLOS"]' -p eosio.token@active

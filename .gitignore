@@ -1,6 +1,9 @@
 .vscode
-src/contracts/eosio.contracts
+src/contracts/telos-decide
+src/contracts/telos.contracts
 src/contracts/telosmaindex/telosmaindex.abi
 src/contracts/telosmaindex/telosmaindex.wasm
 src/contracts/eventhandler/eventhandler.abi
 src/contracts/eventhandler/eventhandler.wasm
+libraries/telos-decide
+libraries/eos

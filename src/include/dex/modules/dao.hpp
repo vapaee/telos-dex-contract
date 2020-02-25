@@ -117,13 +117,31 @@ namespace eosio {
                 // charge feepayer for the fees to pay telos.decide ballot service
                 eosio::dex::deposit::aux_substract_deposits(feepayer, extended, feepayer);
 
+                // deposit ballot fee in telos decide contract
                 action(
                     permission_level{get_self(),name("active")},
                     eosio::dex::SYS_TKN_CONTRACT,
                     name("transfer"),
                     std::make_tuple(get_self(), eosio::dex::dao::decide, ballot_fee, string("deposit"))
-                ).send();    
+                ).send();
 
+                // at this point it should be a treasure created for VOTE token in telos decide contract
+
+                // at this point it this contract name should be registered as votter in tat treasury
+
+                // create ballot
+                name ballot_name = property;
+                name category = 
+                action(
+                    permission_level{get_self(),name("active")},
+                    eosio::dex::SYS_TKN_CONTRACT,
+                    name("newballot"),
+                    std::make_tuple(get_self(), eosio::dex::dao::decide, ballot_fee, string("deposit"))
+                ).send();
+
+
+name ballot_name, name category, name publisher,  
+    symbol treasury_symbol, name voting_method, vector<name> initial_options
 
                 // TODO: 
                 // + validar el property

@@ -8,10 +8,12 @@
 
 ./2_deploy_contract.sh
 
-./3_load_tokens.sh
+./3_load_system.sh
 
-./4_register_interfaces.sh
+./4_load_tokens.sh
 
-./5_deposits.sh
+./5_register_interfaces.sh
 
-./6_orders.sh
+./6_deposits.sh
+
+./7_orders.sh

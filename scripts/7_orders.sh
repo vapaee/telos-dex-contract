@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "-- 6_orders --"
+echo "-- 7_orders --"
 sleep 1
 
 echo "-- alice sells TLOS/TLOSD --"
