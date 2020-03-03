@@ -26,6 +26,51 @@ namespace eosio {
 
             typedef eosio::multi_index< "depusers"_n, config > config_table;
 
+            struct ballot {
+                name ballot_name;
+                name category; //proposal, referendum, election, poll, leaderboard
+                name publisher;
+                name status; //setup, voting, closed, cancelled, archived
+
+                string title; //markdown
+                string description; //markdown
+                string content; //IPFS link to content or markdown
+
+                symbol treasury_symbol; //treasury used for counting votes
+                name voting_method; //1acct1vote, 1tokennvote, 1token1vote, 1tsquare1v, quadratic
+                uint8_t min_options; //minimum options per voter
+                uint8_t max_options; //maximum options per voter
+                map<name, asset> options; //option name -> total weighted votes
+
+                uint32_t total_voters; //number of voters who voted on ballot
+                uint32_t total_delegates; //number of delegates who voted on ballot
+                asset total_raw_weight; //total raw weight cast on ballot
+                uint32_t cleaned_count; //number of expired vote receipts cleaned
+                map<name, bool> settings; //setting name -> on/off
+                
+                time_point_sec begin_time; //time that voting begins
+                time_point_sec end_time; //time that voting closes
+
+                uint64_t primary_key() const { return ballot_name.value; }
+                uint64_t by_category() const { return category.value; }
+                uint64_t by_status() const { return status.value; }
+                uint64_t by_symbol() const { return treasury_symbol.code().raw(); }
+                uint64_t by_end_time() const { return static_cast<uint64_t>(end_time.utc_seconds); }
+                
+                EOSLIB_SERIALIZE(ballot, 
+                    (ballot_name)(category)(publisher)(status)
+                    (title)(description)(content)
+                    (treasury_symbol)(voting_method)(min_options)(max_options)(options)
+                    (total_voters)(total_delegates)(total_raw_weight)(cleaned_count)(settings)
+                    (begin_time)(end_time))
+            };
+            typedef multi_index<name("ballots"), ballot,
+                indexed_by<name("bycategory"), const_mem_fun<ballot, uint64_t, &ballot::by_category>>,
+                indexed_by<name("bystatus"), const_mem_fun<ballot, uint64_t, &ballot::by_status>>,
+                indexed_by<name("bysymbol"), const_mem_fun<ballot, uint64_t, &ballot::by_symbol>>,
+                indexed_by<name("byendtime"), const_mem_fun<ballot, uint64_t, &ballot::by_end_time>>
+            > ballots_table;
+
             config aux_get_telos_decide_config() {
                 config_table configs(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
                 auto ptr = configs.begin();
@@ -36,6 +81,11 @@ namespace eosio {
             asset aux_get_telos_decide_ballot_fee() {
                 config configs = aux_get_telos_decide_config();
                 return configs.fees[name("ballot")];
+            }
+
+            name aux_get_available_ballot_name() {
+                ballots_table ballots(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
+                return name(ballots.available_primary_key());
             }
 
             // ---------------------------------------------
@@ -130,18 +180,35 @@ namespace eosio {
                 // at this point it this contract name should be registered as votter in tat treasury
 
                 // create ballot
-                name ballot_name = property;
-                name category = 
+                name ballot_name = aux_get_available_ballot_name();
+                name category = name("poll");
+                symbol treasury_symbol = symbol(symbol_code("VOTE"), 4);
+                name voting_method = name("1token1vote");
+                vector<name> initial_options = {name("yes"), name("no"), name("abstain")};
                 action(
                     permission_level{get_self(),name("active")},
                     eosio::dex::SYS_TKN_CONTRACT,
                     name("newballot"),
-                    std::make_tuple(get_self(), eosio::dex::dao::decide, ballot_fee, string("deposit"))
+                    std::make_tuple(
+                        ballot_name,
+                        category,
+                        get_self(),
+                        treasury_symbol,
+                        voting_method,
+                        initial_options
+                    )
                 ).send();
 
+                // category
+                // "proposal"
+                // "referendum"
+                // "election"
+                // "poll"
+                // "leaderboard"
 
-name ballot_name, name category, name publisher,  
-    symbol treasury_symbol, name voting_method, vector<name> initial_options
+
+                // name ballot_name, name category, name publisher,  
+                // symbol treasury_symbol, name voting_method, vector<name> initial_options
 
                 // TODO: 
                 // + validar el property
