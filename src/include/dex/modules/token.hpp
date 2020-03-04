@@ -40,12 +40,12 @@ namespace eosio {
                     a.icon      = "";
                     a.iconlg    = "";
                     a.tradeable = false;
+                    a.ballot    = name();
+                    a.date      = time_point_sec(current_time_point().sec_since_epoch());
                     a.data      = 0;
                 });
                 PRINT(" -> tokenstable.emplace() OK\n");
-
-
-
+                
                 PRINT("vapaee::token::exchange::action_add_token() ...\n");
             }
 
@@ -74,6 +74,7 @@ namespace eosio {
                     a.icon      = icon;
                     a.iconlg    = iconlg;
                     a.tradeable = tradeable;
+                    a.date      = time_point_sec(current_time_point().sec_since_epoch());
                 });
 
                 PRINT("vapaee::token::exchange::action_update_token_info() ...\n");

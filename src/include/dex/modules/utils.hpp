@@ -17,6 +17,10 @@ namespace eosio {
             inline name get_self() { return eosio::dex::contract; }
             inline name get_code() { return eosio::dex::contract; }
 
+            inline string create_error_string1(const char * text, const string str) {
+                return string(text) + " [" + str + "]";
+            }
+
             inline string create_error_id1(const char * text, const uint64_t id) {
                 return string(text) + " [" + std::to_string((unsigned long) id ) + "]";
             }

@@ -148,13 +148,10 @@ CONTRACT telosmaindex : public eosio::contract {
         [[eosio::on_notify("telos.decide::broadcast")]]
         void catch_broadcast(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
             MAINTENANCE();
-            PRINT("\nACTION telosmaindex.balloton()\n");
-            eosio::dex::dao::handler_ballor_result(ballot_name,final_results,total_voters);
+            PRINT("\nHANDLER telosmaindex.catch_broadcast()\n");
+            eosio::dex::dao::handler_ballot_result(ballot_name, final_results, total_voters);
         };
-
-        
-
-        
+                
         AUX_DEBUG_ACTIONS (
 
             ACTION hotfix (int max, name scope, asset q) {

@@ -63,7 +63,16 @@
 
 
 // aux_check_symbol_code_from_string
-#define ERROR_ACSCFS_1 "ERR-ACSCFS-01: This token is not registered: "
+#define ERROR_ACSCFS_1 "ERR-ACSCFS-01: string is too long to be a valid symbol_code: "
+#define ERROR_ACSCFS_2 "ERR-ACSCFS-02: thirteenth character in name cannot be a letter that comes after j: "
+
+// aux_check_name_from_string
+#define ERROR_ACNFS_1 "ERR-ACNFS-01: contract name is too long to be a valid name: "
+#define ERROR_ACNFS_2 "ERR-ACNFS-02: contract name can not be empty: "
+#define ERROR_ACNFS_3 "ERR-ACNFS-03: thirteenth character of contract name cannot be a letter that comes after j: "
+
+// char_to_value
+#define ERROR_CTV_1 "ERR-CTV-1: character is not in allowed character set for names: "
 
 // aux_check_double_from_string
 #define ERROR_ACDFS_1 "ERR-ACDFS-01: Fee can not be negative: "

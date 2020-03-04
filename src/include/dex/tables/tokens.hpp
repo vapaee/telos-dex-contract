@@ -18,9 +18,10 @@
             string icon;
             string iconlg;
             time_point_sec date;
+            name ballot;
+            uint32_t data;
             bool tradeable;
             bool currency;
-            uint32_t data;
             uint64_t primary_key() const { return symbol.raw(); }
             uint64_t by_contract_key() const { return contract.value; }
         };

@@ -89,13 +89,59 @@ namespace eosio {
             }
 
             // ---------------------------------------------
+            uint8_t char_to_value( char c ) {
+                if( c == '.')
+                    return 0;
+                else if( c >= '1' && c <= '5' )
+                    return (c - '1') + 1;
+                else if( c >= 'a' && c <= 'z' )
+                    return (c - 'a') + 6;
+                else
+                    eosio::check( false, create_error_string1(ERROR_CTV_1, std::to_string(c)).c_str());
+
+                return 0;
+            }
+
+            name aux_check_name_from_string(string str) {
+                uint64_t value = 0;
+                if( str.size() > 13 ) {
+                    eosio::check( false, create_error_string1(ERROR_ACNFS_1, str).c_str());
+                }
+                if( str.empty() ) {
+                    eosio::check( false, create_error_string1(ERROR_ACNFS_2, str).c_str());
+                }
+
+                auto n = std::min( (uint32_t)str.size(), (uint32_t)12u );
+                for( decltype(n) i = 0; i < n; ++i ) {
+                    value <<= 5;
+                    value |= char_to_value( str[i] );
+                }
+                value <<= ( 4 + 5*(12 - n) );
+                if( str.size() == 13 ) {
+                    uint64_t v = char_to_value( str[12] );
+                    if( v > 0x0Full ) {
+                        eosio::check(false, create_error_string1(ERROR_ACNFS_3, str).c_str());
+                    }
+                    value |= v;
+                }
+
+                return name(value);
+            }
 
             symbol_code aux_check_symbol_code_from_string(string str) {
-                symbol_code sym_code(str.c_str());
-                tokens tokens_table(get_self(), get_self().value);
-                auto ptr = tokens_table.find(sym_code.raw());
-                check(ptr != tokens_table.end(), create_error_symcode1(ERROR_ACSCFS_1, sym_code).c_str());
-                return sym_code;
+                uint64_t value = 0;
+                if( str.size() > 7 ) {
+                    eosio::check( false, create_error_string1(ERROR_ACSCFS_1, str).c_str());
+                }
+                for( auto itr = str.rbegin(); itr != str.rend(); ++itr ) {
+                    if( *itr < 'A' || *itr > 'Z') {
+                        eosio::check( false, create_error_string1(ERROR_ACSCFS_2, str).c_str());
+                    }
+                    value <<= 8;
+                    value |= *itr;
+                }
+                symbol_code code(str.c_str());
+                return code;
             }
 
             double aux_check_double_from_string(string str) {
@@ -140,7 +186,9 @@ namespace eosio {
                     property == name("setcurrency")
                 ) {
                     string param1 = params[0];
+                    string param2 = params[1];
                     symbol_code sym_code = aux_check_symbol_code_from_string(param1);
+                    name contract = aux_check_name_from_string(param2);
                 }
 
                 if (property == name("makerfee")    || 
@@ -223,21 +271,11 @@ namespace eosio {
                     a.date = time_point_sec(current_time_point().sec_since_epoch());
                 });
 
-                // TODO: 
-                // + validar el property
-                // + validar los params
-                // + averiguar en telos.decide:config cuanto es el fee por ballot
-                // + descontar de los depósitos de feepayer el fee de un ballot
-                // + mandar los fondos (TLOS) a telos.decide a nombre de este contrato
-                // + crear un ballot y de algún modo recuperar una referencia a ese ballot (un ballotid?)
-                // + openvoting para ese ballot?
-                // + guardar localmente que se ha iniciado un ballot -> guardar la invocación y el ballotid
-
                 PRINT("vapaee::token::dao::action_start_ballot_on() ...\n");
             }
 
-            void handler_ballor_result(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
-                PRINT("eosio::dex::dao::handler_ballor_result()\n");
+            void handler_ballot_result(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
+                PRINT("eosio::dex::dao::handler_ballot_result()\n");
                 PRINT(" property: ", ballot_name.to_string(), "\n");
                 for (int i=0; i<final_results.size(); i++) {
                 for (auto it = final_results.begin(); it != final_results.end(); ++it)
@@ -253,7 +291,7 @@ namespace eosio {
                 // - si el resultado es positivo, ejecutar los cambios según el caso (hay que hacer N sub funciones y un switch-case con las props)
                 // https://github.com/telosnetwork/telos-decide/tree/master/contracts/decide
 
-                PRINT("eosio::dex::dao::handler_ballor_result() ...\n");
+                PRINT("eosio::dex::dao::handler_ballot_result() ...\n");
             }
             
         };     
