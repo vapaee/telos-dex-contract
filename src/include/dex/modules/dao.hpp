@@ -134,7 +134,6 @@ namespace eosio {
                     check(false, create_error_name1(ERROR_ASBO_1, property).c_str());
                 }
 
-
                 // validating params
                 if (property == name("bantoken")    || 
                     property == name("delisttoken") || 
@@ -175,11 +174,10 @@ namespace eosio {
                     std::make_tuple(get_self(), eosio::dex::dao::decide, ballot_fee, string("deposit"))
                 ).send();
 
-                // at this point it should be a treasure created for VOTE token in telos decide contract
+                // + at this point it should be a treasure created for VOTE token in telos decide contract
+                // + at this point it this contract name should be registered as voter in that treasury
 
-                // at this point it this contract name should be registered as votter in tat treasury
-
-                // create ballot
+                // create ballot on Telos Decide contract
                 name ballot_name = aux_get_available_ballot_name();
                 name category = name("poll");
                 symbol treasury_symbol = symbol(symbol_code("VOTE"), 4);
@@ -187,7 +185,7 @@ namespace eosio {
                 vector<name> initial_options = {name("yes"), name("no"), name("abstain")};
                 action(
                     permission_level{get_self(),name("active")},
-                    eosio::dex::SYS_TKN_CONTRACT,
+                    eosio::dex::dao::decide,
                     name("newballot"),
                     std::make_tuple(
                         ballot_name,
@@ -199,16 +197,31 @@ namespace eosio {
                     )
                 ).send();
 
-                // category
-                // "proposal"
-                // "referendum"
-                // "election"
-                // "poll"
-                // "leaderboard"
+                // open ballot for votting in Telos Decide contract
+                uint32_t _15_days = 15 * 24 * 60 * 60;
+                time_point_sec end_time = time_point_sec(current_time_point().sec_since_epoch() + _15_days);
 
+                action(
+                    permission_level{get_self(),name("active")},
+                    eosio::dex::dao::decide,
+                    name("openvoting"),
+                    std::make_tuple(
+                        ballot_name,
+                        end_time
+                    )
+                ).send();
 
-                // name ballot_name, name category, name publisher,  
-                // symbol treasury_symbol, name voting_method, vector<name> initial_options
+                ballots ball_table(get_self(), get_self().value);
+                auto ptr = ball_table.find(ballot_name.value);
+                check(ptr == ball_table.end(), create_error_name1(ERROR_ASBO_3, ballot_name).c_str()); 
+
+                ball_table.emplace(get_self(), [&]( auto &a){
+                    a.ballot_name = ballot_name;
+                    a.property = property;
+                    a.params = params;
+                    a.feepayer = feepayer;
+                    a.date = time_point_sec(current_time_point().sec_since_epoch());
+                });
 
                 // TODO: 
                 // + validar el property
@@ -216,10 +229,9 @@ namespace eosio {
                 // + averiguar en telos.decide:config cuanto es el fee por ballot
                 // + descontar de los depósitos de feepayer el fee de un ballot
                 // + mandar los fondos (TLOS) a telos.decide a nombre de este contrato
-                // - crear un ballot y de algún modo recuperar una referencia a ese ballot (un ballotid?)
-                // - openvote para ese ballot?
-                // - guardar localmente que se ha iniciado un ballot -> guardar la invocación y el ballotid
-                
+                // + crear un ballot y de algún modo recuperar una referencia a ese ballot (un ballotid?)
+                // + openvoting para ese ballot?
+                // + guardar localmente que se ha iniciado un ballot -> guardar la invocación y el ballotid
 
                 PRINT("vapaee::token::dao::action_start_ballot_on() ...\n");
             }
@@ -232,6 +244,9 @@ namespace eosio {
                     PRINT(" final_results[",it->first.to_string(),"]: ", it->second.to_string(), "\n");
                 }                
                 PRINT(" total_voters: ", std::to_string((unsigned long)total_voters), "\n");
+
+
+
 
                 // TODO: 
                 // - ir a las tabla de cambios en curso y ver si existe una para ballot_name

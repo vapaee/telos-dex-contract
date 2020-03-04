@@ -59,6 +59,7 @@
 // action_start_ballot_on
 #define ERROR_ASBO_1 "ERR-ASBO-01: unknown property: "
 #define ERROR_ASBO_2 "ERR-ASBO-02: telos.decide fee symbol_code and system symbol_code does not match?: "
+#define ERROR_ASBO_3 "ERR-ASBO-03: ballot_name already exists: "
 
 
 // aux_check_symbol_code_from_string

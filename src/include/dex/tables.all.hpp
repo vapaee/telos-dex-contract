@@ -1,3 +1,4 @@
+#include "./tables/ballots.hpp"
 #include "./tables/blockhistory.hpp"
 #include "./tables/deposits.hpp"
 #include "./tables/depusers.hpp"
