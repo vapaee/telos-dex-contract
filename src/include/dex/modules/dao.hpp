@@ -268,7 +268,8 @@ namespace eosio {
                     a.property = property;
                     a.params = params;
                     a.feepayer = feepayer;
-                    a.date = time_point_sec(current_time_point().sec_since_epoch());
+                    a.started = time_point_sec(current_time_point().sec_since_epoch());
+                    a.finished = a.started;
                 });
 
                 PRINT("vapaee::token::dao::action_start_ballot_on() ...\n");

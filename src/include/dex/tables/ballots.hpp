@@ -9,7 +9,8 @@
             name property;
             vector<string> params;
             name feepayer;
-            time_point_sec date;
+            time_point_sec started;
+            time_point_sec finished;
             uint64_t primary_key() const { return ballot_name.value; }
             uint64_t by_property_key() const { return property.value; }
         };

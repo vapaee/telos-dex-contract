@@ -1,9 +1,69 @@
+--- TODO ---
+- crear la tabla blacklist {
+    id,
+    symbol_code,
+    contract
+  }
+- crear el singleton config {
+    maker_fee,
+    taker_fee,
+    prune
+  }
+- crear la tabla delmarkets {
+    id,     // id del market
+    name,   // xxx.yyy
+  }
+  
+
+- Hay que crear un indice nuevo en ballot para poder identificar rápido cuales son los ballots que están abiertos.  
+- Hay que sacar el property delisttoken
+- Crear una funcion que determine si un token está en lista negra o está siendo evaluado (ballot) actualmente.
+- hay que adaptar el addtoken y updatetoken para que no permita operar si el token no está abilitado (con la función del punto anterior)
+- Si alguien intenta hacer trading de un token que no está habiltado para trading debe explotar
+- reaccionar a la resolución de un ballot.
+  - verificar que existe en nuestra lista.
+  - deendiendo de que sea ejecutar una u otra sub función
+  - "bantoken"
+    - hay que agregar el token a la lista negra
+    - sacarlo de la lista de tokens
+    - averiaguar en cuantos markets participa y ponerlos en delmarkets
+  - "makerfee"
+    - solo cambiar el valor en config y nada más
+  - "takerfee"
+    - Idem anterior
+  - "setcurrency"
+    - si se desea setear el token como Currency, sólo se le cambia el parámetro currency al token y listo
+    - si era currency y se lo sacan, hay que eliminar todos los markets a los que pertenece
+  - "historyprune"
+- función para mantenimiento: es una func que se debería ejecutar una o dos veces cada tanto
+  - No debe dar error nunca!!
+  - Debe fijarse si hay un market en la delmarkets table. Si encuentra, debe:
+    - borrar entradas del history(market-id)
+    - cancelar ordenes para ese market de sellorders(market-id)
+  - debe fijarse si la fecha de config.prune es posterior a la última fecha del historial de eventos y borrarlo si lo es
+  - Idem anterior, pero para el historial de un Market dado (por parámetro)
+
+
+
+
+
+
+
+
+--- token ---
+
+- set token as currency: allow people to create markets with this token as currency
+  - que token: symbol
+
+
+-- blacklist --
 
 - banning a token: the token will be complete banned from the DEX. Can't be relisting unless restored by voting.
-  - que token: symbol
+  - que token: symbol, contract
 
-- delisting token: is not allowed te be traded!! but is not banned, can be shown (this is up to the UI). This can be undone by voting.
-  - que token: symbol
+
+
+--- gonfig ---
 
 - maker fees: apply percent to taker money and give to the account of the UI maker is using
   - cuanto: double
@@ -11,10 +71,12 @@
 - taker fees: apply percent to maker money and give to the account of the UI taker is using
   - cuanto: double
 
-- set token as currency: allow people to create markets with this token as currency
-  - que token: symbol
-
 - history pruning: to release RAM people can decide to prune the oldest history entries
   - prune hasta que fecha: date
 
+
+--------
+
+- delisting token: is not allowed te be traded!! but is not banned, can be shown (this is up to the UI). This can be undone by voting.
+  - que token: symbol
 
