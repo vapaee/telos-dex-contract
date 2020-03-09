@@ -157,7 +157,7 @@
                 },
                 {
                     "name": "ballot",
-                    "type": "uint64"
+                    "type": "name"
                 }
             ]
         },
@@ -1011,7 +1011,7 @@
                 },
                 {
                     "name": "ballot",
-                    "type": "uint64"
+                    "type": "name"
                 }
             ]
         },

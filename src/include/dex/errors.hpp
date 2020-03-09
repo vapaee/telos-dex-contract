@@ -109,3 +109,11 @@
 
 // aux_is_token_blacklisted
 #define ERROR_AITB_1 "ERR-AITB-01: Token is not registered: " 
+
+// aux_process_ballot_to_ban_token
+#define ERROR_APBTBT_1 "ERR-APBTBT-01: This token can't be banned because it belongs to the DEX token white list: " 
+#define ERROR_APBTBT_2 "ERR-APBTBT-02: This token is already blacklisted: " 
+
+// handler_ballot_result
+#define ERROR_HBR_1 "ERR-HBR-01: could't find a ballot identified: "
+#define ERROR_HBR_2 "ERR-HBR-02: property not valid: "

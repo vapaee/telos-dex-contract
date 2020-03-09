@@ -3,6 +3,7 @@
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
 #include <dex/modules/utils.hpp>
+#include <dex/modules/dao.hpp>
 
 using namespace std;
 
@@ -21,13 +22,13 @@ namespace eosio {
                 
                 stats statstable( contract, sym_code.raw() );
                 auto token_itr = statstable.find( sym_code.raw() );
-                check( token_itr != statstable.end(), , create_error_symcode1(ERROR_AAT_1, sym_code.raw()).c_str());
+                check(token_itr != statstable.end(), create_error_symcode1(ERROR_AAT_1, sym_code).c_str());
                 
                 check(has_auth(get_self()) || has_auth(contract) || has_auth(token_itr->issuer), "only token contract or issuer can add this token to DEX" );
 
                 tokens tokenstable(get_self(), get_self().value);
                 auto itr = tokenstable.find(sym_code.raw());
-                check(itr == tokenstable.end(), create_error_symcode1(ERROR_AAT_2, sym_code.raw()).c_str());
+                check(itr == tokenstable.end(), create_error_symcode1(ERROR_AAT_2, sym_code).c_str());
                 tokenstable.emplace( admin, [&]( auto& a ){
                     a.contract  = contract;
                     a.symbol    = sym_code;
@@ -67,8 +68,8 @@ namespace eosio {
                 check(has_auth(get_self()) || has_auth(admin), ERROR_AUTI_1);
 
                 // is it blacklisted?
-                check(eosio::dex::dao::aux_is_token_blacklisted(itr->symbol.code().raw(), itr->contract), 
-                    create_error_symcode1(ERROR_AUTI_2, itr->symbol.code()).c_str());
+                check(eosio::dex::dao::aux_is_token_blacklisted(itr->symbol, itr->contract), 
+                    create_error_symcode1(ERROR_AUTI_2, itr->symbol).c_str());
                 
 
                 tokenstable.modify( *itr, same_payer, [&]( auto& a ){
@@ -92,9 +93,9 @@ namespace eosio {
 
                 tokens tokenstable(get_self(), get_self().value);
                 auto itr = tokenstable.find(sym_code.raw());
-                check(itr != tokenstable.end(), create_error_symcode1(ERROR_ASTA_1, sym_code.c_str());
+                check(itr != tokenstable.end(), create_error_symcode1(ERROR_ASTA_1, sym_code).c_str());
 
-                check( is_account( newadmin ), create_error_name1(ERROR_ASTA_2, sym_code.c_str(), newadmin);
+                check( is_account( newadmin ), create_error_name1(ERROR_ASTA_2, newadmin).c_str());
                 check(has_auth(get_self()) || has_auth(itr->admin), ERROR_ASTA_2);
 
                 tokenstable.modify( *itr, same_payer, [&]( auto& a ){

@@ -30,15 +30,12 @@ https://github.com/telosnetwork/telos-decide/blob/master/contracts/decide/includ
 + hay que adaptar el addtoken y updatetoken para que no permita operar si el token no está abilitado (con la función del punto anterior)
 + Si alguien intenta hacer trading de un token que no está habiltado para trading debe explotar
 + la action order debería cancelar si uno de los tokens involucrados está en blacklist
-- al crear un ballot. Subfunciones:
-  - "bantoken"
-    - si el token está en whitelist, no puede ser baneado
-    - hay que agregar el token en blacklist
-    
-
++ al crear un ballot. Subfunciones:
+  + "bantoken"
+    + si el token está en whitelist, no puede ser baneado
+    + hay que agregar el token en blacklist
 - reaccionar a la resolución de un ballot.
   - verificar que existe en nuestra lista.
-  - deendiendo de que sea ejecutar una u otra sub función
   - "savetoken"
     - afirmativo:
       - hay que agregar el token a la lista blanca

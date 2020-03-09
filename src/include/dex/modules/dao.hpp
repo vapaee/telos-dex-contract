@@ -3,6 +3,7 @@
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
 #include <dex/modules/utils.hpp>
+#include <dex/modules/deposit.hpp>
 
 namespace eosio {
     namespace dex {
@@ -69,7 +70,7 @@ namespace eosio {
                 indexed_by<name("bystatus"), const_mem_fun<ballot, uint64_t, &ballot::by_status>>,
                 indexed_by<name("bysymbol"), const_mem_fun<ballot, uint64_t, &ballot::by_symbol>>,
                 indexed_by<name("byendtime"), const_mem_fun<ballot, uint64_t, &ballot::by_end_time>>
-            > ballots_table;
+            > decide_ballots_table;
 
             config_struct aux_get_telos_decide_config() {
                 config_table configs(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
@@ -84,7 +85,7 @@ namespace eosio {
             }
 
             name aux_get_available_ballot_name() {
-                ballots_table ballots(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
+                decide_ballots_table ballots(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
                 return name(ballots.available_primary_key());
             }
 
@@ -189,8 +190,31 @@ namespace eosio {
                 auto ptr = token_table.find(sym_code.raw());
                 check(ptr != token_table.end(), create_error_symcode1(ERROR_AITB_1, sym_code).c_str());
                 return aux_is_token_blacklisted(sym_code, ptr->contract);
-            }            
-            
+            }
+
+            void aux_process_ballot_to_ban_token(symbol_code & symcode, name contract, name ballot_name) {
+                PRINT("eosio::dex::dao::aux_process_ballot_to_ban_token()\n");
+                PRINT(" symcode: ", symcode.to_string(), "\n");
+                PRINT(" contract: ", contract.to_string(), "\n");
+                
+                whitelist white_table(get_self(), get_self().value);
+                auto wptr = white_table.find(symcode.raw());
+                check(wptr == white_table.end(), create_error_symcode1(ERROR_APBTBT_1, symcode).c_str());
+
+                blacklist black_table(get_self(), get_self().value);
+                auto bptr = black_table.find(symcode.raw());
+                check(bptr != black_table.end(), create_error_symcode1(ERROR_APBTBT_2, symcode).c_str());
+
+                black_table.emplace(get_self(), [&](auto &a){
+                    a.id = black_table.available_primary_key();
+                    a.symbol = symcode;
+                    a.contract = contract;
+                    a.ballot = ballot_name;
+                });
+                
+                PRINT("eosio::dex::dao::aux_process_ballot_to_ban_token()\n");
+            }
+
             void action_start_ballot_on (name property, vector<string> params, name feepayer) {
                 
                 PRINT("vapaee::token::dao::action_start_ballot_on()\n");
@@ -205,7 +229,7 @@ namespace eosio {
                 // validating property
                 if (
                     property != name("bantoken")    && 
-                    property != name("savetoken") && 
+                    property != name("savetoken")   && 
                     property != name("makerfee")    && 
                     property != name("takerfee")    && 
                     property != name("setcurrency") && 
@@ -215,7 +239,7 @@ namespace eosio {
                 }
 
                 // validating params
-                if (property == name("bantoken")    || 
+                if (property == name("bantoken")  || 
                     property == name("savetoken") || 
                     property == name("setcurrency")
                 ) {
@@ -306,30 +330,119 @@ namespace eosio {
                     a.finished = time_point_sec::maximum();
                 });
 
-                // TODO:
-                // - tengo que hacer una subfunción por cada tipo de property
+                if ( property == name("bantoken") ) {
+                    string param1 = params[0];
+                    string param2 = params[1];
+                    symbol_code sym_code = aux_check_symbol_code_from_string(param1);
+                    name contract = aux_check_name_from_string(param2);                    
+                    aux_process_ballot_to_ban_token(sym_code, contract, ballot_name);
+                }
 
                 PRINT("vapaee::token::dao::action_start_ballot_on() ...\n");
                 
             }
 
+            void handler_ballot_result_for_savetoken(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("vapaee::token::dao::handler_ballot_result_for_savetoken()\n");
+
+                string param1 = ballot.params[0];
+                string param2 = ballot.params[1];
+                symbol_code sym_code = aux_check_symbol_code_from_string(param1);
+                name contract = aux_check_name_from_string(param2);          
+
+
+
+                whitelist list(get_self(), get_self().value);
+                auto index = list.get_index<name("symbol")>();
+                auto itr = index.lower_bound(sym_code.raw());
+
+                if (approved) {
+                    if (itr != index.end()) {
+                        list.emplace(get_self(), [&](auto &a){
+                            a.id = list.available_primary_key();
+                            a.symbol = sym_code;
+                            a.contract = contract;
+                            a.ballot = ballot.ballot_name;                            
+                        });
+                    }
+                } else {
+                    if (itr == index.end()) {
+                        list.erase(*itr);
+                    }
+                }
+                PRINT("vapaee::token::dao::handler_ballot_result_for_savetoken() ...\n");
+            }
+
+            void handler_ballot_result_for_bantoken(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("vapaee::token::dao::handler_ballot_result_for_bantoken()\n");
+
+                PRINT("vapaee::token::dao::handler_ballot_result_for_bantoken() ...\n");
+            }
+
+            void handler_ballot_result_for_makerfee(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("vapaee::token::dao::handler_ballot_result_for_makerfee()\n");
+
+                PRINT("vapaee::token::dao::handler_ballot_result_for_makerfee() ...\n");
+            }
+
+            void handler_ballot_result_for_takerfee(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("vapaee::token::dao::handler_ballot_result_for_takerfee()\n");
+
+                PRINT("vapaee::token::dao::handler_ballot_result_for_takerfee() ...\n");
+            }
+
+            void handler_ballot_result_for_setcurrency(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("vapaee::token::dao::handler_ballot_result_for_setcurrency()\n");
+
+                PRINT("vapaee::token::dao::handler_ballot_result_for_setcurrency() ...\n");
+            }
+
+            void handler_ballot_result_for_historyprune(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("vapaee::token::dao::handler_ballot_result_for_historyprune()\n");
+
+                PRINT("vapaee::token::dao::handler_ballot_result_for_historyprune() ...\n");
+            }
+
             void handler_ballot_result(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
                 
                 PRINT("eosio::dex::dao::handler_ballot_result()\n");
-                PRINT(" property: ", ballot_name.to_string(), "\n");
+                PRINT(" ballot_name: ", ballot_name.to_string(), "\n");
                 for (int i=0; i<final_results.size(); i++) {
                 for (auto it = final_results.begin(); it != final_results.end(); ++it)
                     PRINT(" final_results[",it->first.to_string(),"]: ", it->second.to_string(), "\n");
                 }                
                 PRINT(" total_voters: ", std::to_string((unsigned long)total_voters), "\n");
 
+                ballots ball_table(get_self(), get_self().value);
+                const ballots_table ballot = ball_table.get(ballot_name.value, create_error_name1(ERROR_HBR_1, ballot_name).c_str());
+     
+                bool approved = final_results[name("yes")].amount > final_results[name("no")].amount;
+
+                switch(ballot.property.value) {
+                    case name("savetoken").value:
+                        handler_ballot_result_for_savetoken(ballot, approved, total_voters);
+                        break;
+                    case name("bantoken").value:
+                        handler_ballot_result_for_bantoken(ballot, approved, total_voters);
+                        break;
+                    case name("makerfee").value:
+                        handler_ballot_result_for_makerfee(ballot, approved, total_voters);
+                        break;
+                    case name("takerfee").value:
+                        handler_ballot_result_for_takerfee(ballot, approved, total_voters);
+                        break;
+                    case name("setcurrency").value:
+                        handler_ballot_result_for_setcurrency(ballot, approved, total_voters);
+                        break;
+                    case name("historyprune").value:
+                        handler_ballot_result_for_historyprune(ballot, approved, total_voters);
+                        break;
+                    default:
+                        check(false, create_error_name1(ERROR_HBR_2, ballot.property).c_str()); 
+                        break;
+                }
 
 
-
-                // TODO: 
-                // - ir a las tabla de cambios en curso y ver si existe una para ballot_name
-                // - si el resultado es positivo, ejecutar los cambios según el caso (hay que hacer N sub funciones y un switch-case con las props)
-                
 
                 PRINT("eosio::dex::dao::handler_ballot_result() ...\n");
                 
