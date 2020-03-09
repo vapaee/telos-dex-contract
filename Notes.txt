@@ -1,40 +1,63 @@
+https://github.com/telosnetwork/telos-decide/tree/master/contracts/decide
+
 --- TODO ---
-- crear la tabla blacklist {
++ crear la tabla blacklist {
     id,
     symbol_code,
-    contract
+    contract,
+    ballot
   }
-- crear el singleton config {
++ crear el singleton config {
     maker_fee,
     taker_fee,
     prune
   }
-- crear la tabla delmarkets {
+https://github.com/telosnetwork/telos-decide/blob/master/contracts/decide/include/decide.hpp#L312
+
+
++ crear la tabla delmarkets {
     id,     // id del market
     name,   // xxx.yyy
   }
-  
 
-- Hay que crear un indice nuevo en ballot para poder identificar rápido cuales son los ballots que están abiertos.  
-- Hay que sacar el property delisttoken
-- Crear una funcion que determine si un token está en lista negra o está siendo evaluado (ballot) actualmente.
-- hay que adaptar el addtoken y updatetoken para que no permita operar si el token no está abilitado (con la función del punto anterior)
-- Si alguien intenta hacer trading de un token que no está habiltado para trading debe explotar
+
+  
++ Q: como hago para detectar que no se puede realizar una orden para un market determinado mientras un token está siendo evaluado (ballot) ?
+  A: puedo preguntar si alguno de los tokens involucrados está en blacklist
++ Hay que crear un indice nuevo en ballot para poder identificar rápido cuales son los ballots que están abiertos.  
++ Hay que sacar el property delisttoken
++ Crear una funcion que determine si un token está en lista negra o está siendo evaluado (ballot) actualmente.
++ hay que adaptar el addtoken y updatetoken para que no permita operar si el token no está abilitado (con la función del punto anterior)
++ Si alguien intenta hacer trading de un token que no está habiltado para trading debe explotar
++ la action order debería cancelar si uno de los tokens involucrados está en blacklist
+- al crear un ballot. Subfunciones:
+  - "bantoken"
+    - si el token está en whitelist, no puede ser baneado
+    - hay que agregar el token en blacklist
+    
+
 - reaccionar a la resolución de un ballot.
   - verificar que existe en nuestra lista.
   - deendiendo de que sea ejecutar una u otra sub función
+  - "savetoken"
+    - afirmativo:
+      - hay que agregar el token a la lista blanca
   - "bantoken"
-    - hay que agregar el token a la lista negra
-    - sacarlo de la lista de tokens
-    - averiaguar en cuantos markets participa y ponerlos en delmarkets
+    - afirmativo:
+      - sacarlo de la lista de tokens
+      - averiaguar en cuantos markets participa y ponerlos en delmarkets
+    - negativo:
+      - sacarlo de la blacklist
   - "makerfee"
-    - solo cambiar el valor en config y nada más
+    - afirmativo: solo cambiar el valor en config y nada más
   - "takerfee"
-    - Idem anterior
+    - afirmativo: Idem anterior
   - "setcurrency"
-    - si se desea setear el token como Currency, sólo se le cambia el parámetro currency al token y listo
-    - si era currency y se lo sacan, hay que eliminar todos los markets a los que pertenece
+    - afirmativo: sólo se le cambia el parámetro currency al token y listo
+    - negativo:
+      - solo si antes si era currency y se lo sacan, hay que setearlo en false y eliminar todos los markets a los que pertenece (delmarkets)
   - "historyprune"
+    - afirmativo: sólo se le cambia el parámetro prune al config
 - función para mantenimiento: es una func que se debería ejecutar una o dos veces cada tanto
   - No debe dar error nunca!!
   - Debe fijarse si hay un market en la delmarkets table. Si encuentra, debe:
@@ -56,9 +79,12 @@
   - que token: symbol
 
 
--- blacklist --
+-- black & white list --
 
-- banning a token: the token will be complete banned from the DEX. Can't be relisting unless restored by voting.
+- banning a token: the token will be complete banned from the DEX. Can't be relisting unless restored by voting. While the voting is in process, the token is immediately temporarily suspended from trading.
+  - que token: symbol, contract
+
+- saving a token: The token will be white listed which meeans it can't be banned. It can be unsaved but this process is longger than banning and the token can still be traded.
   - que token: symbol, contract
 
 

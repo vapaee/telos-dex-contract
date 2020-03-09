@@ -1,7 +1,6 @@
 #!/bin/bash
 
 echo "-- 6_deposits --"
-sleep 1
 
 cleos push action acornaccount transfer  '["bob",  "telosmaindex","50.0000 ACORN","deposit"]' -p bob@active
 cleos push action acornaccount transfer  '["alice","telosmaindex","1000.0000 ACORN","deposit"]' -p alice@active
@@ -69,3 +68,5 @@ cleos push action eosio.token transfer  '["tom",  "telosmaindex","1000.0000 TLOS
 
 cleos push action vapaeetokens transfer  '["bob",  "telosmaindex","1000.0000 BOX","deposit"]' -p bob@active
 cleos push action vapaeetokens transfer  '["alice","telosmaindex","1000.0000 BOX","deposit"]' -p alice@active
+
+echo "-- 6_deposits finiched --"

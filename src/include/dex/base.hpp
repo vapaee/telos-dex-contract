@@ -1,16 +1,11 @@
 #pragma once
+
 #include <eosio/eosio.hpp>
 #include <eosio/system.hpp>
 #include <eosio/symbol.hpp>
 #include <eosio/asset.hpp>
+#include <eosio/singleton.hpp>
 #include <eosio/print.hpp>
-
-// #include <eosiolib/contracts/eosio/eosio.hpp>
-// #include <eosiolib/core/eosio/symbol.hpp>
-// #include <eosiolib/core/eosio/asset.hpp>
-// #include <eosiolib/core/eosio/print.hpp>
-// #include <eosiolib/contracts/eosio/transaction.hpp>
-// #include <eosiolib/core/eosio/check.hpp>
 
 #include <ctype.h>
 #include <stdlib.h>

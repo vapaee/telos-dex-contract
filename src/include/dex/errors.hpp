@@ -1,5 +1,12 @@
 #pragma once
 
+
+// aux_generate_order
+ 
+#define ERROR_AGO_1 "ERR-AGO-01: amount token is blacklisted: "
+#define ERROR_AGO_2 "ERR-AGO-02: price token is blacklisted: "
+
+
 // aux_generate_sell_order
 #define ERROR_AGSO_1 "ERR-AGSO-01: symbol mismatch: "
 #define ERROR_AGSO_2 "ERR-AGSO-02: symbol mismatch: "
@@ -54,6 +61,22 @@
 #define ERROR_AGEA_1 "ERR-AGEA-01: precision mismatch: "
 
 
+// Token Module ----------------------
+
+// action_update_token_info
+#define ERROR_AUTI_1 "ERR-AUTI-01: only admin or token's admin can modify the token main info: " 
+#define ERROR_AUTI_2 "ERR-AUTI-02: the token is currently blacklisted: " 
+
+// action_add_token
+#define ERROR_AAT_1 "ERR-AAT-01: Token with symbol not exists: " 
+#define ERROR_AAT_2 "ERR-AAT-02: Token already registered: " 
+
+
+// action_set_token_admin
+#define ERROR_ASTA_1 "ERR-ASTA-01: Token not registered. You must register it first calling addtoken action: " 
+#define ERROR_ASTA_2 "ERR-ASTA-02: account does not exist: " 
+#define ERROR_ASTA_3 "ERR-ASTA-03: only DAO or token's admin can change token admin" 
+
 // DAO Module ------------------------
 
 // action_start_ballot_on
@@ -83,3 +106,6 @@
 
 // aux_get_telos_decide_config
 #define ERROR_AGTDC_1 "ERR-AGTDC-02: Cant prune future records: "
+
+// aux_is_token_blacklisted
+#define ERROR_AITB_1 "ERR-AITB-01: Token is not registered: " 

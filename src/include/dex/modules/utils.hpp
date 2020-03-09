@@ -290,7 +290,7 @@ namespace eosio {
             }
 
             name aux_get_canonical_scope_for_symbols(const symbol_code & A, const symbol_code & B) {
-                PRINT("vapaee::token::exchange::aux_get_canonical_scope_for_symbols()\n");
+                PRINT("eosio::dex::utils::aux_get_canonical_scope_for_symbols()\n");
                 PRINT(" A: ", A.to_string(), "\n");
                 PRINT(" B: ", B.to_string(), "\n");
                 name scope;
@@ -311,7 +311,7 @@ namespace eosio {
 
                 PRINT(" ->scope: ", scope.to_string(), "\n");
                 
-                PRINT("vapaee::token::exchange::aux_get_canonical_scope_for_symbols() ...\n");
+                PRINT("eosio::dex::utils::aux_get_canonical_scope_for_symbols() ...\n");
                 return scope;
             }  
 

@@ -12,7 +12,7 @@ namespace eosio {
         namespace market {
 
             bool aux_is_it_allowed_to_cerate_this_market(const symbol_code & A, const symbol_code & B) {
-                PRINT("vapaee::token::exchange::aux_is_it_allowed_to_cerate_this_market()\n");
+                PRINT("eosio::dex::market::aux_is_it_allowed_to_cerate_this_market()\n");
                 PRINT(" A: ", A.to_string(), "\n");
                 PRINT(" B: ", B.to_string(), "\n");
 
@@ -35,12 +35,12 @@ namespace eosio {
                     allowed = true;
                 }
 
-                PRINT("vapaee::token::exchange::aux_is_it_allowed_to_cerate_this_market()...\n");
+                PRINT("eosio::dex::market::aux_is_it_allowed_to_cerate_this_market()...\n");
                 return allowed;
             }
 
             uint64_t aux_get_market_id(const symbol_code& A, const symbol_code& B) {
-                PRINT("vapaee::token::exchange::aux_get_market_id()\n");
+                PRINT("eosio::dex::market::aux_get_market_id()\n");
                 PRINT(" A: ", A.to_string(), "\n");
                 PRINT(" B: ", B.to_string(), "\n");
                 uint64_t market = 0;
@@ -91,7 +91,7 @@ namespace eosio {
                     a.currency = commodity;
                 });
 
-                PRINT("vapaee::token::exchange::aux_get_market_id()...\n");
+                PRINT("eosio::dex::market::aux_get_market_id()...\n");
                 return market;
             }            
 
@@ -112,11 +112,11 @@ namespace eosio {
             }
 
             name aux_get_table_from_market(uint64_t market_id) {
-                PRINT("vapaee::token::exchange::aux_get_table_from_market()\n");
+                PRINT("eosio::dex::market::aux_get_table_from_market()\n");
                 PRINT(" market_id: ", std::to_string((unsigned long) market_id), "\n");
                 markets mktable(get_self(), get_self().value);
                 auto market = mktable.get(market_id,  create_error_id1(ERROR_AGTFM_1, market_id).c_str());
-                PRINT("vapaee::token::exchange::aux_get_table_from_market()...\n");
+                PRINT("eosio::dex::market::aux_get_table_from_market()...\n");
                 return market.name;
             }
 

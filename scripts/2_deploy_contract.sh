@@ -27,11 +27,11 @@ DEX_CONTRACT_DIR=$HOME/src/contracts/telosmaindex
 
 
 echo "-------- 2_deploy_contract ---------"
-sleep 1
 
 echo "-------- telosmaindex ---------"
 cd $DEX_CONTRACT_DIR
-if [[ $DEX_CONTRACT_DIR/../../include/dex/modules/deposit.hpp -nt telosmaindex.wasm  ||
+if [[ $DEX_CONTRACT_DIR/../../include/dex/modules/dao.hpp -nt telosmaindex.wasm      ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/deposit.hpp -nt telosmaindex.wasm  ||
       $DEX_CONTRACT_DIR/../../include/dex/modules/exchange.hpp -nt telosmaindex.wasm ||
       $DEX_CONTRACT_DIR/../../include/dex/modules/market.hpp -nt telosmaindex.wasm   ||
       $DEX_CONTRACT_DIR/../../include/dex/modules/record.hpp -nt telosmaindex.wasm   ||
@@ -59,3 +59,6 @@ if [ "$NET" == "" ]; then
     echo "cleos $NET set contract eventhandler $PWD -p eventhandler@active"
     cleos $NET set contract eventhandler $PWD -p eventhandler@active
 fi
+
+
+echo "-------- 2_deploy_contract finished ---------"

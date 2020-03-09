@@ -2,7 +2,6 @@
 HOME=/var/www/telos-dex-contract
 
 echo "-------- 4_load_tokens ---------"
-sleep 1
 
 cd $HOME/src/contracts/telos.contracts/contracts/eosio.token
 
@@ -250,3 +249,4 @@ cleos push action telosmaindex addtoken '["vapaeetokens", "VPE", 6, "telosmainde
 
 
 
+echo "-------- 4_load_tokens finished ---------"

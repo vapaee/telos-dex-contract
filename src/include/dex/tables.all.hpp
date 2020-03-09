@@ -1,5 +1,8 @@
 #include "./tables/ballots.hpp"
+#include "./tables/blacklist.hpp"
 #include "./tables/blockhistory.hpp"
+#include "./tables/config.hpp"
+#include "./tables/delmarkets.hpp"
 #include "./tables/deposits.hpp"
 #include "./tables/depusers.hpp"
 #include "./tables/events.hpp"
@@ -15,3 +18,4 @@
 #include "./tables/tokengroup.hpp"
 #include "./tables/tokens.hpp"
 #include "./tables/userorders.hpp"
+#include "./tables/whitelist.hpp"

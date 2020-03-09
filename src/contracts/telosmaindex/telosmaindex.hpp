@@ -110,7 +110,7 @@ CONTRACT telosmaindex : public eosio::contract {
             
             // skip handling outcoming transfers from this contract to outside
             if (from == get_self()) {
-                PRINT(from.to_string(), " to ", to.to_string(), ": ", quantity.to_string(), " vapaee::token::exchange::handler_transfer() skip...\n");
+                PRINT(from.to_string(), " to ", to.to_string(), ": ", quantity.to_string(), " eosio::telosmaindex::handler_transfer() skip...\n");
                 return;
             }
             

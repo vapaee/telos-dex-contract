@@ -14,7 +14,7 @@ namespace eosio {
             const name decide = name("telos.decide");
 
             // telos.decide table structs ------------------
-            struct config {
+            struct config_struct {
                 string app_name;
                 string app_version;
                 asset total_deposits;
@@ -24,7 +24,7 @@ namespace eosio {
                 uint64_t primary_key() const { return 0; }
             };
 
-            typedef eosio::multi_index< "depusers"_n, config > config_table;
+            typedef eosio::multi_index< "tdconfig"_n, config_struct > config_table;
 
             struct ballot {
                 name ballot_name;
@@ -71,7 +71,7 @@ namespace eosio {
                 indexed_by<name("byendtime"), const_mem_fun<ballot, uint64_t, &ballot::by_end_time>>
             > ballots_table;
 
-            config aux_get_telos_decide_config() {
+            config_struct aux_get_telos_decide_config() {
                 config_table configs(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
                 auto ptr = configs.begin();
                 check(ptr != configs.end(), create_error_name1(ERROR_AGTDC_1, eosio::dex::dao::decide).c_str()); 
@@ -79,7 +79,7 @@ namespace eosio {
             }
 
             asset aux_get_telos_decide_ballot_fee() {
-                config configs = aux_get_telos_decide_config();
+                config_struct configs = aux_get_telos_decide_config();
                 return configs.fees[name("ballot")];
             }
 
@@ -157,8 +157,42 @@ namespace eosio {
                 check(value <= nowsec, create_error_id1(ERROR_ACIFS_1, value).c_str());
                 return value;
             }
+
+            bool aux_is_token_whitelisted(const symbol_code &sym_code) {
+                whitelist list(get_self(), get_self().value);
+                auto index = list.get_index<name("symbol")>();
+                auto itr = index.lower_bound(sym_code.raw());
+                if (itr != index.end()) {
+                    return true;
+                }
+                return false;
+            }
+
+            bool aux_is_token_blacklisted(const symbol_code &sym_code, name contract) {
+                blacklist list(get_self(), get_self().value);
+                auto index = list.get_index<name("symbol")>();
+                auto itr = index.lower_bound(sym_code.raw());
+                for (auto itr = index.lower_bound(sym_code.raw()); itr != index.end(); itr++) {
+                    if (itr->symbol == sym_code) {
+                        if (itr->contract == contract) {
+                            return true;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                return false;
+            }
+
+            bool aux_is_token_blacklisted(const symbol_code &sym_code) {
+                tokens token_table(get_self(), get_self().value);
+                auto ptr = token_table.find(sym_code.raw());
+                check(ptr != token_table.end(), create_error_symcode1(ERROR_AITB_1, sym_code).c_str());
+                return aux_is_token_blacklisted(sym_code, ptr->contract);
+            }            
             
             void action_start_ballot_on (name property, vector<string> params, name feepayer) {
+                
                 PRINT("vapaee::token::dao::action_start_ballot_on()\n");
                 PRINT(" property: ", property.to_string(), "\n");
                 for (int i=0; i<params.size(); i++) {
@@ -171,7 +205,7 @@ namespace eosio {
                 // validating property
                 if (
                     property != name("bantoken")    && 
-                    property != name("delisttoken") && 
+                    property != name("savetoken") && 
                     property != name("makerfee")    && 
                     property != name("takerfee")    && 
                     property != name("setcurrency") && 
@@ -182,7 +216,7 @@ namespace eosio {
 
                 // validating params
                 if (property == name("bantoken")    || 
-                    property == name("delisttoken") || 
+                    property == name("savetoken") || 
                     property == name("setcurrency")
                 ) {
                     string param1 = params[0];
@@ -269,13 +303,18 @@ namespace eosio {
                     a.params = params;
                     a.feepayer = feepayer;
                     a.started = time_point_sec(current_time_point().sec_since_epoch());
-                    a.finished = a.started;
+                    a.finished = time_point_sec::maximum();
                 });
 
+                // TODO:
+                // - tengo que hacer una subfunción por cada tipo de property
+
                 PRINT("vapaee::token::dao::action_start_ballot_on() ...\n");
+                
             }
 
             void handler_ballot_result(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
+                
                 PRINT("eosio::dex::dao::handler_ballot_result()\n");
                 PRINT(" property: ", ballot_name.to_string(), "\n");
                 for (int i=0; i<final_results.size(); i++) {
@@ -290,9 +329,10 @@ namespace eosio {
                 // TODO: 
                 // - ir a las tabla de cambios en curso y ver si existe una para ballot_name
                 // - si el resultado es positivo, ejecutar los cambios según el caso (hay que hacer N sub funciones y un switch-case con las props)
-                // https://github.com/telosnetwork/telos-decide/tree/master/contracts/decide
+                
 
                 PRINT("eosio::dex::dao::handler_ballot_result() ...\n");
+                
             }
             
         };     

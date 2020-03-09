@@ -13,7 +13,7 @@ namespace eosio {
         namespace token {
             
             void action_add_token(name contract, const symbol_code & sym_code, uint8_t precision, name admin) {
-                PRINT("vapaee::token::exchange::action_add_token()\n");
+                PRINT("eosio::dex::token::action_add_token()\n");
                 PRINT(" contract: ", contract.to_string(), "\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
                 PRINT(" precision: ", std::to_string((unsigned) precision), "\n");
@@ -21,13 +21,13 @@ namespace eosio {
                 
                 stats statstable( contract, sym_code.raw() );
                 auto token_itr = statstable.find( sym_code.raw() );
-                check( token_itr != statstable.end(), "token with symbol not exists" );
+                check( token_itr != statstable.end(), , create_error_symcode1(ERROR_AAT_1, sym_code.raw()).c_str());
                 
                 check(has_auth(get_self()) || has_auth(contract) || has_auth(token_itr->issuer), "only token contract or issuer can add this token to DEX" );
 
                 tokens tokenstable(get_self(), get_self().value);
                 auto itr = tokenstable.find(sym_code.raw());
-                check(itr == tokenstable.end(), "Token already registered");
+                check(itr == tokenstable.end(), create_error_symcode1(ERROR_AAT_2, sym_code.raw()).c_str());
                 tokenstable.emplace( admin, [&]( auto& a ){
                     a.contract  = contract;
                     a.symbol    = sym_code;
@@ -46,11 +46,11 @@ namespace eosio {
                 });
                 PRINT(" -> tokenstable.emplace() OK\n");
                 
-                PRINT("vapaee::token::exchange::action_add_token() ...\n");
+                PRINT("eosio::dex::token::action_add_token() ...\n");
             }
 
             void action_update_token_info(const symbol_code & sym_code, string title, string website, string brief, string banner, string icon, string iconlg, bool tradeable) {
-                PRINT("vapaee::token::exchange::action_update_token_info()\n");
+                PRINT("eosio::dex::token::action_update_token_info()\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
                 PRINT(" title: ", title.c_str(), "\n");
                 PRINT(" website: ", website.c_str(), "\n");
@@ -64,7 +64,12 @@ namespace eosio {
                 auto itr = tokenstable.find(sym_code.raw());
                 check(itr != tokenstable.end(), "Token not registered. You must register it first calling addtoken action");
                 name admin = itr->admin;
-                check(has_auth(get_self()) || has_auth(admin), "only admin or token's admin can modify the token main info");
+                check(has_auth(get_self()) || has_auth(admin), ERROR_AUTI_1);
+
+                // is it blacklisted?
+                check(eosio::dex::dao::aux_is_token_blacklisted(itr->symbol.code().raw(), itr->contract), 
+                    create_error_symcode1(ERROR_AUTI_2, itr->symbol.code()).c_str());
+                
 
                 tokenstable.modify( *itr, same_payer, [&]( auto& a ){
                     a.title     = title;
@@ -77,30 +82,30 @@ namespace eosio {
                     a.date      = time_point_sec(current_time_point().sec_since_epoch());
                 });
 
-                PRINT("vapaee::token::exchange::action_update_token_info() ...\n");
+                PRINT("eosio::dex::token::action_update_token_info() ...\n");
             }
             
             void action_set_token_admin (const symbol_code & sym_code, name newadmin) {
-                PRINT("vapaee::token::exchange::action_set_token_admin()\n");
+                PRINT("eosio::dex::token::action_set_token_admin()\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
                 PRINT(" newadmin: ", newadmin.to_string(), "\n");
 
                 tokens tokenstable(get_self(), get_self().value);
                 auto itr = tokenstable.find(sym_code.raw());
-                check(itr != tokenstable.end(), "Token not registered. You must register it first calling addtoken action");
+                check(itr != tokenstable.end(), create_error_symcode1(ERROR_ASTA_1, sym_code.c_str());
 
-                check( is_account( newadmin ), "newadmin account does not exist");
-                check(has_auth(get_self()) || has_auth(itr->admin), "only DAO or token's admin can change token admin");
+                check( is_account( newadmin ), create_error_name1(ERROR_ASTA_2, sym_code.c_str(), newadmin);
+                check(has_auth(get_self()) || has_auth(itr->admin), ERROR_ASTA_2);
 
                 tokenstable.modify( *itr, same_payer, [&]( auto& a ){
                     a.admin = newadmin;
                 });
 
-                PRINT("vapaee::token::exchange::action_set_token_admin() ...\n");
+                PRINT("eosio::dex::token::action_set_token_admin() ...\n");
             }
             
             void action_set_token_as_currency (const symbol_code & sym_code, bool is_currency) {
-                PRINT("vapaee::token::exchange::action_set_token_as_currency()\n");
+                PRINT("eosio::dex::token::action_set_token_as_currency()\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
                 PRINT(" is_currency: ", std::to_string(is_currency), "\n");
 
@@ -114,11 +119,11 @@ namespace eosio {
                     a.currency = is_currency;
                 });
 
-                PRINT("vapaee::token::exchange::action_set_token_as_currency() ...\n");
+                PRINT("eosio::dex::token::action_set_token_as_currency() ...\n");
             }
 
             void action_set_token_data (const symbol_code & sym_code, uint64_t id, name action, name category, string text, string link) {
-                PRINT("vapaee::token::exchange::action_set_token_data()\n");
+                PRINT("eosio::dex::token::action_set_token_data()\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
                 PRINT(" id: ", std::to_string((unsigned long) id), "\n");
                 PRINT(" action: ", action.to_string(), "\n");
@@ -169,11 +174,11 @@ namespace eosio {
                     }
                 }
                 
-                PRINT("vapaee::token::exchange::action_set_token_data() ...\n");            
+                PRINT("eosio::dex::token::action_set_token_data() ...\n");            
             }
 
             void action_edit_token_event(const symbol_code & sym_code, name event, name action, name receptor) {
-                PRINT("vapaee::token::exchange::action_edit_token_event()\n");
+                PRINT("eosio::dex::token::action_edit_token_event()\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
                 PRINT(" event: ", event.to_string(), "\n");
                 PRINT(" action: ", action.to_string(), "\n");
@@ -224,7 +229,7 @@ namespace eosio {
                     }
                 }
 
-                PRINT("vapaee::token::exchange::action_edit_token_event()...\n");
+                PRINT("eosio::dex::token::action_edit_token_event()...\n");
             }
 
             

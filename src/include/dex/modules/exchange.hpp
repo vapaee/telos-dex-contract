@@ -22,7 +22,7 @@ namespace eosio {
 
             void aux_cancel_sell_order(name owner, uint64_t can_market, uint64_t market, const std::vector<uint64_t> & orders) {
                 // viterbotelos, acorn.telosd, acorn.telosd, [1]
-                PRINT("vapaee::token::exchange::aux_cancel_sell_order()\n");
+                PRINT("eosio::dex::exchange::aux_cancel_sell_order()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" can_market: ", std::to_string((unsigned long) can_market), "\n");
                 PRINT(" market: ", std::to_string((unsigned long) market), "\n");
@@ -105,7 +105,7 @@ namespace eosio {
 
             void action_cancel(name owner, name type, const symbol_code & token_a, const symbol_code & token_p, const std::vector<uint64_t> & orders) {
                 // viterbotelos, sell, ACORN, TELOSD, [1]
-                PRINT("vapaee::token::exchange::action_cancel()\n");
+                PRINT("eosio::dex::exchange::action_cancel()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" type: ", type.to_string(), "\n");
                 PRINT(" token_a: ",  token_a.to_string(), "\n");
@@ -127,12 +127,12 @@ namespace eosio {
                     aux_cancel_sell_order(owner, can_market, sell_market, orders);
                 }
 
-                PRINT("vapaee::token::exchange::action_cancel() ...\n");
+                PRINT("eosio::dex::exchange::action_cancel() ...\n");
             }
 
             // ----------------------------------------------------------
             void aux_clone_user_deposits(name owner, vector<asset> & depos) {
-                PRINT("vapaee::token::exchange::aux_clone_user_deposits()\n");
+                PRINT("eosio::dex::exchange::aux_clone_user_deposits()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 
                 deposits depositstable(get_self(), owner.value);
@@ -142,11 +142,11 @@ namespace eosio {
                 }
 
                 PRINT(" deposits.size(): ", depos.size(), "\n");
-                PRINT("vapaee::token::exchange::aux_clone_user_deposits() ...\n");
+                PRINT("eosio::dex::exchange::aux_clone_user_deposits() ...\n");
             } 
                         
             void aux_generate_sell_order(bool inverted, name owner, uint64_t market_buy, uint64_t market_sell, asset total, asset payment, asset price, asset inverse, name ram_payer, uint64_t sell_ui) {
-                PRINT("vapaee::token::exchange::aux_generate_sell_order()\n");
+                PRINT("eosio::dex::exchange::aux_generate_sell_order()\n");
                 PRINT(" inverted: ", std::to_string(inverted), "\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" market_buy: ", std::to_string((long unsigned) market_buy), "\n");
@@ -488,11 +488,11 @@ namespace eosio {
                     PRINT("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
                 }
                 
-                PRINT("vapaee::token::exchange::aux_generate_sell_order() ...\n");
+                PRINT("eosio::dex::exchange::aux_generate_sell_order() ...\n");
             }
 
             void aux_generate_order(name owner, name type, asset total, asset price, name ram_payer, uint64_t ui) {
-                PRINT("vapaee::token::exchange::aux_generate_order()\n");
+                PRINT("eosio::dex::exchange::aux_generate_order()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" type: ", type.to_string(), "\n");
                 PRINT(" total: ", total.to_string(), "\n");
@@ -500,6 +500,12 @@ namespace eosio {
                 PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
                 
                 require_auth(owner);
+
+                // Check if blacklisted
+                check(eosio::dex::dao::aux_is_token_blacklisted(total.symbol.code()), 
+                    create_error_symcode1(ERROR_AGO_1, total.symbol.code()).c_str());
+                check(eosio::dex::dao::aux_is_token_blacklisted(price.symbol.code()), 
+                    create_error_symcode1(ERROR_AGO_2, price.symbol.code()).c_str());
 
                 // create scope for the orders table
                 uint64_t market_buy = aux_get_market_id(total.symbol.code(), price.symbol.code());
@@ -528,12 +534,12 @@ namespace eosio {
                     check(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
                 }
                 
-                PRINT("vapaee::token::exchange::aux_generate_order() ...\n");
+                PRINT("eosio::dex::exchange::aux_generate_order() ...\n");
             }
 
 
             void action_order(name owner, name type, const asset & total, const asset & price, uint64_t ui) {
-                PRINT("vapaee::token::exchange::action_order()\n");
+                PRINT("eosio::dex::exchange::action_order()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" type: ", type.to_string(), "\n");      
                 PRINT(" total: ", total.to_string(), "\n");      
@@ -543,7 +549,7 @@ namespace eosio {
 
                 aux_generate_order(owner, type, total, price, owner, ui);
 
-                PRINT("vapaee::token::exchange::action_order() ...\n");      
+                PRINT("eosio::dex::exchange::action_order() ...\n");      
             }
 
             void action_hotfix(int num, name account, asset quantity) {

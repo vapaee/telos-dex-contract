@@ -13,10 +13,12 @@
             time_point_sec finished;
             uint64_t primary_key() const { return ballot_name.value; }
             uint64_t by_property_key() const { return property.value; }
+            uint64_t by_finished_key() const { return (uint64_t) finished.sec_since_epoch(); }
         };
 
         typedef eosio::multi_index< "ballots"_n, ballots_table,
-            indexed_by<"property"_n, const_mem_fun<ballots_table, uint64_t, &ballots_table::by_property_key>>
+            indexed_by<"property"_n, const_mem_fun<ballots_table, uint64_t, &ballots_table::by_property_key>>,
+            indexed_by<"finished"_n, const_mem_fun<ballots_table, uint64_t, &ballots_table::by_finished_key>>
         > ballots;
         // ------------------------------------
         
