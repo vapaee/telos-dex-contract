@@ -45,14 +45,14 @@ namespace eosio {
                 PRINT(" B: ", B.to_string(), "\n");
                 uint64_t market = 0;
                 markets mktable(get_self(), get_self().value);
-                auto index = mktable.get_index<name("name")>();
+                auto index = mktable.get_index<name("table")>();
                 
 
                 name scope_canonical = aux_get_canonical_scope_for_symbols(A, B);
                 name scope_b = aux_get_scope_for_tokens(A, B);
                 
                 for (auto itr = index.lower_bound(scope_b.value); itr != index.end(); itr++) {
-                    if (itr->name == scope_b) {
+                    if (itr->table == scope_b) {
                         if (itr->commodity == A && itr->currency == B) {
                             return itr->id;
                         }
@@ -78,7 +78,7 @@ namespace eosio {
                 PRINT("  mktable.emplace() id\n", std::to_string((unsigned) id), scope_canonical.to_string(), "\n");
                 mktable.emplace(get_self(), [&](auto & a){
                     a.id = id;
-                    a.name = scope_canonical;
+                    a.table = scope_canonical;
                     a.commodity = commodity;
                     a.currency = currency;
                 });
@@ -86,7 +86,7 @@ namespace eosio {
                 PRINT("  mktable.emplace() id+1\n", std::to_string((unsigned) id+1), scope_canonical.to_string(), "\n");
                 mktable.emplace(get_self(), [&](auto & a){
                     a.id = id+1;
-                    a.name = scope_inv;
+                    a.table = scope_inv;
                     a.commodity = currency;
                     a.currency = commodity;
                 });
@@ -117,7 +117,7 @@ namespace eosio {
                 markets mktable(get_self(), get_self().value);
                 auto market = mktable.get(market_id,  create_error_id1(ERROR_AGTFM_1, market_id).c_str());
                 PRINT("eosio::dex::market::aux_get_table_from_market()...\n");
-                return market.name;
+                return market.table;
             }
 
         };

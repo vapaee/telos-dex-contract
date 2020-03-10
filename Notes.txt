@@ -35,10 +35,10 @@ https://github.com/telosnetwork/telos-decide/blob/master/contracts/decide/includ
     + si el token está en whitelist, no puede ser baneado
     + hay que agregar el token en blacklist
 - reaccionar a la resolución de un ballot.
-  - verificar que existe en nuestra lista.
-  - "savetoken"
-    - afirmativo:
-      - hay que agregar el token a la lista blanca
+  + verificar que existe en nuestra lista.
+  + "savetoken"
+    + afirmativo:
+      + hay que agregar el token a la lista blanca
   - "bantoken"
     - afirmativo:
       - sacarlo de la lista de tokens

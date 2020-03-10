@@ -371,12 +371,59 @@ namespace eosio {
                 PRINT("vapaee::token::dao::handler_ballot_result_for_savetoken() ...\n");
             }
 
+            void aux_delete_token_markets(const symbol_code & sym_code) {
+                PRINT("vapaee::token::dao::aux_delete_token_markets()\n");
+
+                markets table(get_self(), get_self().value);
+                delmarkets deltable(get_self(), get_self().value);
+                ordersummary summarytable(get_self(), get_self().value);
+
+                // deleting all markets with this token as a commodity
+                auto commodity_index = table.get_index<name("commodity")>();
+                for (
+                    auto ptr = commodity_index.lower_bound(sym_code.raw());
+                    ptr != commodity_index.end();
+                    ptr++
+                ) {
+                    if (sym_code == ptr->commodity) {
+
+                        // add this market to be slowly deleted (history and orders)
+                        deltable.emplace(get_self(), [&](auto &a){
+                            a.id = ptr->id;
+                            a.table = ptr->table;
+                        });
+
+                        // delete ordersummary entrance for this market
+                        auto sptr = summarytable.find(ptr->id);
+                        summarytable.erase(*sptr);
+                    }
+                }
+
+                // deleting all markets with this token as a currency
+                auto currency_index = table.get_index<name("currency")>();
+                for (
+                    auto ptr = currency_index.lower_bound(sym_code.raw());
+                    ptr != currency_index.end();
+                    ptr++
+                ) {
+                    if (sym_code == ptr->currency) {
+
+                        // add this market to be slowly deleted (history and orders)
+                        deltable.emplace(get_self(), [&](auto &a){
+                            a.id = ptr->id;
+                            a.table = ptr->table;
+                        });
+
+                        // delete ordersummary entrance for this market
+                        auto sptr = summarytable.find(ptr->id);
+                        summarytable.erase(*sptr);
+                    }
+                }
+                PRINT("vapaee::token::dao::aux_delete_token_markets() ...\n");
+            }
+
             void handler_ballot_result_for_bantoken(const ballots_table & ballot, bool approved, uint32_t total_voters) {
                 PRINT("vapaee::token::dao::handler_ballot_result_for_bantoken()\n");
-
-                //     - afirmativo:
-                //       - sacarlo de la lista de tokens
-                //       - averiaguar en cuantos markets participa y ponerlos en delmarkets
                 
                 string param1 = ballot.params[0];
                 symbol_code sym_code = aux_check_symbol_code_from_string(param1);
@@ -392,7 +439,7 @@ namespace eosio {
                     }
 
                     // delete all markets were this tokens participates
-                    aaaaaaaaaaaaaa
+                    aux_delete_token_markets(sym_code);
 
                 } else {
                     // not approved, so the token must be removed from the blacklist.
@@ -401,11 +448,12 @@ namespace eosio {
                     auto itr = index.lower_bound(sym_code.raw());
 
                     if (itr != index.end()) {
+                        // token is free to operate again
                         blist.erase(*itr);
                     }
                 }                
 
-
+                
                 PRINT("vapaee::token::dao::handler_ballot_result_for_bantoken() ...\n");
             }
 
@@ -434,7 +482,7 @@ namespace eosio {
             }
 
             void handler_ballot_result(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
-                
+                /*
                 PRINT("eosio::dex::dao::handler_ballot_result()\n");
                 PRINT(" ballot_name: ", ballot_name.to_string(), "\n");
                 for (int i=0; i<final_results.size(); i++) {
@@ -443,9 +491,11 @@ namespace eosio {
                 }                
                 PRINT(" total_voters: ", std::to_string((unsigned long)total_voters), "\n");
 
+                // search locally for the ballot data
                 ballots ball_table(get_self(), get_self().value);
                 const ballots_table ballot = ball_table.get(ballot_name.value, create_error_name1(ERROR_HBR_1, ballot_name).c_str());
      
+                // was it approved
                 bool approved = final_results[name("yes")].amount > final_results[name("no")].amount;
 
                 switch(ballot.property.value) {
@@ -471,7 +521,7 @@ namespace eosio {
                         check(false, create_error_name1(ERROR_HBR_2, ballot.property).c_str()); 
                         break;
                 }
-
+                */
 
 
                 PRINT("eosio::dex::dao::handler_ballot_result() ...\n");
