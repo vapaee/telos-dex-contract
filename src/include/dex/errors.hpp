@@ -117,3 +117,6 @@
 // handler_ballot_result
 #define ERROR_HBR_1 "ERR-HBR-01: could't find a ballot identified: "
 #define ERROR_HBR_2 "ERR-HBR-02: property not valid: "
+
+// handler_ballot_result_for_bantoken
+#define ERROR_HBRFB_1 "ERR-HBRFB-01: Symbol is not part of the token list: "

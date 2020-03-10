@@ -350,8 +350,6 @@ namespace eosio {
                 symbol_code sym_code = aux_check_symbol_code_from_string(param1);
                 name contract = aux_check_name_from_string(param2);          
 
-
-
                 whitelist list(get_self(), get_self().value);
                 auto index = list.get_index<name("symbol")>();
                 auto itr = index.lower_bound(sym_code.raw());
@@ -366,7 +364,7 @@ namespace eosio {
                         });
                     }
                 } else {
-                    if (itr == index.end()) {
+                    if (itr != index.end()) {
                         list.erase(*itr);
                     }
                 }
@@ -375,6 +373,38 @@ namespace eosio {
 
             void handler_ballot_result_for_bantoken(const ballots_table & ballot, bool approved, uint32_t total_voters) {
                 PRINT("vapaee::token::dao::handler_ballot_result_for_bantoken()\n");
+
+                //     - afirmativo:
+                //       - sacarlo de la lista de tokens
+                //       - averiaguar en cuantos markets participa y ponerlos en delmarkets
+                
+                string param1 = ballot.params[0];
+                symbol_code sym_code = aux_check_symbol_code_from_string(param1);
+
+                if (approved) {
+                    // approved, so the token must be removed from the token list.
+                    tokens list(get_self(), get_self().value);
+                    auto ptr = list.find(sym_code.raw());
+                    check(ptr != list.end(), create_error_symcode1(ERROR_HBRFB_1, sym_code).c_str());
+
+                    if (ptr != list.end()) {
+                        list.erase(*ptr);
+                    }
+
+                    // delete all markets were this tokens participates
+                    aaaaaaaaaaaaaa
+
+                } else {
+                    // not approved, so the token must be removed from the blacklist.
+                    blacklist blist(get_self(), get_self().value);
+                    auto index = blist.get_index<name("symbol")>();
+                    auto itr = index.lower_bound(sym_code.raw());
+
+                    if (itr != index.end()) {
+                        blist.erase(*itr);
+                    }
+                }                
+
 
                 PRINT("vapaee::token::dao::handler_ballot_result_for_bantoken() ...\n");
             }

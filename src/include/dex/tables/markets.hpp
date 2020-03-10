@@ -11,10 +11,14 @@
             symbol_code currency;
             uint64_t primary_key() const { return id; }
             uint64_t by_name_key() const { return name.value; }
+            uint64_t by_commodity_key() const { return commodity.raw(); }
+            uint64_t by_currency_key() const { return currency.raw(); }
         };
 
         typedef eosio::multi_index< "markets"_n, markets_table,
-            indexed_by<"name"_n, const_mem_fun<markets_table, uint64_t, &markets_table::by_name_key>>
+            indexed_by<"name"_n, const_mem_fun<markets_table, uint64_t, &markets_table::by_name_key>>,
+            indexed_by<"currency"_n, const_mem_fun<markets_table, uint64_t, &markets_table::by_currency_key>>,
+            indexed_by<"currency"_n, const_mem_fun<markets_table, uint64_t, &markets_table::by_currency_key>>
         > markets;
         // ------------------------------------
         
