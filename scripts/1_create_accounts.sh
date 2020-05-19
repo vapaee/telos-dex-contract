@@ -18,6 +18,8 @@ cleos create account eosio eosio.wrap   EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD
 cleos create account eosio telos.free   EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio telos.tfvt   EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio decide       EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
+cleos create account eosio telos.decide EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
+cleos create account eosio token.issuer EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 
 cleos create account eosio vapaeetokens EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio revelation21 EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
@@ -35,6 +37,7 @@ cleos create account eosio telosdacdrop EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD
 cleos create account eosio eventhandler EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio futboltokens EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 cleos create account eosio teloslegends EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
+cleos create account eosio cryptomulita EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 
 cleos create account eosio telosmaindex EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc
 
@@ -48,6 +51,7 @@ cleos create account eosio sqrl    EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQN
 
 
 cleos set account permission telosmaindex active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"telosmaindex","permission":"eosio.code"},"weight":1}]}' owner -p telosmaindex
+cleos set account permission telos.decide active '{"threshold": 1,"keys": [{"key": "EOS8RoCAXxWYUW2v4xkG19F57BDVBzpt9NN2iDsD1ouQNyV2BkiNc","weight": 1}],"accounts": [{"permission":{"actor":"telos.decide","permission":"eosio.code"},"weight":1}]}' owner -p telos.decide
 
 
 

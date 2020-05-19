@@ -30,14 +30,17 @@ echo "-------- 2_deploy_contract ---------"
 
 echo "-------- telosmaindex ---------"
 cd $DEX_CONTRACT_DIR
-if [[ $DEX_CONTRACT_DIR/../../include/dex/modules/dao.hpp -nt telosmaindex.wasm      ||
-      $DEX_CONTRACT_DIR/../../include/dex/modules/deposit.hpp -nt telosmaindex.wasm  ||
-      $DEX_CONTRACT_DIR/../../include/dex/modules/exchange.hpp -nt telosmaindex.wasm ||
-      $DEX_CONTRACT_DIR/../../include/dex/modules/market.hpp -nt telosmaindex.wasm   ||
-      $DEX_CONTRACT_DIR/../../include/dex/modules/record.hpp -nt telosmaindex.wasm   ||
-      $DEX_CONTRACT_DIR/../../include/dex/modules/token.hpp -nt telosmaindex.wasm    ||
-      $DEX_CONTRACT_DIR/../../include/dex/modules/ui.hpp -nt telosmaindex.wasm       ||
-      $DEX_CONTRACT_DIR/../../include/dex/modules/utils.hpp -nt telosmaindex.wasm    ||
+if [[ $DEX_CONTRACT_DIR/../../include/dex/modules/dao.hpp -nt telosmaindex.wasm         ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/deposit.hpp -nt telosmaindex.wasm     ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/exchange.hpp -nt telosmaindex.wasm    ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/market.hpp -nt telosmaindex.wasm      ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/record.hpp -nt telosmaindex.wasm      ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/token.hpp -nt telosmaindex.wasm       ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/ui.hpp -nt telosmaindex.wasm          ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/maintenance.hpp -nt telosmaindex.wasm ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/global.hpp -nt telosmaindex.wasm      ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/utils.hpp -nt telosmaindex.wasm       ||
+      $DEX_CONTRACT_DIR/../../include/dex/modules/maintenance.hpp -nt telosmaindex.wasm ||
       telosmaindex.cpp -nt telosmaindex.wasm ||
       telosmaindex.hpp -nt telosmaindex.wasm || 
       $force == true ]]; then

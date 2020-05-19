@@ -5,6 +5,7 @@
         TABLE blacklist_table {
             uint64_t id;
             symbol_code symbol;
+            uint8_t precision;
             name contract;
             name ballot;
             uint64_t primary_key() const { return id; }

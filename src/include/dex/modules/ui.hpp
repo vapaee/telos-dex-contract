@@ -3,6 +3,7 @@
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
 #include <dex/modules/utils.hpp>
+#include <dex/modules/global.hpp>
 
 namespace eosio {
     namespace dex {
@@ -59,7 +60,7 @@ namespace eosio {
                     a.banner    = banner;
                     a.thumbnail = thumbnail;
                     a.state     = "";
-                    a.date      = time_point_sec(current_time_point().sec_since_epoch());
+                    a.date      = eosio::dex::global::get_now_time_point_sec();
                 });
 
                 PRINT(" -> emplace: ", receiver.to_string(), " with id ", std::to_string((unsigned) ui), "\n");
@@ -106,7 +107,7 @@ namespace eosio {
                     a.brief     = brief;
                     a.banner    = banner;
                     a.thumbnail = thumbnail;
-                    a.date      = time_point_sec(current_time_point().sec_since_epoch());
+                    a.date      = eosio::dex::global::get_now_time_point_sec();
                 });
 
                 PRINT(" -> modify: ", receiver.to_string(), " with id ", std::to_string((unsigned) ui), "\n");

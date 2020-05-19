@@ -3,6 +3,8 @@
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
 #include <dex/modules/utils.hpp>
+#include <dex/modules/global.hpp>
+#include <algorithm>
 
 namespace eosio {
     namespace dex {
@@ -11,10 +13,68 @@ namespace eosio {
 
         namespace market {
 
+            bool aux_contains(vector<uint64_t> v, uint64_t x) {
+                return std::find(v.begin(), v.end(), x) != v.end();
+            }
+
+            bool aux_is_token_blacklisted(const symbol_code &sym_code, name contract) {
+                PRINT("eosio::dex::market::aux_is_token_blacklisted()\n");
+                PRINT(" sym_code: ", sym_code.to_string(), "\n");
+                PRINT(" contract: ", contract.to_string(), "\n");
+
+                blacklist list(get_self(), get_self().value); 
+                auto index = list.get_index<name("symbol")>();
+                auto itr = index.lower_bound(sym_code.raw());
+                for (auto itr = index.lower_bound(sym_code.raw()); itr != index.end(); itr++) {
+                    if (itr->symbol == sym_code) {
+                        if (itr->contract == contract) {
+                            PRINT("eosio::dex::market::aux_is_token_blacklisted() ...\n");
+                            return true;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                PRINT("eosio::dex::market::aux_is_token_blacklisted() ...\n");
+                return false;
+            }            
+
+            bool aux_is_A_currency_in_any_B_groups(const symbol_code & A, const symbol_code & B) {
+                PRINT("eosio::dex::market::aux_is_A_currency_in_any_B_groups()\n");
+                PRINT(" A: ", A.to_string(), "\n");
+                PRINT(" B: ", B.to_string(), "\n");
+                
+                tokens tokenstable(get_self(), get_self().value);
+                auto atk_itr = tokenstable.find(A.raw());
+                auto btk_itr = tokenstable.find(B.raw());
+
+                tokengroups groupstable(get_self(), get_self().value);
+
+                for (int i=0; i<btk_itr->groups.size(); i++) {
+                    uint64_t group = btk_itr->groups[i];
+
+                    auto ptr = groupstable.find(group);
+                    check(ptr != groupstable.end(), create_error_string2(ERROR_AIACIABG_1, B.to_string(), std::to_string((unsigned long)group)).c_str());
+
+                    for (int j=0; j<ptr->currencies.size(); j++) {
+                        symbol_code currency = ptr->currencies[j];
+
+                        if (currency == A) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+                PRINT("eosio::dex::market::aux_is_A_currency_in_any_B_groups() ...\n");
+            }
+
             bool aux_is_it_allowed_to_cerate_this_market(const symbol_code & A, const symbol_code & B) {
                 PRINT("eosio::dex::market::aux_is_it_allowed_to_cerate_this_market()\n");
                 PRINT(" A: ", A.to_string(), "\n");
                 PRINT(" B: ", B.to_string(), "\n");
+
+                // TODO: debería fijarse si los tokens no están blacklisted y si el token es tradeable
 
                 tokens tokenstable(get_self(), get_self().value);
                 auto atk_itr = tokenstable.find(A.raw());
@@ -25,13 +85,16 @@ namespace eosio {
                 check(atk_itr != btk_itr,           create_error_symcode1(ERROR_AIIATCTM_3, A).c_str());
 
                 bool allowed = false;
-                if (atk_itr->currency) {
+
+                if (!atk_itr->tradeable || !btk_itr->tradeable) {
                     allowed = true;
                 }
-                if (btk_itr->currency) {
+
+                if (aux_is_A_currency_in_any_B_groups(A, B)) {
                     allowed = true;
                 }
-                if (atk_itr->group > 0 && atk_itr->group == btk_itr->group) {
+
+                if (aux_is_A_currency_in_any_B_groups(B, A)) {
                     allowed = true;
                 }
 
@@ -39,37 +102,24 @@ namespace eosio {
                 return allowed;
             }
 
-            uint64_t aux_get_market_id(const symbol_code& A, const symbol_code& B) {
-                PRINT("eosio::dex::market::aux_get_market_id()\n");
+            void aux_create_market(const symbol_code& A, const symbol_code& B) {
+                PRINT("eosio::dex::market::aux_create_market()\n");
                 PRINT(" A: ", A.to_string(), "\n");
                 PRINT(" B: ", B.to_string(), "\n");
-                uint64_t market = 0;
                 markets mktable(get_self(), get_self().value);
-                auto index = mktable.get_index<name("table")>();
-                
-
-                name scope_canonical = aux_get_canonical_scope_for_symbols(A, B);
-                name scope_b = aux_get_scope_for_tokens(A, B);
-                
-                for (auto itr = index.lower_bound(scope_b.value); itr != index.end(); itr++) {
-                    if (itr->table == scope_b) {
-                        if (itr->commodity == A && itr->currency == B) {
-                            return itr->id;
-                        }
-                    } else {
-                        break;
-                    }
-                }
 
                 // Is it allowed to create this market?
                 if (!aux_is_it_allowed_to_cerate_this_market(A,B)) {
-                    check(false, create_error_symcode2(ERROR_AGMI_1, A,B).c_str());
+                    check(false, create_error_symcode2(ERROR_ACMARI_1, A,B).c_str());
                 }
             
                 symbol_code commodity = A;
                 symbol_code currency = B;
-                uint64_t id = mktable.available_primary_key();
-                market = id;
+                uint64_t id = eosio::dex::global::get().next_market;
+                uint64_t market = id;
+                name scope_canonical = aux_get_canonical_scope_for_symbols(A, B);
+                name scope_b = aux_get_scope_for_tokens(A, B);
+
                 if (scope_canonical != scope_b) {
                     commodity = B;
                     currency = A;
@@ -91,7 +141,36 @@ namespace eosio {
                     a.currency = commodity;
                 });
 
-                PRINT("eosio::dex::market::aux_get_market_id()...\n");
+                state newstate = eosio::dex::global::get();
+                newstate.next_market = id + 2;
+                eosio::dex::global::set(newstate);
+
+                PRINT("eosio::dex::market::aux_create_market() ...\n");
+            }
+
+            uint64_t aux_get_market_id(const symbol_code& A, const symbol_code& B) {
+                PRINT("eosio::dex::market::aux_get_market_id()\n");
+                PRINT(" A: ", A.to_string(), "\n");
+                PRINT(" B: ", B.to_string(), "\n");
+                markets mktable(get_self(), get_self().value);
+                auto index = mktable.get_index<name("table")>();
+
+                name scope_b = aux_get_scope_for_tokens(A, B);
+                
+                for (auto itr = index.lower_bound(scope_b.value); itr != index.end(); itr++) {
+                    if (itr->table == scope_b) {
+                        if (itr->commodity == A && itr->currency == B) {
+                            return itr->id;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                aux_create_market(A, B);
+                uint64_t market = aux_get_market_id(A, B); // recursive call
+                PRINT(" -> recursive call returned: ", std::to_string((unsigned long)market), "\n");
+                PRINT("eosio::dex::market::aux_get_market_id() ...\n");
                 return market;
             }            
 
@@ -114,6 +193,15 @@ namespace eosio {
             name aux_get_table_from_market(uint64_t market_id) {
                 PRINT("eosio::dex::market::aux_get_table_from_market()\n");
                 PRINT(" market_id: ", std::to_string((unsigned long) market_id), "\n");
+
+                // if the market is being deleted, is not persent in the market table but it can be found in the delmarkets table
+                delmarkets delmktable(get_self(), get_self().value);
+                auto market_ptr = delmktable.find(market_id);
+                if (market_ptr != delmktable.end()) {
+                    PRINT("eosio::dex::market::aux_get_table_from_market()...\n");
+                    return market_ptr->table;
+                }
+
                 markets mktable(get_self(), get_self().value);
                 auto market = mktable.get(market_id,  create_error_id1(ERROR_AGTFM_1, market_id).c_str());
                 PRINT("eosio::dex::market::aux_get_table_from_market()...\n");

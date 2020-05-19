@@ -4,6 +4,40 @@
     "types": [],
     "structs": [
         {
+            "name": "addtnkgroup",
+            "base": "",
+            "fields": [
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                },
+                {
+                    "name": "currencies",
+                    "type": "symbol_code[]"
+                }
+            ]
+        },
+        {
             "name": "addtoken",
             "base": "",
             "fields": [
@@ -45,6 +79,14 @@
                 },
                 {
                     "name": "iconlg",
+                    "type": "string"
+                },
+                {
+                    "name": "pcontact",
+                    "type": "string"
+                },
+                {
+                    "name": "gcontact",
                     "type": "string"
                 },
                 {
@@ -96,12 +138,16 @@
             "base": "",
             "fields": [
                 {
-                    "name": "property",
+                    "name": "operation",
                     "type": "name"
                 },
                 {
                     "name": "params",
                     "type": "string[]"
+                },
+                {
+                    "name": "arguments",
+                    "type": "string"
                 },
                 {
                     "name": "feepayer",
@@ -114,11 +160,15 @@
             "base": "",
             "fields": [
                 {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
                     "name": "ballot_name",
                     "type": "name"
                 },
                 {
-                    "name": "property",
+                    "name": "operation",
                     "type": "name"
                 },
                 {
@@ -136,6 +186,10 @@
                 {
                     "name": "finished",
                     "type": "time_point_sec"
+                },
+                {
+                    "name": "arguments",
+                    "type": "string"
                 }
             ]
         },
@@ -150,6 +204,10 @@
                 {
                     "name": "symbol",
                     "type": "symbol_code"
+                },
+                {
+                    "name": "precision",
+                    "type": "uint8"
                 },
                 {
                     "name": "contract",
@@ -248,24 +306,6 @@
                 {
                     "name": "orders",
                     "type": "uint64[]"
-                }
-            ]
-        },
-        {
-            "name": "config",
-            "base": "",
-            "fields": [
-                {
-                    "name": "maker_fee",
-                    "type": "float64"
-                },
-                {
-                    "name": "taker_fee",
-                    "type": "float64"
-                },
-                {
-                    "name": "prune",
-                    "type": "time_point_sec"
                 }
             ]
         },
@@ -434,6 +474,28 @@
             ]
         },
         {
+            "name": "historyall_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "key",
+                    "type": "uint64"
+                },
+                {
+                    "name": "market",
+                    "type": "uint64"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
             "name": "hotfix",
             "base": "",
             "fields": [
@@ -450,6 +512,11 @@
                     "type": "asset"
                 }
             ]
+        },
+        {
+            "name": "init",
+            "base": "",
+            "fields": []
         },
         {
             "name": "interfaces_table",
@@ -500,6 +567,11 @@
                     "type": "time_point_sec"
                 }
             ]
+        },
+        {
+            "name": "maintenance",
+            "base": "",
+            "fields": []
         },
         {
             "name": "markets_table",
@@ -584,6 +656,20 @@
             ]
         },
         {
+            "name": "pair_name_asset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "name"
+                },
+                {
+                    "name": "value",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "reg_token_table",
             "base": "",
             "fields": [
@@ -592,8 +678,8 @@
                     "type": "symbol_code"
                 },
                 {
-                    "name": "group",
-                    "type": "uint64"
+                    "name": "groups",
+                    "type": "uint64[]"
                 },
                 {
                     "name": "precision",
@@ -629,6 +715,14 @@
                 },
                 {
                     "name": "iconlg",
+                    "type": "string"
+                },
+                {
+                    "name": "pcontact",
+                    "type": "string"
+                },
+                {
+                    "name": "gcontact",
                     "type": "string"
                 },
                 {
@@ -732,6 +826,44 @@
             ]
         },
         {
+            "name": "state",
+            "base": "",
+            "fields": [
+                {
+                    "name": "maker_fee",
+                    "type": "asset"
+                },
+                {
+                    "name": "taker_fee",
+                    "type": "asset"
+                },
+                {
+                    "name": "hprune",
+                    "type": "int32"
+                },
+                {
+                    "name": "bprune",
+                    "type": "int32"
+                },
+                {
+                    "name": "eprune",
+                    "type": "int32"
+                },
+                {
+                    "name": "regcost",
+                    "type": "asset"
+                },
+                {
+                    "name": "next_market",
+                    "type": "uint64"
+                },
+                {
+                    "name": "time_offset",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
             "name": "swapdeposit",
             "base": "",
             "fields": [
@@ -804,6 +936,34 @@
             ]
         },
         {
+            "name": "testdao",
+            "base": "",
+            "fields": [
+                {
+                    "name": "ballot_name",
+                    "type": "name"
+                },
+                {
+                    "name": "final_results",
+                    "type": "pair_name_asset[]"
+                },
+                {
+                    "name": "total_voters",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "timeoffset",
+            "base": "",
+            "fields": [
+                {
+                    "name": "offset",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
             "name": "tokenadmin",
             "base": "",
             "fields": [
@@ -858,7 +1018,7 @@
             ]
         },
         {
-            "name": "tokengroup_table",
+            "name": "tokengroups_table",
             "base": "",
             "fields": [
                 {
@@ -886,12 +1046,12 @@
                     "type": "string"
                 },
                 {
-                    "name": "bigbanner",
+                    "name": "thumbnail",
                     "type": "string"
                 },
                 {
-                    "name": "currency",
-                    "type": "symbol_code"
+                    "name": "currencies",
+                    "type": "symbol_code[]"
                 }
             ]
         },
@@ -926,6 +1086,18 @@
                 {
                     "name": "iconlg",
                     "type": "string"
+                },
+                {
+                    "name": "pcontact",
+                    "type": "string"
+                },
+                {
+                    "name": "gcontact",
+                    "type": "string"
+                },
+                {
+                    "name": "groups",
+                    "type": "uint64[]"
                 },
                 {
                     "name": "tradeable",
@@ -972,6 +1144,44 @@
                 {
                     "name": "thumbnail",
                     "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "uptnkgroup",
+            "base": "",
+            "fields": [
+                {
+                    "name": "group_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                },
+                {
+                    "name": "currencies",
+                    "type": "symbol_code[]"
                 }
             ]
         },
@@ -1036,6 +1246,11 @@
     ],
     "actions": [
         {
+            "name": "addtnkgroup",
+            "type": "addtnkgroup",
+            "ricardian_contract": ""
+        },
+        {
             "name": "addtoken",
             "type": "addtoken",
             "ricardian_contract": ""
@@ -1071,6 +1286,16 @@
             "ricardian_contract": ""
         },
         {
+            "name": "init",
+            "type": "init",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "maintenance",
+            "type": "maintenance",
+            "ricardian_contract": ""
+        },
+        {
             "name": "order",
             "type": "order",
             "ricardian_contract": ""
@@ -1091,6 +1316,16 @@
             "ricardian_contract": ""
         },
         {
+            "name": "testdao",
+            "type": "testdao",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "timeoffset",
+            "type": "timeoffset",
+            "ricardian_contract": ""
+        },
+        {
             "name": "tokenadmin",
             "type": "tokenadmin",
             "ricardian_contract": ""
@@ -1103,6 +1338,11 @@
         {
             "name": "updateui",
             "type": "updateui",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "uptnkgroup",
+            "type": "uptnkgroup",
             "ricardian_contract": ""
         },
         {
@@ -1129,13 +1369,6 @@
         {
             "name": "blockhistory",
             "type": "blockhistory_table",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "config",
-            "type": "config",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
@@ -1176,6 +1409,13 @@
             "key_types": []
         },
         {
+            "name": "historyall",
+            "type": "historyall_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "interfaces",
             "type": "interfaces_table",
             "index_type": "i64",
@@ -1211,6 +1451,13 @@
             "key_types": []
         },
         {
+            "name": "state",
+            "type": "state",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "tablesummary",
             "type": "tablesummary_table",
             "index_type": "i64",
@@ -1232,8 +1479,8 @@
             "key_types": []
         },
         {
-            "name": "tokengroup",
-            "type": "tokengroup_table",
+            "name": "tokengroups",
+            "type": "tokengroups_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

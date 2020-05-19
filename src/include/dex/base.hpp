@@ -16,6 +16,9 @@ namespace eosio {
         symbol_code SYS_TKN_CODE    = symbol_code("TLOS");
         name SYS_TKN_CONTRACT       = name("eosio.token");
         uint8_t internal_precision  = 8;
+
+        inline name get_self() { return eosio::dex::contract; }
+        inline name get_code() { return eosio::dex::contract; }
     }
 }
 
@@ -32,8 +35,8 @@ namespace eosio {
 
 //*
 #define PRINT(...) print(__VA_ARGS__)
-#define AUX_DEBUG_ACTIONS(...) __VA_ARGS__
+#define AUX_DEBUG_CODE(...) __VA_ARGS__
 /*/
 #define PRINT(...)
-#define AUX_DEBUG_ACTIONS(...)
+#define AUX_DEBUG_CODE(...)
 //*/

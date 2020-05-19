@@ -46,49 +46,49 @@ cleos push action telosmaindex order '["alice", "buy", "10.00000000 TLOS", "0.02
 cleos push action telosmaindex order '["alice", "buy", "10.00000000 TLOS", "0.02900000 TLOSD",0]' -p alice
 
 
-echo "-- alice sells CNT/TLOSD --"
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00400000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00410000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00420000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00430000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00440000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00450000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00460000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00470000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00480000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00490000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00500000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00510000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00520000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00530000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00540000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00550000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00560000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00570000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00580000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00590000 TLOSD",0]' -p alice
-
-echo "-- alice buys CNT/TLOSD --"
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00100000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00110000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00120000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00130000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00140000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00150000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00160000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00170000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00180000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00190000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00200000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00210000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00220000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00230000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00240000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00250000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00260000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00270000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00280000 TLOSD",0]' -p alice
-cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00290000 TLOSD",0]' -p alice
+# echo "-- alice sells CNT/TLOSD --"
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00400000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00410000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00420000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00430000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00440000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00450000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00460000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00470000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00480000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00490000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00500000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00510000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00520000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00530000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00540000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00550000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00560000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00570000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00580000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "sell", "10.00000000 CNT", "0.00590000 TLOSD",0]' -p alice
+# 
+# echo "-- alice buys CNT/TLOSD --"
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00100000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00110000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00120000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00130000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00140000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00150000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00160000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00170000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00180000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00190000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00200000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00210000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00220000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00230000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00240000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00250000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00260000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00270000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00280000 TLOSD",0]' -p alice
+# cleos push action telosmaindex order '["alice", "buy", "10.00000000 CNT", "0.00290000 TLOSD",0]' -p alice
 
 
 
@@ -137,7 +137,26 @@ cleos push action telosmaindex order '["alice", "buy", "10.00000000 ACORN", "0.2
 cleos push action telosmaindex order '["alice", "buy", "10.00000000 ACORN", "0.28000000 TLOS",1]' -p alice
 cleos push action telosmaindex order '["alice", "buy", "10.00000000 ACORN", "0.29000000 TLOS",1]' -p alice
 
-echo "-- alice sells OLIVE --"
+# echo "-- alice sells OLIVE --"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# echo "*********** INTERRUMPIDO ******************"
+# exit 0
+
 cleos push action telosmaindex order '["alice", "sell", "1.00000000 OLIVE", "0.40000000 TLOS",1]' -p alice
 cleos push action telosmaindex order '["alice", "sell", "1.00000000 OLIVE", "0.41000000 TLOS",1]' -p alice
 cleos push action telosmaindex order '["alice", "sell", "1.00000000 OLIVE", "0.42000000 TLOS",1]' -p alice
@@ -456,6 +475,51 @@ cleos push action telosmaindex order '["alice", "buy", "5.00000000 TEACH", "0.27
 cleos push action telosmaindex order '["alice", "buy", "5.00000000 TEACH", "0.28000000 TLOS",0]' -p alice
 cleos push action telosmaindex order '["alice", "buy", "5.00000000 TEACH", "0.29000000 TLOS",0]' -p alice
 
+
+
+echo "-- alice sells FAKE --"
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.40000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.41000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.42000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.43000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.44000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.45000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.46000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.47000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.48000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.49000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.50000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.51000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.52000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.53000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.54000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.55000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.56000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.57000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.58000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "sell", "5.00000000 FAKE", "0.59000000 TLOS",0]' -p alice
+
+echo "-- alice buys FAKE --"
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.10000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.11000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.12000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.13000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.14000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.15000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.16000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.17000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.18000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.19000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.20000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.21000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.22000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.23000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.24000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.25000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.26000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.27000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.28000000 TLOS",0]' -p alice
+cleos push action telosmaindex order '["alice", "buy", "5.00000000 FAKE", "0.29000000 TLOS",0]' -p alice
 
 
 echo "-- 7_orders finished --"

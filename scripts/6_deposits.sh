@@ -1,6 +1,10 @@
 #!/bin/bash
 
 echo "-- 6_deposits --"
+cleos push action eosio.token transfer  '["bob",  "telosmaindex","100.0000 TLOS","deposit"]' -p bob@active
+cleos push action eosio.token transfer  '["alice","telosmaindex","1000.0000 TLOS","deposit"]' -p alice@active
+cleos push action eosio.token transfer  '["kate", "telosmaindex","100.0000 TLOS","deposit"]' -p kate@active
+cleos push action eosio.token transfer  '["tom",  "telosmaindex","1000.0000 TLOS","deposit"]' -p tom@active
 
 cleos push action acornaccount transfer  '["bob",  "telosmaindex","50.0000 ACORN","deposit"]' -p bob@active
 cleos push action acornaccount transfer  '["alice","telosmaindex","1000.0000 ACORN","deposit"]' -p alice@active
@@ -61,12 +65,18 @@ cleos push action vapaeetokens transfer '["bob",  "telosmaindex","100.0000 CNT",
 cleos push action vapaeetokens transfer '["alice","telosmaindex","1000.0000 CNT","deposit"]' -p alice@active
 cleos push action vapaeetokens transfer '["kate", "telosmaindex","100.0000 CNT","deposit"]' -p kate@active
 
-cleos push action eosio.token transfer  '["bob",  "telosmaindex","100.0000 TLOS","deposit"]' -p bob@active
-cleos push action eosio.token transfer  '["alice","telosmaindex","1000.0000 TLOS","deposit"]' -p alice@active
-cleos push action eosio.token transfer  '["kate", "telosmaindex","100.0000 TLOS","deposit"]' -p kate@active
-cleos push action eosio.token transfer  '["tom",  "telosmaindex","1000.0000 TLOS","deposit"]' -p tom@active
-
 cleos push action vapaeetokens transfer  '["bob",  "telosmaindex","1000.0000 BOX","deposit"]' -p bob@active
 cleos push action vapaeetokens transfer  '["alice","telosmaindex","1000.0000 BOX","deposit"]' -p alice@active
+
+
+cleos push action cryptomulita transfer '["bob",  "telosmaindex","1000.0000 MULITA","deposit"]' -p bob@active
+cleos push action cryptomulita transfer '["alice","telosmaindex","1000.0000 MULITA","deposit"]' -p alice@active
+cleos push action cryptomulita transfer '["tom",  "telosmaindex","1000.0000 MULITA","deposit"]' -p tom@active
+cleos push action cryptomulita transfer '["kate", "telosmaindex","1000.0000 MULITA","deposit"]' -p kate@active
+
+cleos push action cryptomulita transfer '["bob",  "telosmaindex","1000.0000 FAKE","deposit"]' -p bob@active
+cleos push action cryptomulita transfer '["alice","telosmaindex","1000.0000 FAKE","deposit"]' -p alice@active
+cleos push action cryptomulita transfer '["tom",  "telosmaindex","1000.0000 FAKE","deposit"]' -p tom@active
+cleos push action cryptomulita transfer '["kate", "telosmaindex","1000.0000 FAKE","deposit"]' -p kate@active
 
 echo "-- 6_deposits finiched --"

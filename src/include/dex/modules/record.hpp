@@ -2,6 +2,7 @@
 #include <dex/base.hpp>
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
+#include <dex/modules/global.hpp>
 #include <dex/modules/utils.hpp>
 #include <dex/modules/market.hpp>
 
@@ -9,6 +10,7 @@ namespace eosio {
     namespace dex {
         using namespace utils;
         using namespace market;
+        using namespace global;
         
         namespace record {
 
@@ -56,7 +58,7 @@ namespace eosio {
                 PRINT(" user: ", user.to_string(), "\n");
                 PRINT(" event: ", event.to_string(), "\n");
                 PRINT(" params: ", params.c_str(), "\n");
-                time_point_sec date = time_point_sec(current_time_point().sec_since_epoch());
+                time_point_sec date = get_now_time_point_sec();
                 
                 events table(get_self(), get_self().value);
                 auto header = table.begin();
@@ -131,7 +133,7 @@ namespace eosio {
                 PRINT(" buyfee: ", buyfee.to_string(), "\n");   // 0.00000047 TLOS
                 PRINT(" sellfee: ", sellfee.to_string(), "\n"); // 0.00200000 EDNA
         
-                time_point_sec date = time_point_sec(current_time_point().sec_since_epoch());
+                time_point_sec date = get_now_time_point_sec();
                 name tmp_name;
                 asset tmp_asset;
                 asset tmp_pay;
@@ -202,6 +204,16 @@ namespace eosio {
                     a.sellfee = sellfee;
                     a.isbuy = is_buy;
                 });
+
+                // register event on historyall table
+                historyall hall_table(get_self(), get_self().value);
+                uint64_t hall_id = hall_table.available_primary_key();
+                hall_table.emplace(get_self(), [&](auto & a){
+                    a.id = hall_table.available_primary_key();
+                    a.key = h_id;
+                    a.market = can_market;
+                    a.date = date;
+                });                
 
                 // register event for activity log
                 if (!inverted) {

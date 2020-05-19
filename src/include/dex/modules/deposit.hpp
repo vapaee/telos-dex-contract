@@ -10,14 +10,13 @@
 namespace eosio {
     namespace dex {
 
+        using namespace error;
         using namespace utils;
-        // using namespace ui;
         using namespace record;
-        // using namespace market;
 
         namespace deposit {
 
-            void aux_substract_deposits(name owner, const asset & amount, name ram_payer) {
+            void aux_substract_deposits(name owner, const asset & amount) {
                 PRINT("eosio::dex::deposit::aux_substract_deposits()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" amount: ", amount.to_string(), "\n");
@@ -30,18 +29,46 @@ namespace eosio {
                 check(itr->amount.symbol == amount.symbol,
                     create_error_asset2(ERROR_ASD_2, itr->amount, amount).c_str());
                 if (itr->amount == amount) {
-                    PRINT("  itr->amount == amount: ",  amount.to_string(), "\n");
+                    PRINT("  (itr->amount == amount): (",  amount.to_string(), ")\n");
+                    PRINT(" -> depositstable.erase() : \n");
                     depositstable.erase(itr);
                 } else {
-                    PRINT("  itr->amount > amount: ", itr->amount.to_string(), " > ", amount.to_string(),  "\n");
+                    PRINT("  (itr->amount > amount): (", itr->amount.to_string(), " > ", amount.to_string(),  ")\n");
                     check(itr->amount > amount,
                             create_error_asset2(ERROR_ASD_3, amount, itr->amount).c_str());
                     
+                    PRINT(" -> depositstable.modify() : \n");
                     depositstable.modify(*itr, same_payer, [&](auto& a){
                         a.amount -= amount;
                     });
                 }
                 PRINT("eosio::dex::deposit::aux_substract_deposits() ...\n");
+            }
+
+            bool aux_is_token_blacklisted(const symbol_code &sym_code) {
+                PRINT("eosio::dex::deposit::aux_is_token_blacklisted()\n");
+                PRINT(" sym_code: ", sym_code.to_string(), "\n");
+                
+                tokens token_table(get_self(), get_self().value);
+                auto ptr = token_table.find(sym_code.raw());
+                if (ptr != token_table.end()) {
+                    PRINT("eosio::dex::deposit::aux_is_token_blacklisted() ... -> false\n");
+                    return false;
+                }
+
+                blacklist list(get_self(), get_self().value); 
+                auto index = list.get_index<name("symbol")>();
+                auto itr = index.lower_bound(sym_code.raw());
+                for (auto itr = index.lower_bound(sym_code.raw()); itr != index.end(); itr++) {
+                    if (itr->symbol == sym_code) {
+                        PRINT("eosio::dex::deposit::aux_is_token_blacklisted() ... -> true\n");
+                        return true;
+                    } else {
+                        break;
+                    }
+                }
+                PRINT("eosio::dex::deposit::aux_is_token_blacklisted() ... -> false\n");
+                return false;
             }
 
             void aux_add_deposits(name owner, const asset & amount, name ram_payer) {
@@ -52,15 +79,19 @@ namespace eosio {
 
                 if (has_auth(owner)) {
                     PRINT(" -> owner has auth : ", owner.to_string(), "\n");
+                    // check(owner == ram_payer || get_self() == ram_payer, create_error_name2(ERROR_AAD_1, owner, ram_payer).c_str());
                 }
                 if (has_auth(get_self())) {
-                    PRINT(" -> owner has auth : ", owner.to_string(), "\n");
+                    PRINT(" -> contract has auth : ", get_self().to_string(), "\n");
+                    // check(owner != ram_payer, create_error_name2(ERROR_AAD_2, get_self(), ram_payer).c_str());
                 }
 
-                tokens tokenstable(get_self(), get_self().value);
-                auto tk_itr = tokenstable.find(amount.symbol.code().raw());
-                check(tk_itr != tokenstable.end(), "The token is not registered");
-                check(tk_itr->tradeable, "The token is not setted as tradeable. Contact the token's responsible admin.");
+                if (!aux_is_token_blacklisted(amount.symbol.code())) {
+                    tokens tokenstable(get_self(), get_self().value);
+                    auto tk_itr = tokenstable.find(amount.symbol.code().raw());
+                    check(tk_itr != tokenstable.end(), create_error_symbol1(ERROR_AAD_3, amount.symbol).c_str());
+                    check(tk_itr->tradeable, create_error_symbol1(ERROR_AAD_4, amount.symbol).c_str());
+                }
 
                 depusers depuserstable(get_self(), get_self().value);
                 auto user_itr = depuserstable.find(owner.value);
@@ -73,8 +104,8 @@ namespace eosio {
                 } else {
                     if (ram_payer != get_self()) {
                         // change from using contract RAM to user's RAM 
-                        PRINT(" -> depuserstable.modify() : \n");
-                        depuserstable.modify(*user_itr, same_payer, [&]( auto& a ){
+                        PRINT(" -> depuserstable.modify() ram_payer:",ram_payer.to_string()," \n");
+                        depuserstable.modify(*user_itr, ram_payer, [&]( auto& a ){
                             a.account = owner;
                         });
                     }
@@ -91,7 +122,7 @@ namespace eosio {
                 } else {
                     depositstable.modify(*itr, same_payer , [&](auto& a){
                         check(a.amount.symbol == amount.symbol,
-                            create_error_asset2(ERROR_AAD_1, a.amount, amount).c_str()); 
+                            create_error_asset2(ERROR_AAD_5, a.amount, amount).c_str()); 
                         a.amount += amount;
                     });
                 }
@@ -144,9 +175,11 @@ namespace eosio {
                 if (itr == depositstable.end()) return;
                 // check(itr != depositstable.end(),
                 //             create_error_symbol1(ERROR_AEMC_1, extended).c_str());
-                
+                PRINT("  before check!\n");
                 check(orig.code().raw() == extended.code().raw(),
                             create_error_symbol2(ERROR_AEMC_2, orig, extended).c_str());
+
+                PRINT("  after check!\n");
 
                 asset lowest_real_value = asset(1, orig);
                 asset lowest_extended_value = aux_extend_asset(lowest_real_value);
@@ -210,7 +243,7 @@ namespace eosio {
                 PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
                 PRINT(" quantity: ", quantity.to_string(), "\n");
 
-                aux_substract_deposits(get_self(), quantity, get_self());
+                aux_substract_deposits(get_self(), quantity);
                 aux_transfer_earnings_to_ui(ui, quantity);
 
                 PRINT("eosio::dex::deposit::aux_convert_deposits_to_earnings() ...\n");
@@ -222,25 +255,44 @@ namespace eosio {
                 PRINT(" quantity: ", quantity.to_string(), "\n");
                 PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
 
+                // if is not an internal inline action then the user "owner" must have beed signed this transaction
+                if ( !has_auth( get_self() )) {
+                    require_auth( owner );
+                }
+
                 // substract or remove deposit entry
-                require_auth(owner);
                 asset extended = aux_extend_asset(quantity);
-                aux_substract_deposits(owner, extended, owner);
+                aux_substract_deposits(owner, extended);
 
                 aux_earn_micro_change(owner, quantity.symbol, extended.symbol, owner, ui);
 
                 // send tokens
+                name contract = name(0);
                 tokens tokenstable(get_self(), get_self().value);
                 auto ptk_itr = tokenstable.find(quantity.symbol.code().raw());
-                check(ptk_itr != tokenstable.end(), (string("Token ") + quantity.symbol.code().to_string() + " not registered").c_str());
+                
+                if (ptk_itr != tokenstable.end()) {
+                    contract = ptk_itr->contract;
+                } else {
+                    // try and see if the token is_blacklisted
+                    blacklist list(get_self(), get_self().value); 
+                    auto index = list.get_index<name("symbol")>();                    
+                    for (auto itr = index.lower_bound(quantity.symbol.code().raw()); itr != index.end(); itr++) {
+                        if (itr->symbol == quantity.symbol.code()) {
+                            contract = itr->contract;
+                        }
+                    }
+                }
+
+                check(contract != name(0), create_error_symcode1(ERROR_AW_1, quantity.symbol.code()).c_str());
 
                 action(
                     permission_level{get_self(),name("active")},
-                    ptk_itr->contract,
+                    contract,
                     name("transfer"),
-                    std::make_tuple(get_self(), owner, quantity, string("withdraw deposits: ") + quantity.to_string())
+                    std::make_tuple(get_self(), owner, quantity, string("withdraw: ") + quantity.to_string())
                 ).send();
-                PRINT("   transfer ", quantity.to_string(), " to ", owner.to_string(),"\n");
+                PRINT("   transfer ", quantity.to_string(), "(",contract.to_string(),") to ", owner.to_string(),"\n");
 
                 aux_register_event(owner, name("withdraw"), quantity.to_string());
 
@@ -248,6 +300,16 @@ namespace eosio {
                 aux_trigger_event(quantity.symbol.code(), name("withdraw"), owner, get_self(), quantity, _asset, _asset);
 
                 PRINT("eosio::dex::deposit::action_withdraw() ...\n");
+            }
+
+            bool aux_is_market_being_deleted(uint64_t market_id) {
+                PRINT("eosio::dex::deposit::aux_is_market_being_deleted()\n");
+                PRINT(" can_market: ", std::to_string((unsigned long) market_id), "\n");
+                delmarkets table(get_self(), get_self().value);
+                auto ptr = table.find(market_id);
+                bool found = ptr != table.end();
+                PRINT("eosio::dex::deposit::aux_is_market_being_deleted() ...\n");
+                return found;
             }
 
             void action_swapdeposit(name from, name to, const asset & quantity, bool trigger_event, string memo) {
@@ -267,8 +329,10 @@ namespace eosio {
                 
                 check( is_account( to ), "to account does not exist");
                 auto sym = quantity.symbol.code();
-                tokens tokenstable(get_self(), get_self().value);
-                const auto& st = tokenstable.get( sym.raw() );
+                if (!aux_is_token_blacklisted(sym)) {
+                    tokens tokenstable(get_self(), get_self().value);
+                    const auto& st = tokenstable.get( sym.raw() );
+                }
 
                 require_recipient( from );
                 require_recipient( to );
@@ -287,7 +351,7 @@ namespace eosio {
                     ram_payer = get_self();
                 }
                 PRINT("   -> ram_payer: ", ram_payer.to_string(), "\n");
-                aux_substract_deposits(from, quantity, ram_payer);
+                aux_substract_deposits(from, quantity);
                 aux_add_deposits(to, quantity, ram_payer);
 
                 if (from != get_self() && to != get_self()) {
@@ -298,7 +362,7 @@ namespace eosio {
                 if (trigger_event) {
                     asset _asset;
                     aux_trigger_event(quantity.symbol.code(), name("swapdeposit"), from, to, quantity, _asset, _asset);
-                }
+                }               
                 
                 PRINT("eosio::dex::deposit::action_swapdeposit() ...\n"); 
             }

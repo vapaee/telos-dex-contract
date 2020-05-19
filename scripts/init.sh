@@ -12,11 +12,11 @@ sleep 1
 
 sleep 1
 
-./3_load_system.sh
+./3_load_tokens.sh
 
 sleep 1
 
-./4_load_tokens.sh
+./4_load_telos_decide.sh
 
 sleep 1
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <dex/base.hpp>
+#include <dex/modules/error.hpp>
 
 #include <algorithm> 
 #include <functional> 
@@ -12,18 +13,30 @@ using namespace eosio;
 
 namespace eosio {
     namespace dex {
+
+        using namespace error;
+
         namespace utils {
         
-            inline name get_self() { return eosio::dex::contract; }
-            inline name get_code() { return eosio::dex::contract; }
+            // inline name get_self() { return eosio::dex::contract; }
+            // inline name get_code() { return eosio::dex::contract; }
 
+            /* --- error ---
             inline string create_error_string1(const char * text, const string str) {
                 return string(text) + " [" + str + "]";
+            }
+
+            inline string create_error_string2(const char * text, const string str1, const string str2) {
+                return string(text) + " [" + str1 + ", " + str2 + "]";
             }
 
             inline string create_error_id1(const char * text, const uint64_t id) {
                 return string(text) + " [" + std::to_string((unsigned long) id ) + "]";
             }
+
+            inline string create_error_id2(const char * text, const uint64_t id1, const uint64_t id2) {
+                return string(text) + " [" + std::to_string((unsigned long) id1 ) + ", " + std::to_string((unsigned long) id2 ) + "]";
+            }            
 
             inline string create_error_double1(const char * text, const double value) {
                 return string(text) + " [" + std::to_string( value ) + "]";
@@ -49,6 +62,10 @@ namespace eosio {
                 return string(text) + " [" + account1.to_string() + "]";
             }
 
+            inline string create_error_name2(const char * text, const name & account1, const name & account2) {
+                return string(text) + " [" + account1.to_string() + "," + account2.to_string() + "]";
+            }
+
             inline string create_error_asset1(const char * text, const asset & token1) {
                 return string(text) + " [" + token1.to_string() + "]";
             }
@@ -67,7 +84,7 @@ namespace eosio {
 
             inline string create_error_asset5(const char * text, const asset & token1, const asset & token, const asset & token3, const asset & token4, const asset & token5) {
                 return string(text) + " [" + token1.to_string() + "], [" + token.to_string()+"], [" + token3.to_string()+"], [" + token4.to_string()+"], [" + token5.to_string()+"]";
-            }
+            }*/
 
             string to_lowercase(string str) {
                 string result = str;
@@ -316,6 +333,7 @@ namespace eosio {
             }  
 
             asset aux_extend_asset(const asset & quantity) {
+                PRINT("eosio::dex::utils::aux_extend_asset()\n");
                 asset extended = quantity;
                 uint64_t amount = quantity.amount;
                 uint8_t precision = quantity.symbol.precision();
@@ -331,20 +349,46 @@ namespace eosio {
 
                 extended.amount = amount;
                 extended.symbol = symbol(sym_code, eosio::dex::internal_precision);
+                PRINT("eosio::dex::utils::aux_extend_asset() ...\n");
                 return extended;
             }
             
             asset aux_get_real_asset(const asset & quantity_extended) {
+                PRINT("eosio::dex::utils::aux_get_real_asset()\n");
+                PRINT("  quantity_extended: ", quantity_extended.to_string(), "\n");
                 asset real = quantity_extended;
                 uint64_t amount = quantity_extended.amount;
                 uint8_t precision = quantity_extended.symbol.precision();
                 symbol_code sym_code = quantity_extended.symbol.code();
 
-                eosio::check(eosio::dex::internal_precision == precision, create_error_id1(ERROR_AGEA_1, precision).c_str());
+                check(eosio::dex::internal_precision == precision, create_error_id1(ERROR_AGEA_1, precision).c_str());
 
                 tokens tokenstable(get_self(), get_self().value);
+                PRINT(" tokens tokenstable(get_self(), get_self().value);\n");
                 auto tk_itr = tokenstable.find(quantity_extended.symbol.code().raw());
-                precision = tk_itr->precision;
+                PRINT(" auto tk_itr = tokenstable.find(quantity_extended.symbol.code().raw());\n");
+
+                bool found = false;
+                if (tk_itr != tokenstable.end()) {
+                    found = true;
+                    precision = tk_itr->precision;
+                    PRINT(" tk_itr != tokenstable.end()  ---> precision: ",std::to_string((int) precision),"\n");
+                } else {
+                    // try and see if the token is_blacklisted
+                    PRINT(" tk_itr == tokenstable.end()\n");
+                    blacklist list(get_self(), get_self().value); 
+                    auto index = list.get_index<name("symbol")>();                    
+                    for (auto itr = index.lower_bound(quantity_extended.symbol.code().raw()); itr != index.end(); itr++) {
+                        if (itr->symbol == quantity_extended.symbol.code()) {
+                            precision = itr->precision;
+                            found = true;
+                            PRINT(" tk_itr == tokenstable.end()  ---> precision: ",std::to_string((int) precision),"\n");
+                            break;
+                        }
+                    }
+                }
+
+                check(found, create_error_symcode1(ERROR_AGEA_2, sym_code).c_str());
 
                 // no extension
                 if (eosio::dex::internal_precision == precision) return quantity_extended;
@@ -356,8 +400,21 @@ namespace eosio {
 
                 real.amount = amount;
                 real.symbol = symbol(sym_code, precision);
+                PRINT(" real asset: ",real.to_string(),"\n");
+                PRINT("eosio::dex::utils::aux_get_real_asset() ...\n");
                 return real;
-            }          
+            }
+            
+            // taken from here
+            // https://github.com/EOSIO/eosio.cdt/issues/404#issuecomment-461626338
+            float stof(std::string s, float def) {
+                if (s == "") return def;
+                std::size_t i = s.find(".");
+                int digits = s.length() - i - 1;
+                s.erase(i, 1); 
+                float result = (float) ( atoi(s.c_str()) / pow(10, digits) );
+                return result;
+            }  
 
         };       
     };

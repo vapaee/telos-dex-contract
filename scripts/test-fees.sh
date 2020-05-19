@@ -10,9 +10,11 @@
 
 ./3_load_tokens.sh
 
-./4_register_interfaces.sh
+./4_load_telos_decide.sh
 
-./5_deposits.sh
+./5_register_interfaces.sh
+
+./6_deposits.sh
 
 echo "pause..."
 sleep 4

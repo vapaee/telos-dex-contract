@@ -2,6 +2,7 @@
 #include <dex/base.hpp>
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
+#include <dex/modules/error.hpp>
 #include <dex/modules/utils.hpp>
 #include <dex/modules/record.hpp>
 #include <dex/modules/market.hpp>
@@ -11,6 +12,7 @@
 namespace eosio {
     namespace dex {
 
+        using namespace error;
         using namespace utils;
         using namespace ui;
         using namespace record;
@@ -19,6 +21,15 @@ namespace eosio {
 
         namespace exchange {
          
+            /*bool aux_is_market_being_deleted(uint64_t market_id) {
+                PRINT("eosio::dex::exchange::aux_is_market_being_deleted()\n");
+                PRINT(" can_market: ", std::to_string((unsigned long) market_id), "\n");
+                delmarkets table(get_self(), get_self().value);
+                auto ptr = table.find(market_id);
+                bool found = ptr != table.end();
+                PRINT("eosio::dex::exchange::aux_is_market_being_deleted() ...\n");
+                return found;
+            }*/
 
             void aux_cancel_sell_order(name owner, uint64_t can_market, uint64_t market, const std::vector<uint64_t> & orders) {
                 // viterbotelos, acorn.telosd, acorn.telosd, [1]
@@ -65,14 +76,15 @@ namespace eosio {
                         buyerorders.erase(*buyer_itr);
                     }
 
+                    //if (!aux_is_market_being_deleted(can_market)) {
                     // take out the registry for this canceled order
-                    check(orders_ptr != o_summary.end(), "ordertable does not exist for that scope");
+                    check(orders_ptr != o_summary.end(), create_error_id1(ERROR_ACSO_1, can_market).c_str());
                     if (!reverse_scope) {
                         // we are canceling a sell-order so we decrement the supply
                         o_summary.modify(*orders_ptr, same_payer, [&](auto & a){
                             a.supply.orders--;
                             check(a.supply.total.symbol == return_amount.symbol,
-                                create_error_asset2(ERROR_AGSO_6, a.supply.total, return_amount).c_str());
+                                create_error_asset2(ERROR_ACSO_2, a.supply.total, return_amount).c_str());
                             a.supply.total -= return_amount;
                         });
                     } else {
@@ -80,20 +92,33 @@ namespace eosio {
                         o_summary.modify(*orders_ptr, same_payer, [&](auto & a){
                             a.demand.orders--;
                             check(a.demand.total.symbol == return_amount.symbol,
-                                create_error_asset2(ERROR_AGSO_6, a.demand.total, return_amount).c_str());
+                                create_error_asset2(ERROR_ACSO_2, a.demand.total, return_amount).c_str());
                             a.demand.total -= return_amount;
                         });
                     }
+                    //}
+                    asset _asset;
 
+                    PRINT("  --> swapdeposit: ", return_amount.to_string(), " to ", owner.to_string(), "\n");
                     action(
                         permission_level{get_self(),name("active")},
                         get_self(),
                         name("swapdeposit"),
                         std::make_tuple(get_self(), owner, return_amount, false, string("order canceled, payment returned"))
                     ).send();
-
-                    asset _asset;
                     aux_trigger_event(return_amount.symbol.code(), name("cancel"), owner, get_self(), return_amount, _asset, _asset);
+                    
+                    // auto-withraw
+                    asset return_real_amount = aux_get_real_asset(return_amount);
+                    PRINT("  --> withdraw: transfer ", return_real_amount.to_string(), " to ", owner.to_string(), "\n");
+                    action(
+                        permission_level{get_self(),name("active")},
+                        get_self(),
+                        name("withdraw"),
+                        std::make_tuple(owner, return_real_amount, itr->ui)
+                    ).send();
+                    aux_trigger_event(return_real_amount.symbol.code(), name("withdraw"), owner, get_self(), return_real_amount, _asset, _asset);
+                    
                 }
 
                 userorders buyerorders(get_self(), owner.value);
@@ -143,7 +168,41 @@ namespace eosio {
 
                 PRINT(" deposits.size(): ", depos.size(), "\n");
                 PRINT("eosio::dex::exchange::aux_clone_user_deposits() ...\n");
-            } 
+            }
+
+            asset aux_apply_maker_fees(const asset& money) {
+                PRINT("eosio::dex::exchange::aux_apply_maker_fees()\n");
+                PRINT("        money: ", money.to_string(), "\n");
+                asset result = money;
+                asset maker_fee = eosio::dex::global::get().maker_fee;
+                PRINT(" >  maker_fee: ", maker_fee.to_string(), "\n");
+                
+                uint64_t unit = pow(10.0, maker_fee.symbol.precision());
+                float maker_fee_percentage = (float) ((float)maker_fee.amount / (float)unit);
+                result.amount = (uint64_t) (money.amount * maker_fee_percentage);
+                PRINT(" ->     float: ", std::to_string(maker_fee_percentage), "\n");
+                PRINT(" ->    result: ", result.to_string(), "\n");
+
+                PRINT("eosio::dex::exchange::aux_apply_maker_fees()\n");
+                return result;
+            }
+
+            asset aux_apply_taker_fees(const asset& money) {
+                PRINT("eosio::dex::exchange::aux_apply_taker_fees()\n");
+                PRINT("        money: ", money.to_string(), "\n");
+                asset result = money;
+                asset taker_fee = eosio::dex::global::get().taker_fee;
+                PRINT(" >  taker_fee: ", taker_fee.to_string(), "\n");
+                
+                uint64_t unit = pow(10.0, taker_fee.symbol.precision());
+                float taker_fee_percentage = (float) ((float)taker_fee.amount / (float)unit);
+                result.amount = (uint64_t) (money.amount * taker_fee_percentage);
+                PRINT(" ->     float: ", std::to_string(taker_fee_percentage), "\n");
+                PRINT(" ->    result: ", result.to_string(), "\n");
+
+                PRINT("eosio::dex::exchange::aux_apply_taker_fees()\n");
+                return result;
+            }
                         
             void aux_generate_sell_order(bool inverted, name owner, uint64_t market_buy, uint64_t market_sell, asset total, asset payment, asset price, asset inverse, name ram_payer, uint64_t sell_ui) {
                 PRINT("eosio::dex::exchange::aux_generate_sell_order()\n");
@@ -158,15 +217,13 @@ namespace eosio {
                 PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
                 PRINT(" sell_ui: ", std::to_string((long unsigned) sell_ui), "\n");
                 
-                double maker_fee_percentage = 0.000;
-                double taker_fee_percentage = 0.0025;
-                
                 sellorders buytable(get_self(),  market_buy);
                 sellorders selltable(get_self(), market_sell);
 
                 ordersummary o_summary(get_self(), get_self().value);
                 symbol_code  A = total.symbol.code();
                 symbol_code  B = payment.symbol.code();
+                asset _asset; // aux var;
                 
                 uint64_t can_market = aux_get_canonical_market(A, B);
                 uint64_t inv_market = aux_get_inverted_market(A, B);
@@ -321,13 +378,11 @@ namespace eosio {
                         asset taker_fee, maker_fee, taker_gains, maker_gains;
 
                         // calculate fees
-                        maker_fee = current_total;
-                        maker_fee.amount = current_total.amount * maker_fee_percentage;
+                        maker_fee = aux_apply_maker_fees(current_total);
                         maker_gains = current_total - maker_fee;
                         // taker gets total minus maker_fee
 
-                        taker_fee = current_payment;
-                        taker_fee.amount = current_payment.amount * taker_fee_percentage;
+                        taker_fee = aux_apply_taker_fees(current_payment);
                         taker_gains = current_payment - taker_fee;
 
                         // transfer CNT to maker 
@@ -337,8 +392,9 @@ namespace eosio {
                             name("swapdeposit"),
                             std::make_tuple(taker, maker, maker_gains, true, string("exchange made for ") + current_payment.to_string())
                         ).send();
-                        PRINT("     -- transfer ", maker_gains.to_string(), " to ", maker.to_string(),"\n");
-                            
+                        PRINT("     -- transfer ", maker_gains.to_string(), " to ", maker.to_string()," (maker)\n");
+
+
                         // transfer to contract fees on CNT
                         // at this moment maker_fee is still in the owner's deposits. So it must be swaped to the contract before earning it
                         if (maker_fee.amount > 0) {
@@ -348,7 +404,7 @@ namespace eosio {
                                 name("swapdeposit"),
                                 std::make_tuple(taker, get_self(), maker_fee, true, string("exchange made for ") + current_total.to_string())
                             ).send();
-                            PRINT("     -- charge fees ", maker_fee.to_string(), " to ", maker.to_string(),"\n");
+                            PRINT("     -- charge fees ", maker_fee.to_string(), " to ", maker.to_string()," (maker)\n");
                         }
                             
                         // transfer TLOS to taker (TLOS the belongs to maker but the contracxts holds them)
@@ -358,7 +414,7 @@ namespace eosio {
                             name("swapdeposit"),
                             std::make_tuple(get_self(), taker, taker_gains, true, string("exchange made for ") + current_total.to_string())
                         ).send();
-                        PRINT("     -- transfer ", taker_gains.to_string(), " to ", taker.to_string(),"\n");
+                        PRINT("     -- transfer ", taker_gains.to_string(), " to ", taker.to_string()," (taker)\n");
 
                         // convert deposits to earnings
                         // Now the contract's deposits includes the maker_fee, so it can be transformed to ernings
@@ -369,7 +425,7 @@ namespace eosio {
                                 name("deps2earn"),
                                 std::make_tuple(taker_ui, taker_fee)
                             ).send();
-                            PRINT("     -- converting fee ", maker_fee.to_string(), " to earnings\n");
+                            PRINT("     -- sending fees ", taker_fee.to_string(), " to ", std::to_string((unsigned long)taker_ui)," (taker_ui)\n");
                         }
 
                         // The taker_fee were already included in the contract's deposits, so no swap was needed.
@@ -381,7 +437,7 @@ namespace eosio {
                                 name("deps2earn"),
                                 std::make_tuple(maker_ui, maker_fee)
                             ).send();
-                            PRINT("     -- converting fee ", taker_fee.to_string(), " to earnings\n");
+                            PRINT("     -- sending fees ", maker_fee.to_string(), " to ", std::to_string((unsigned long)maker_ui)," (maker_ui)\n");
                         }
                         // saving the transaction in history
                         current_inverse = utils::inverse(current_price, current_payment.symbol);
@@ -391,6 +447,27 @@ namespace eosio {
                         // PRINT("   - current_inverse: ", current_inverse.to_string(), "\n");
                         aux_register_transaction_in_history(inverted, maker, taker, current_inverse, current_price, current_payment, current_total, maker_fee, taker_fee);
                         
+                        // auto-withraw -----------
+                        asset maker_gains_real = aux_get_real_asset(maker_gains);
+                        PRINT("  --> withdraw: transfer ", maker_gains_real.to_string(), " to ", maker.to_string(), "\n");
+                        action(
+                            permission_level{get_self(),name("active")},
+                            get_self(),
+                            name("withdraw"),
+                            std::make_tuple(maker, maker_gains_real,  maker_ui)
+                        ).send();
+                        aux_trigger_event(maker_gains_real.symbol.code(), name("withdraw"), maker, get_self(), maker_gains_real, _asset, _asset);
+                        
+                        asset taker_gains_real = aux_get_real_asset(taker_gains);
+                        PRINT("  --> withdraw: transfer ", taker_gains_real.to_string(), " to ", maker.to_string(), "\n");
+                        action(
+                            permission_level{get_self(),name("active")},
+                            get_self(),
+                            name("withdraw"),
+                            std::make_tuple(taker, taker_gains_real, taker_ui)
+                        ).send();
+                        aux_trigger_event(taker_gains_real.symbol.code(), name("withdraw"), taker, get_self(), taker_gains_real, _asset, _asset);    
+
                     } else {
                         break;
                     }
@@ -502,9 +579,9 @@ namespace eosio {
                 require_auth(owner);
 
                 // Check if blacklisted
-                check(eosio::dex::dao::aux_is_token_blacklisted(total.symbol.code()), 
+                check(!eosio::dex::dao::aux_is_token_blacklisted(total.symbol.code()), 
                     create_error_symcode1(ERROR_AGO_1, total.symbol.code()).c_str());
-                check(eosio::dex::dao::aux_is_token_blacklisted(price.symbol.code()), 
+                check(!eosio::dex::dao::aux_is_token_blacklisted(price.symbol.code()), 
                     create_error_symcode1(ERROR_AGO_2, price.symbol.code()).c_str());
 
                 // create scope for the orders table

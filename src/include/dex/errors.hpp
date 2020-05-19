@@ -1,10 +1,17 @@
 #pragma once
 
 
+
+// Exchange Module ----------------------
+
 // aux_generate_order
  
 #define ERROR_AGO_1 "ERR-AGO-01: amount token is blacklisted: "
 #define ERROR_AGO_2 "ERR-AGO-02: price token is blacklisted: "
+
+// aux_cancel_sell_order
+#define ERROR_ACSO_1 "ERR-ACSO-01: ordersummary table does not exist for that scope: "
+#define ERROR_ACSO_2 "ERR-ACSO-02: symbol mismatch: "
 
 
 // aux_generate_sell_order
@@ -17,6 +24,9 @@
 #define ERROR_AGSO_7 "ERR-AGSO-07: symbol mismatch: "
 #define ERROR_AGSO_8 "ERR-AGSO-08: symbol mismatch: "
 
+// Deposits Module --------------------
+// action_withdraw
+#define ERROR_AW_1 "ERR-AW-01: : can't find contract's name for token: "
 
 // aux_substract_deposits
 #define ERROR_ASD_1 "ERR-ASD-01: user has no deposits for this symbol to subtract from: "
@@ -27,8 +37,21 @@
 #define ERROR_AEMC_1 "ERR-AEMC-01: user has no deposits for this symbol: "
 #define ERROR_AEMC_2 "ERR-AEMC-02: internal and external symbols don't match in code: "
 
-// aux_get_market_id
-#define ERROR_AGMI_1 "ERR-AGMI-01: This market is not allowed because none of them are currencies and they are not in the same token group: "
+// aux_create_market_and_return_id
+#define ERROR_ACMARI_1 "ERR-ACMARI-01: This market is not allowed because none of them are currencies and they are not in the same token group: "
+
+// aux_add_deposits
+#define ERROR_AAD_1 "ERR-AAD-01: Inconsistency, owner has signed the transaction but is not the same as ram payer: "
+#define ERROR_AAD_2 "ERR-AAD-02: Inconsistency, contract account has signed the transaction but is not the same as ram payer: "
+#define ERROR_AAD_3 "ERR-AAD-03: The token is not registered: "
+#define ERROR_AAD_4 "ERR-AAD-04: The token is not setted as tradeable. Contact the token's responsible admin: "
+#define ERROR_AAD_5 "ERR-AAD-05: symbol mismatch: "
+
+
+// Market Module ----------------------
+
+// aux_is_A_currency_in_any_B_groups
+#define ERROR_AIACIABG_1 "ERR-AIACIABG-01: Can't find tokengroup for token: "
 
 // aux_is_it_allowed_to_cerate_this_market
 #define ERROR_AIIATCTM_1 "ERR-AIIATCTM-01: This token is not registered: "
@@ -38,8 +61,10 @@
 // aux_get_table_from_market
 #define ERROR_AGTFM_1 "ERR-AGTFM-01: not market found: "
 
-// aux_add_deposits
-#define ERROR_AAD_1 "ERR-AAD-01: symbol mismatch: "
+
+
+
+// UI Module -------------------------
 
 // action_add_ui
 #define ERROR_AAU_1 "ERR-AAU-01: receiver account does not exist: "
@@ -59,6 +84,7 @@
 
 // aux_get_real_asset
 #define ERROR_AGEA_1 "ERR-AGEA-01: precision mismatch: "
+#define ERROR_AGEA_2 "ERR-AGEA-02: can't find the precision for this symbol because can't fint the token registration: "
 
 
 // Token Module ----------------------
@@ -71,19 +97,41 @@
 #define ERROR_AAT_1 "ERR-AAT-01: Token with symbol not exists: " 
 #define ERROR_AAT_2 "ERR-AAT-02: Token already registered: " 
 
-
 // action_set_token_admin
 #define ERROR_ASTA_1 "ERR-ASTA-01: Token not registered. You must register it first calling addtoken action: " 
 #define ERROR_ASTA_2 "ERR-ASTA-02: account does not exist: " 
 #define ERROR_ASTA_3 "ERR-ASTA-03: only DAO or token's admin can change token admin" 
 
+// action_add_token_group
+#define ERROR_AATG_1 "ERR-AATG-01: admin account does not exist: "
+#define ERROR_AATG_2 "ERR-AATG-02: admin signature needed: "
+
+// action_update_token_group
+#define ERROR_AUTG_1 "ERR-AUTG-01: admin account does not exist: "
+#define ERROR_AUTG_2 "ERR-AUTG-02: admin signature needed: "
+#define ERROR_AUTG_3 "ERR-AUTG-03: tokengroup not found with id: "
+
+// action_set_token_as_currency
+#define ERROR_ASTAC_1 "ERR-ASTAC-01: Token not registered. You must register it first calling setcurrency action: " 
+#define ERROR_ASTAC_2 "ERR-ASTAC-02: Only contract account can modify the token.currency status" 
+#define ERROR_ASTAC_3 "ERR-ASTAC-03: Token group zero not found: " 
+#define ERROR_ASTAC_4 "ERR-ASTAC-04: Token is already present in token group zero as currency: " 
+
+
+// Maintenance Module ------------------------
+// aux_maintenance_from_history
+#define ERROR_AMFH_1 "ERR-AMFH-01: inconsistancy during maintenance. Trying to prune history (key, scope): "
+
 // DAO Module ------------------------
 
 // action_start_ballot_on
-#define ERROR_ASBO_1 "ERR-ASBO-01: unknown property: "
-#define ERROR_ASBO_2 "ERR-ASBO-02: telos.decide fee symbol_code and system symbol_code does not match?: "
-#define ERROR_ASBO_3 "ERR-ASBO-03: ballot_name already exists: "
+#define ERROR_ASBO_1 "ERR-ASBO-01: argument is too long (1024 chars max). Your's has: "
+#define ERROR_ASBO_2 "ERR-ASBO-02: unknown property: "
+#define ERROR_ASBO_3 "ERR-ASBO-03: telos.decide fee symbol_code and system symbol_code does not match?: "
+#define ERROR_ASBO_4 "ERR-ASBO-04: ballot_name already exists: "
 
+// aux_check_ballot_can_be_created
+#define ERROR_ACBABC_3 "ERR-ACBABC-03: already exists an open ballot for this same operation (and params): "
 
 // aux_check_symbol_code_from_string
 #define ERROR_ACSCFS_1 "ERR-ACSCFS-01: string is too long to be a valid symbol_code: "
@@ -97,6 +145,12 @@
 // char_to_value
 #define ERROR_CTV_1 "ERR-CTV-1: character is not in allowed character set for names: "
 
+// get (config)
+#define ERROR_GC_1 "ERR-GC-1: table not initialized: " 
+
+// action_init_config
+#define ERROR_AIC_1 "ERR-AIC-1: config already initialized! " 
+
 // aux_check_double_from_string
 #define ERROR_ACDFS_1 "ERR-ACDFS-01: Fee can not be negative: "
 #define ERROR_ACDFS_2 "ERR-ACDFS-02: Fee can not higher than 1: "
@@ -105,18 +159,30 @@
 #define ERROR_ACIFS_1 "ERR-ACIFS-02: Cant prune future records: "
 
 // aux_get_telos_decide_config
-#define ERROR_AGTDC_1 "ERR-AGTDC-02: Cant prune future records: "
+#define ERROR_AGTDC_1 "ERR-AGTDC-01: Can't find Telos Decide config in contract: "
 
 // aux_is_token_blacklisted
 #define ERROR_AITB_1 "ERR-AITB-01: Token is not registered: " 
 
+// handler_ballot_result_for_setcurrency
+#define ERROR_HBRFSC_1 "ERR-HBRFSC-01: Token is not registered: " 
+#define ERROR_HBRFSC_2 "ERR-HBRFSC-02: Token's contract differs from given contract: " 
+
 // aux_process_ballot_to_ban_token
 #define ERROR_APBTBT_1 "ERR-APBTBT-01: This token can't be banned because it belongs to the DEX token white list: " 
-#define ERROR_APBTBT_2 "ERR-APBTBT-02: This token is already blacklisted: " 
+#define ERROR_APBTBT_2 "ERR-APBTBT-02: Token contract does not has a stats table: " 
+#define ERROR_APBTBT_3 "ERR-APBTBT-03: This token is already blacklisted: " 
 
 // handler_ballot_result
 #define ERROR_HBR_1 "ERR-HBR-01: could't find a ballot identified: "
 #define ERROR_HBR_2 "ERR-HBR-02: property not valid: "
 
 // handler_ballot_result_for_bantoken
-#define ERROR_HBRFB_1 "ERR-HBRFB-01: Symbol is not part of the token list: "
+#define ERROR_HBRFB_1 "ERR-HBRFB-01: Symbol is registered in whitelist, can not be baned: "
+#define ERROR_HBRFB_2 "ERR-HBRFB-02: Symbol is not part of the token list: "
+
+// handler_ballot_result_for_savetoken
+#define ERROR_HBRFS_1 "ERR-HBRFS-01: token is blacklisted and can not be saved: "
+#define ERROR_HBRFS_2 "ERR-HBRFS-02: Symbol mismatch: "
+
+
