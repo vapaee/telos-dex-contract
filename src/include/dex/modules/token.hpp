@@ -25,6 +25,9 @@ namespace eosio {
                 string icon = "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/telos.png";
                 string iconlg = "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/telos-lg.png";
                 string group = "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/uploads/telos-token-group.png";
+                
+                string pcontact = "https://telosfoundation.io";
+                string gcontact = "https://t.me/HelloTelos";
 
                 action(
                     permission_level{get_self(),name("active")},
@@ -41,6 +44,8 @@ namespace eosio {
                         banner,                                // string banner
                         icon,                                  // string icon
                         iconlg,                                // string iconlg
+                        pcontact,                              // string pcontact
+                        gcontact,                              // string gcontact
                         true                                   // bool tradeable
                     )
                 ).send();

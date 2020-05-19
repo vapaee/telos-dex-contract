@@ -1,6 +1,6 @@
 # telos-dex-contract
 Telos DEX smart contract source code   
-current version: v4.0.0
+current version: v4.0.1
 
 ## About this project  
 This *Telos DEX* project was initialy part of another bigger project called *[vapaee](https://github.com/vapaee/vapaee.io-source)*. This last one has a smart contract deployed in the *vapaeetokens* account, which implements every token-related service that will be needed for an even bigger project called [Cards & Tokens](https://cardsandtokens.com).
