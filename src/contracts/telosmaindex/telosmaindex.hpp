@@ -96,7 +96,8 @@ CONTRACT telosmaindex : public eosio::contract {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.chnggroups() ------------------\n");
             eosio::dex::token::action_change_groups_for_a_token(sym_code, groups);
-        };    
+        };
+
         // Exchange Module ---------------------------------------------------------------------
 
         ACTION cancel(name owner, name type, const symbol_code & commodity, const symbol_code & currency, const std::vector<uint64_t> & orders) {
@@ -152,7 +153,6 @@ CONTRACT telosmaindex : public eosio::contract {
                 eosio::dex::deposit::handler_transfer(from, to, quantity, memo);                
             }
         }
-        
 
         ACTION deps2earn(const uint64_t client, const asset & quantity) {
             PRINT("\nACTION telosmaindex.deps2earn() ------------------\n");
@@ -160,6 +160,7 @@ CONTRACT telosmaindex : public eosio::contract {
         };
 
         // Experience Module ---------------------------------------------------------------------
+
         ACTION reward (name user, const asset & points, const asset & exp) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.reward() ------------------\n");
@@ -167,6 +168,7 @@ CONTRACT telosmaindex : public eosio::contract {
         };
 
         // Maintenance Module ---------------------------------------------------------------------
+
         ACTION maintenance (name credits_to) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.maintenance() ------------------\n");
@@ -174,6 +176,7 @@ CONTRACT telosmaindex : public eosio::contract {
         };
 
         // Global Module ---------------------------------------------------------------------
+
         ACTION init () {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.init() ------------------\n");
