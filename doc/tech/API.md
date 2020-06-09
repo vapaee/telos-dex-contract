@@ -6,7 +6,7 @@ This is an exhaustive list of all actions in the contract and a minor descriptio
 ## DEPOSITS ACTIONS
 The contracts cannot manipulate your tokens directly(*). Therefore, you need to transfer your tokens to the core contract and then use our money in the contract. In this case you need to deposit funds before creating any order.
 
-### [withdraw](../src/contracts/telosmaindex/telosmaindex.hpp#110)   
+### [withdraw](../../src/contracts/telosmaindex/telosmaindex.hpp#L110)   
 The singning account (owner) withdraws own tokens from the Telos DEX contract.
 
     ACTION withdraw(name owner, const asset & quantity, uint64_t client)
@@ -17,7 +17,7 @@ The singning account (owner) withdraws own tokens from the Telos DEX contract.
 |quantity|amount of tokens to withdraw from the contract (use the real token's precision) |
 |client|user interface id used by the owner|
 
-### [swapdeposit](../src/contracts/telosmaindex/telosmaindex.hpp#116) 
+### [swapdeposit](../../src/contracts/telosmaindex/telosmaindex.hpp#L116) 
 Once any registered token has been deposited into the DEX contract, it can be transferred to other users just like the real tokens. The only two differences are: the action name is not *transfer* but **swapdeposit**, and the second one is that the contract receiving the action (and performing the transfer) is not the tokens' contract but the Telos DEX contract. That means that all deposit swaps are made inside Telos DEX contract and must be withdrawn at some point.
 
     ACTION swapdeposit(name from, name to, const asset & quantity, string memo)
@@ -29,7 +29,7 @@ Once any registered token has been deposited into the DEX contract, it can be tr
 |quantity|how much of what tokens should be sent|
 |memo|optional text that will bo no stored in ram|
 
-### [deps2earn](../src/contracts/telosmaindex/telosmaindex.hpp#151)   
+### [deps2earn](../../src/contracts/telosmaindex/telosmaindex.hpp#L151)   
 This is a **private action** which means only the contract itself can push. It transfers, from the Telos DEX contract to the UI receiver account, the number of tokes that quantity says.
 
     ACTION deps2earn(const uint64_t client, const asset & quantity)
@@ -43,7 +43,7 @@ This is a **private action** which means only the contract itself can push. It t
 ## EXCHANGE ACTIONS
 In order to exchange tokens with other user, you must have some deposits in the contract. Then you can create and cancel buy and sell orders. If another user likes your offer, a deals is made and you trade your tokens at the exchange ratio you defined (known as price).
 
-### [order](../src/contracts/telosmaindex/telosmaindex.hpp#102)  
+### [order](../../src/contracts/telosmaindex/telosmaindex.hpp#L102)  
 This action is meant to be pushed by the users from a registered client. Anybody can buy or sell a total of any commodity token at a given price in any currency token.
 
     ACTION order(name owner, name type, const asset & total, const asset & price, uint64_t client)
@@ -56,7 +56,7 @@ This action is meant to be pushed by the users from a registered client. Anybody
 |price|price of each commodity token expressed in any currency token|
 |client|id of the user client by the owner|
 
-### [cancel](../src/contracts/telosmaindex/telosmaindex.hpp#96)  
+### [cancel](../../src/contracts/telosmaindex/telosmaindex.hpp#L96)  
 This actions is ment to be pushed by the users from a registered UI. Anybody can cancel any previously created order. If all the orders belong to the same market, they can be all included in the same orders' list to cancel.
 
     ACTION cancel(name owner, name type, const symbol_code & commodity, const symbol_code & currency, const std::vector<uint64_t> & orders)
@@ -78,7 +78,7 @@ By default the TLOS token is settted as currency en the main token group (with i
 
 All the token activity can trigger events to be andeled aouside th DEX by another contract. This can be configured by the admins.
 
-### [addtoken](../src/contracts/telosmaindex/telosmaindex.hpp#44)  
+### [addtoken](../../src/contracts/telosmaindex/telosmaindex.hpp#L44)  
 This action allows anyone token creator or issuer to register the token in Telos DEX.
 
     ACTION addtoken (name contract, const symbol_code & symbol, uint8_t precision, name admin, string title, string website, string brief, string banner, string icon, string iconlg, string pcontact, string gcontact, bool tradeable)
@@ -99,8 +99,7 @@ This action allows anyone token creator or issuer to register the token in Telos
 |gcontact|free text to indicate a wey of contact the community gruop where everybody participates in public way. A telegram group link is strongly recommended (https://t.me/group_xxxxxxxxxxxxxx)|
 |tradeable|indicates if the token is allowed to be traded or it must be only listed just to be shown|
 
-
-### [updatetoken](../src/contracts/telosmaindex/telosmaindex.hpp#52)  
+### [updatetoken](../../src/contracts/telosmaindex/telosmaindex.hpp#L52)  
 All the token data of any registered token can be updated by the admin. This time the admin can change the default list of token groups this token is allowed to participate. The default is that all tokens can participate in market zero (0).
 
     ACTION updatetoken (const symbol_code & sym_code, string title, string website, string brief, string banner, string icon, string iconlg, string pcontact, string gcontact, vector<uint64_t> groups, bool tradeable)
@@ -120,7 +119,7 @@ All the token data of any registered token can be updated by the admin. This tim
 |tradeable|indicates if the token is allowed to be traded or it must be only listed just to be shown|
 
 
-### [tokenadmin](../src/contracts/telosmaindex/telosmaindex.hpp#58)  
+### [tokenadmin](../../src/contracts/telosmaindex/telosmaindex.hpp#L58)  
 This action change the token admin.
 
     ACTION tokenadmin (const symbol_code & sym_code, name admin)
@@ -131,7 +130,7 @@ This action change the token admin.
 |admin|new admin account name|
 
 
-### [setcurrency](../src/contracts/telosmaindex/telosmaindex.hpp#64)  
+### [setcurrency](../../src/contracts/telosmaindex/telosmaindex.hpp#L64)  
 This is a **private action** which means only the contract itself can push. It sets a token as a currency for the token group zero. The token group zero is the only one that needs DAO approval, currencies in other token groups are managed by the token group admin alone.
 
     ACTION setcurrency (const symbol_code & sym_code, bool is_currency)
@@ -143,7 +142,7 @@ This is a **private action** which means only the contract itself can push. It s
 |token_group|id of the token group in which this token should be added or removed as currency|
 
 
-### [settokendata](../src/contracts/telosmaindex/telosmaindex.hpp#70)  
+### [settokendata](../../src/contracts/telosmaindex/telosmaindex.hpp#L70)  
 Each token registered in Telos DEX can have its own list of extra data that can be used to enrich the token's page.  
 
     ACTION settokendata (const symbol_code & sym_code, uint64_t id, name action, name category, string text, string link)
@@ -158,7 +157,7 @@ Each token registered in Telos DEX can have its own list of extra data that can 
 |shownas|a word describing how to use the link when shown ('youtube', 'twitter', 'link', 'image')|
 
 
-### [edittkevent](../src/contracts/telosmaindex/telosmaindex.hpp#76)  
+### [edittkevent](../../src/contracts/telosmaindex/telosmaindex.hpp#L76)  
 Each token registered in Telos DEX can trigger events for other contracts to react when some operations occur inside Telos DEX. The token admin can register a list of events (that wants to react to) and for each, an account name in which a contract should implement a handler for the event.
 
     ACTION edittkevent (const symbol_code & sym_code, name event, name action, name contract)
@@ -171,7 +170,7 @@ Each token registered in Telos DEX can trigger events for other contracts to rea
 |contract|account name of the contract that will handles the event|
 
 
-### [addtnkgroup](../src/contracts/telosmaindex/telosmaindex.hpp#82)  
+### [addtnkgroup](../../src/contracts/telosmaindex/telosmaindex.hpp#L82)  
 Anyone can create a token group but only the token admins can add or remove their tokens from a token group. This action allows anyone to create a group and set the list of currencies for this group (the currencies must be added to the group by their admins).
 
     ACTION addtnkgroup (name admin, string title, string website, string brief, string banner, string thumbnail, vector<symbol_code> currencies)
@@ -186,7 +185,7 @@ Anyone can create a token group but only the token admins can add or remove thei
 |thumbnail|small rectangular thumbnail image url|
 
 
-### [uptnkgroup](../src/contracts/telosmaindex/telosmaindex.hpp#88)  
+### [uptnkgroup](../../src/contracts/telosmaindex/telosmaindex.hpp#L88)  
 Thia action allows to update the token group data.
 
     ACTION uptnkgroup (uint64_t group_id, name admin, string title, string website, string brief, string banner, string thumbnail)
@@ -203,7 +202,7 @@ Thia action allows to update the token group data.
 
 
 
-### [chnggroups](../src/contracts/telosmaindex/telosmaindex.hpp#95)  
+### [chnggroups](../../src/contracts/telosmaindex/telosmaindex.hpp#L95)  
 Thia action allows to update the token group data.
 
     ACTION chnggroups (const symbol_code & sym_code, vector<uint64_t> groups)
@@ -218,7 +217,7 @@ Thia action allows to update the token group data.
 ## CLIENT ACTIONS
 Telos DEX can have multiple clients and user interfaces. Anyone that imlpements a client should register it in the DEX and start earning fees from all the its users.
 
-### [addclient](../src/contracts/telosmaindex/telosmaindex.hpp#30)  
+### [addclient](../../src/contracts/telosmaindex/telosmaindex.hpp#L30)  
 Register a new client for the DEX.
 
     ACTION addclient (name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail)
@@ -235,7 +234,7 @@ Register a new client for the DEX.
 |thumbnail|small rectangular thumbnail image url|
 
 
-### [updateclient](../src/contracts/telosmaindex/telosmaindex.hpp#36)  
+### [updateclient](../../src/contracts/telosmaindex/telosmaindex.hpp#L36)  
 Update client data.
 
     ACTION updateclient (uint64_t client, name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail)
@@ -257,7 +256,7 @@ Update client data.
 ## DAO ACTIONS
 Many of the configuration values of Telos DEX can be adjusted by DAO functionalities using Telos Decide. Who ever initiates a ballot to make a change on the sistem sould must pay the Telos Decide fees for creating a ballot. Those fees will be taken from the user's deposits and not from the user liquid balance.
 
-### [balloton](../src/contracts/telosmaindex/telosmaindex.hpp#174)  
+### [balloton](../../src/contracts/telosmaindex/telosmaindex.hpp#L174)  
 Creates a query on Telos Decide about whether or not to perform one of the possible operations configured by the parameter list.
 
     ACTION balloton (name operation, vector<string> params, string arguments, name feepayer)
@@ -272,12 +271,12 @@ Creates a query on Telos Decide about whether or not to perform one of the possi
 ------------------------
 ## GLOBAL ACTIONS
 
-### [init](../src/contracts/telosmaindex/telosmaindex.hpp#164)  
+### [init](../../src/contracts/telosmaindex/telosmaindex.hpp#L164)  
 Executed just once to initialize the contract state. It creates the main token group registering TLOS token and setting it as currency for this token group zero.
 
     ACTION init ()
 
-### [maintenance](../src/contracts/telosmaindex/telosmaindex.hpp#157)  
+### [maintenance](../../src/contracts/telosmaindex/telosmaindex.hpp#L157)  
 This action can be executed by anyone and should never fail. It performes a maintenance task to prune expired entries from history logs and clean up markets data for blacklisted tokens.
 
     ACTION maintenance ()
@@ -287,12 +286,12 @@ This action can be executed by anyone and should never fail. It performes a main
 ## HANDLERS
 Telos DEX reacts to transfers and ballots on the Telos Decide system and the handlers solve part of the interaction.
 
-### [htransfer](../src/contracts/telosmaindex/telosmaindex.hpp#123)  
+### [htransfer](../../src/contracts/telosmaindex/telosmaindex.hpp#L123)  
 This handles de transfer event to register a deposit from a user.
 
     HANDLER htransfer(name from, name to, asset quantity, string  memo )
 
-### [hbroadcast](../src/contracts/telosmaindex/telosmaindex.hpp#181)  
+### [hbroadcast](../../src/contracts/telosmaindex/telosmaindex.hpp#L181)  
 This handles the ending of a ballot in Telos Decide created by Telos DEX for DAO capabilities.
 
     HANDLER hbroadcast(name ballot_name, map<name, asset> final_results, uint32_t total_voters) 

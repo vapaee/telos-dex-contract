@@ -26,5 +26,5 @@ The currencies of the token group zero are added by the community voting as DAO.
 
 So... given two tokens, is the market allowed to be created? the complete answer is that only if one of them belongs to a group in which the otherone is setted as currency.
 
-- read more about [ACTION balloton setcurrency](./DAO.md#41).
-- read more about [ACTION addtnkgroup](./API.md#171).
+- read more about [ACTION balloton setcurrency](./DAO.md#setcurrency).
+- read more about [ACTION addtnkgroup](./API.md#addtnkgroup).
