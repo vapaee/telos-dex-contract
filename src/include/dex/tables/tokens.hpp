@@ -54,7 +54,6 @@
             string pcontact;
             string gcontact;
             time_point_sec date;
-            name ballot;
             uint32_t data;
             bool tradeable;
             bool currency;

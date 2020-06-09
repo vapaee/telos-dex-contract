@@ -29,8 +29,11 @@ namespace eosio {
                 entry_stored.maker_fee = conf.maker_fee;
                 entry_stored.taker_fee = conf.taker_fee;
                 entry_stored.hprune = conf.hprune;
+                entry_stored.kprune = conf.kprune;
                 entry_stored.bprune = conf.bprune;
                 entry_stored.eprune = conf.eprune;
+                entry_stored.pprune = conf.pprune;
+                entry_stored.approvalmin = conf.approvalmin;
                 entry_stored.regcost = conf.regcost;
                 entry_stored.next_market = conf.next_market;
                 AUX_DEBUG_CODE(entry_stored.time_offset = conf.time_offset;)
@@ -54,6 +57,17 @@ namespace eosio {
                 return _now;
             }            
 
+
+            uint32_t get_current_week_number() {
+                PRINT("eosio::dex::global::get_current_week_number()\n");
+                time_point_sec _now = get_now_time_point_sec();
+                float one_week = 7 * 24 * 60 * 60;
+                float epoch_secs = (float) _now.sec_since_epoch();
+                uint32_t week = uint32_t (  epoch_secs / one_week );
+                PRINT("eosio::dex::global::get_current_week_number() ... -> ",std::to_string((unsigned long)week),"\n");
+                return week;
+            }
+
             void init() {
                 PRINT("eosio::dex::global::init()\n");
                 //authenticate
@@ -69,8 +83,11 @@ namespace eosio {
                 new_state.taker_fee = asset(2500000, fee_symbol);
                 new_state.maker_fee = asset(1500000, fee_symbol);
                 new_state.hprune = 365; // 365 days old history entry should be considered expired and must be deleted
+                new_state.kprune = 365; // 365 days old history block entry should be considered expired and must be deleted
                 new_state.bprune = 100; // no more than 100 entries allowed in the ballots table.
                 new_state.eprune = 60; // 60 days old event should be considered expired and must be deleted
+                new_state.pprune = 6;  // 6 weeks old points should be considered expired and must be deleted
+                new_state.approvalmin = 0.25; // 25% of participation must be reached in order to approve a ballot
                 new_state.regcost = asset(1000000, system_symbol);
                 new_state.next_market = 0;
                 AUX_DEBUG_CODE(new_state.time_offset = 0;)

@@ -20,7 +20,7 @@ sleep 1
 
 sleep 1
 
-./5_register_interfaces.sh
+./5_register_clients.sh
 
 sleep 1
 

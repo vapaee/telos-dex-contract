@@ -61,9 +61,9 @@ cleos push action telosdacdrop transfer '["alice","telosmaindex","50000.0000 TLO
 cleos push action telosdacdrop transfer '["tom",  "telosmaindex","50000.0000 TLOSDAC","deposit"]' -p tom@active
 cleos push action telosdacdrop transfer '["kate", "telosmaindex","50000.0000 TLOSDAC","deposit"]' -p kate@active
 
-cleos push action vapaeetokens transfer '["bob",  "telosmaindex","100.0000 CNT","deposit"]' -p bob@active
-cleos push action vapaeetokens transfer '["alice","telosmaindex","1000.0000 CNT","deposit"]' -p alice@active
-cleos push action vapaeetokens transfer '["kate", "telosmaindex","100.0000 CNT","deposit"]' -p kate@active
+cleos push action vapaeetokens transfer '["bob",  "telosmaindex","10000.0000 CNT","deposit"]' -p bob@active
+cleos push action vapaeetokens transfer '["alice","telosmaindex","10000.0000 CNT","deposit"]' -p alice@active
+cleos push action vapaeetokens transfer '["kate", "telosmaindex","10000.0000 CNT","deposit"]' -p kate@active
 
 cleos push action vapaeetokens transfer  '["bob",  "telosmaindex","1000.0000 BOX","deposit"]' -p bob@active
 cleos push action vapaeetokens transfer  '["alice","telosmaindex","1000.0000 BOX","deposit"]' -p alice@active

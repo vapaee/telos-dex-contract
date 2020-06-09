@@ -1,9 +1,9 @@
 #include "./_aux.hpp"
 
-        // TABLE tablesummary -----------
+        // TABLE last24hs -----------
         // scope: market-id
-        TABLE tablesummary_table {
-            name label;
+        TABLE last24hs_table {
+            name label;     // "lastone", "h.zero", "h.one", ..., "h.twentythree"
             asset price;    // current price for this hour (and last)
             asset inverse;
             asset entrance; // first price for this hour
@@ -13,8 +13,7 @@
             asset amount;
             uint64_t hour;
             time_point_sec date;
-            // uint64_t history;
             uint64_t primary_key() const { return label.value; }
         };
-        typedef eosio::multi_index< "tablesummary"_n, tablesummary_table > tablesummary;
+        typedef eosio::multi_index< "last24hs"_n, last24hs_table > last24hs;
         // ------------------------------------

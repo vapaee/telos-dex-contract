@@ -12,7 +12,7 @@
 
 ./4_load_telos_decide.sh
 
-./5_register_interfaces.sh
+./5_register_clients.sh
 
 ./6_deposits.sh
 
@@ -36,14 +36,18 @@ echo "create ballots over fees -------------------------------"
 cleos push action telosmaindex balloton '["makerfee", ["0.01010101 FEE"], "makerfee - sets a fee for the market creators", "alice"]' -p alice
 cleos push action telosmaindex balloton '["takerfee", ["0.02020202 FEE"], "takerfee - sets a fee for the market orders takers (should be higher)", "alice"]' -p alice
 
-echo "create ballots over history prune ----------------------"
+echo "create prunnng ----------------------"
 cleos push action telosmaindex balloton '["historyprune", ["111"], "historyprune - sets days of expiration for history", "alice"]' -p alice
+cleos push action telosmaindex balloton '["hblockprune", ["222"], "hblockprune - sets days of expiration for history", "alice"]' -p alice
 cleos push action telosmaindex balloton '["ballotsprune", ["22"], "ballotsprune - sets max count for ballots", "alice"]' -p alice
 cleos push action telosmaindex balloton '["eventsprune", ["7"], "eventsprune - sets days of expiration for events", "alice"]' -p alice
+cleos push action telosmaindex balloton '["pointsprune", ["2"], "pointsprune - sets weeks of expiration for user points", "alice"]' -p alice
 
 echo "create ballots over token registration cost ------------"
 cleos push action telosmaindex balloton '["regcost", ["333.0000 TLOS"], "regcost - sets the cost for registerin a new token in the DEX list", "alice"]' -p alice
 
+echo "create ballots over appruval minimum percent of participation ------------"
+cleos push action telosmaindex balloton '["approvalmin", ["0.5"], "minimum percent of participation", "alice"]' -p alice
 
 cleos get table telosmaindex telosmaindex ballots
 sleep 2
@@ -56,6 +60,7 @@ cleos push action telosmaindex balloton '["setcurrency", ["MULITA","cryptomulita
 cleos push action telosmaindex balloton '["makerfee", ["0.01010101 FEE"], "aaaaaa", "alice"]' -p alice
 cleos push action telosmaindex balloton '["takerfee", ["0.02020202 FEE"], "aaaaaa", "alice"]' -p alice
 cleos push action telosmaindex balloton '["historyprune", ["111"], "aaaaaa", "alice"]' -p alice
+cleos push action telosmaindex balloton '["hblockprune", ["222"], "aaaaaa", "alice"]' -p alice
 cleos push action telosmaindex balloton '["regcost", ["333.0000 TLOS"], "aaaaaa", "alice"]' -p alice
 sleep 1
 
@@ -102,23 +107,41 @@ cleos push action telos.decide castvote '["alice", "............a", ["no"]]' -p 
 cleos push action telos.decide castvote '["tom", "............a", ["yes"]]' -p tom
 cleos push action telos.decide castvote '["kate", "............a", ["yes"]]' -p kate
 
-echo " - ballotsprune - "
+echo " - hblockprune - "
 cleos push action telos.decide castvote '["bob", "............b", ["yes"]]' -p bob
 cleos push action telos.decide castvote '["alice", "............b", ["no"]]' -p alice
 cleos push action telos.decide castvote '["tom", "............b", ["yes"]]' -p tom
 cleos push action telos.decide castvote '["kate", "............b", ["yes"]]' -p kate
 
-echo " - eventsprune - "
+echo " - ballotsprune - "
 cleos push action telos.decide castvote '["bob", "............c", ["yes"]]' -p bob
 cleos push action telos.decide castvote '["alice", "............c", ["no"]]' -p alice
 cleos push action telos.decide castvote '["tom", "............c", ["yes"]]' -p tom
 cleos push action telos.decide castvote '["kate", "............c", ["yes"]]' -p kate
 
-echo " - regcost - "
+echo " - eventsprune - "
 cleos push action telos.decide castvote '["bob", "............d", ["yes"]]' -p bob
 cleos push action telos.decide castvote '["alice", "............d", ["no"]]' -p alice
 cleos push action telos.decide castvote '["tom", "............d", ["yes"]]' -p tom
 cleos push action telos.decide castvote '["kate", "............d", ["yes"]]' -p kate
+
+echo " - pointsprune - "
+cleos push action telos.decide castvote '["bob", "............e", ["yes"]]' -p bob
+cleos push action telos.decide castvote '["alice", "............e", ["no"]]' -p alice
+cleos push action telos.decide castvote '["tom", "............e", ["yes"]]' -p tom
+cleos push action telos.decide castvote '["kate", "............e", ["yes"]]' -p kate
+
+echo " - regcost - "
+cleos push action telos.decide castvote '["bob", "............f", ["yes"]]' -p bob
+cleos push action telos.decide castvote '["alice", "............f", ["no"]]' -p alice
+cleos push action telos.decide castvote '["tom", "............f", ["yes"]]' -p tom
+cleos push action telos.decide castvote '["kate", "............f", ["yes"]]' -p kate
+
+echo " - approvalmin - "
+cleos push action telos.decide castvote '["bob", "............g", ["yes"]]' -p bob
+cleos push action telos.decide castvote '["alice", "............g", ["no"]]' -p alice
+cleos push action telos.decide castvote '["tom", "............g", ["yes"]]' -p tom
+cleos push action telos.decide castvote '["kate", "............g", ["yes"]]' -p kate
 
 
 echo "waiting 5 sec for voting timeout..."
@@ -136,21 +159,40 @@ cleos push action telos.decide closevoting '["............5", true]' -p telosmai
 cleos push action telos.decide closevoting '["............a", true]' -p telosmaindex@active
 cleos push action telos.decide closevoting '["............b", true]' -p telosmaindex@active
 cleos push action telos.decide closevoting '["............c", true]' -p telosmaindex@active
+cleos push action telos.decide closevoting '["............d", true]' -p telosmaindex@active
+cleos push action telos.decide closevoting '["............e", true]' -p telosmaindex@active
+cleos push action telos.decide closevoting '["............f", true]' -p telosmaindex@active
+cleos push action telos.decide closevoting '["............g", true]' -p telosmaindex@active
 
-
-#echo "FAIL (saved token CNT)----------------------------"
-#sleep 3
-#cleos push action telosmaindex balloton '["bantoken", ["CNT","vapaeetokens"], "alice"]' -p alice
 
 
 cleos get table telosmaindex telosmaindex state
-echo "--------- FIN ----------"
+
+
+echo "- testing a not approved ballot because of not reaching the minumum percent of participation"
+cleos push action telosmaindex balloton '["regcost", ["111.1111 TLOS"], "aaaaaa", "alice"]' -p alice
+cleos push action telosmaindex balloton '["setcurrency", ["MULITA","cryptomulita"], "setcurrency MULITA cryptomulita", "alice"]' -p alice
+echo "  just 1 vote (less than 25%)"
+cleos push action telos.decide castvote '["bob", "............h", ["yes"]]' -p bob
+
+echo " - approvalmin - "
+cleos push action telos.decide castvote '["bob", "............i", ["no"]]' -p bob
+cleos push action telos.decide castvote '["alice", "............i", ["no"]]' -p alice
+cleos push action telos.decide castvote '["tom", "............i", ["no"]]' -p tom
+cleos push action telos.decide castvote '["kate", "............i", ["no"]]' -p kate
+
+echo "  waiting another 5 sec for voting timeout..."
+sleep 6
+cleos push action telos.decide closevoting '["............h", true]' -p telosmaindex@active
+
 exit 0
-
--- TODO --
-
+cleos push action telos.decide closevoting '["............i", true]' -p telosmaindex@active
 
 
-https://local.bloks.io/account/telos.decide?nodeUrl=localhost%3A8888&coreSymbol=TLOS&systemDomain=eosio&loadContract=true&tab=Tables&account=telos.decide&scope=telos.decide&limit=100&table=ballots
-https://local.bloks.io/account/telosmaindex?nodeUrl=localhost%3A8888&coreSymbol=TLOS&systemDomain=eosio&loadContract=true&tab=Tables&account=telosmaindex&scope=telosmaindex&limit=100
+
+cleos get table telosmaindex telosmaindex state
+
+
+
+echo "--------- FIN ----------"
 

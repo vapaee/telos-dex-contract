@@ -18,74 +18,6 @@ namespace eosio {
 
         namespace utils {
         
-            // inline name get_self() { return eosio::dex::contract; }
-            // inline name get_code() { return eosio::dex::contract; }
-
-            /* --- error ---
-            inline string create_error_string1(const char * text, const string str) {
-                return string(text) + " [" + str + "]";
-            }
-
-            inline string create_error_string2(const char * text, const string str1, const string str2) {
-                return string(text) + " [" + str1 + ", " + str2 + "]";
-            }
-
-            inline string create_error_id1(const char * text, const uint64_t id) {
-                return string(text) + " [" + std::to_string((unsigned long) id ) + "]";
-            }
-
-            inline string create_error_id2(const char * text, const uint64_t id1, const uint64_t id2) {
-                return string(text) + " [" + std::to_string((unsigned long) id1 ) + ", " + std::to_string((unsigned long) id2 ) + "]";
-            }            
-
-            inline string create_error_double1(const char * text, const double value) {
-                return string(text) + " [" + std::to_string( value ) + "]";
-            }
-
-            inline string create_error_symcode1(const char * text, const symbol_code & sym1) {
-                return string(text) + " [" + sym1.to_string() + "]";
-            }
-
-            inline string create_error_symcode2(const char * text, const symbol_code & sym1, const symbol_code & sym2) {
-                return string(text) + " [" + sym1.to_string() + "], [" + sym2.to_string()+"]";
-            }
-
-            inline string create_error_symbol1(const char * text, const symbol & sym1) {
-                return string(text) + " [" + sym1.code().to_string() + "]";
-            }
-
-            inline string create_error_symbol2(const char * text, const symbol & sym1, const symbol & sym2) {
-                return string(text) + " [" + sym1.code().to_string() + "], [" + sym2.code().to_string()+"]";
-            }
-
-            inline string create_error_name1(const char * text, const name & account1) {
-                return string(text) + " [" + account1.to_string() + "]";
-            }
-
-            inline string create_error_name2(const char * text, const name & account1, const name & account2) {
-                return string(text) + " [" + account1.to_string() + "," + account2.to_string() + "]";
-            }
-
-            inline string create_error_asset1(const char * text, const asset & token1) {
-                return string(text) + " [" + token1.to_string() + "]";
-            }
-
-            inline string create_error_asset2(const char * text, const asset & token1, const asset & token) {
-                return string(text) + " [" + token1.to_string() + "], [" + token.to_string()+"]";
-            }
-
-            inline string create_error_asset3(const char * text, const asset & token1, const asset & token, const asset & token3) {
-                return string(text) + " [" + token1.to_string() + "], [" + token.to_string()+"], [" + token3.to_string()+"]";
-            }
-
-            inline string create_error_asset4(const char * text, const asset & token1, const asset & token, const asset & token3, const asset & token4) {
-                return string(text) + " [" + token1.to_string() + "], [" + token.to_string()+"], [" + token3.to_string()+"], [" + token4.to_string()+"]";
-            }
-
-            inline string create_error_asset5(const char * text, const asset & token1, const asset & token, const asset & token3, const asset & token4, const asset & token5) {
-                return string(text) + " [" + token1.to_string() + "], [" + token.to_string()+"], [" + token3.to_string()+"], [" + token4.to_string()+"], [" + token5.to_string()+"]";
-            }*/
-
             string to_lowercase(string str) {
                 string result = str;
                 for (int i=0; i<str.length(); i++) {
@@ -112,15 +44,18 @@ namespace eosio {
                 // PRINT(" amount:   ", std::to_string((unsigned long long) amount), "\n");
 
                 uint64_t diff = amount % 100;
-                // PRINT(" ->diff:   ", std::to_string((unsigned long long) diff), "\n");
-                if (diff == 1)  { amount -= 1; }
-                if (diff == 99) { amount += 1; }
-                // PRINT(" ->amount: ", std::to_string((unsigned long long) amount), "\n");
+                // PRINT(" -> diff:   ", std::to_string((unsigned long long) diff), "\n");
+                if (diff <= 5)  { amount = amount - diff; }
+                if (diff >= 95) { amount = amount + (100 - diff); }
+                // PRINT(" -> FINAL: ", std::to_string((unsigned long long) amount), "\n");
                 // PRINT("eosio::dex::utils::round_amount()...\n");
                 return amount;
             }
 
             uint64_t multiply(const asset &A, const asset &B ) {
+                // PRINT("eosio::dex::utils::multiply()\n");
+                // PRINT(" A: ", A.to_string(), "\n");
+                // PRINT(" B: ", B.to_string(), "\n");
                 double A_amount = (double)A.amount;
                 double B_amount = (double)B.amount;
                 double A_unit = (double)pow(10.0, A.symbol.precision());
@@ -128,8 +63,13 @@ namespace eosio {
                 double A_real = A_amount / A_unit;
                 double B_real = B_amount / B_unit;
                 double total = A_real * B_real;
+                // PRINT(" -> A_real: ", std::to_string((double)A_real), "\n");
+                // PRINT(" -> B_real: ", std::to_string((double)B_real), "\n");
+                // PRINT(" -> total: ", std::to_string((double)total), "\n");
                 uint64_t amount = (uint64_t) (total * B_unit);
+                // PRINT(" -> amount: ", std::to_string((unsigned long long)amount), "\n");
                 amount = round_amount(amount);
+                // PRINT("eosio::dex::utils::multiply() ...", std::to_string((unsigned long long)amount), "\n");
                 return amount;
             }
 
@@ -141,44 +81,14 @@ namespace eosio {
             }
 
             asset inverse(const asset &A, const symbol &B ) {
-                // PRINT("eosio::dex::utils::inverse()\n");
-                // PRINT(" A: ", A.to_string(), "\n");                     // 2.00000000 CNT
-                // PRINT(" B: ", B.code().to_string(), "\n");              // TLOS  (4,"TLOS")
                 double A_amount = (double)A.amount;                        // 200000000
                 double A_unit = (double)pow(10.0, A.symbol.precision());   // 100000000 
                 double B_unit = (double)pow(10.0, B.precision());          //     10000 
                 double A_real = A_unit / A_amount;                         //       0.5 
                 int64_t amount = (int64_t) (A_real * B_unit);              //      5000
-                /*
-                // amount = round_amount(amount);
-                int64_t fixed = round_amount(amount);
-                int64_t aux = amount;
-                if (amount != fixed) {
-
-                    int64_t diff = amount % 100;
-                    print("  diff: ", std::to_string((unsigned long)diff), "\n");
-                    if (diff <= 3) {
-                        aux -= diff;
-                    }
-                    if (diff >= 97) {
-                        aux += 100 - diff;
-                    }                
-                    print("eosio::dex::utils::inverse()\n");
-                    print("  amount: ", std::to_string((unsigned long)amount), "\n");
-                    print("   fixed: ", std::to_string((unsigned long)fixed), "\n");
-                    print("     aux: ", std::to_string((unsigned long)aux), "\n");
-                }
-                */
                 asset inv = asset(amount, B);                              // 0.5000 TLOS
-                // PRINT("  A_amount: ", std::to_string(A_amount), "\n");
-                // PRINT("  unit: ", std::to_string(unit), "\n");     
-                // PRINT("  result: ", std::to_string(result), "\n");     
-                // PRINT("  amount: ", std::to_string((unsigned long)amount), "\n");     
-                // PRINT("  inv: ", inv.to_string(), "\n");
-                // PRINT("eosio::dex::utils::inverse()\n");
                 return inv;
             }
-
 
             asset amount(const asset &price, const asset &payment, const symbol &B ) {
                 // PRINT("eosio::dex::utils::amount()\n");
@@ -196,7 +106,6 @@ namespace eosio {
                 // PRINT("eosio::dex::utils::amount()\n");
                 return result;
             }
-
 
             asset payment(const asset &total, const asset &price ) {
                 // PRINT("eosio::dex::utils::payment()\n");
@@ -305,32 +214,6 @@ namespace eosio {
                 name scope(scope_str);
                 return scope;
             }
-
-            name aux_get_canonical_scope_for_symbols(const symbol_code & A, const symbol_code & B) {
-                PRINT("eosio::dex::utils::aux_get_canonical_scope_for_symbols()\n");
-                PRINT(" A: ", A.to_string(), "\n");
-                PRINT(" B: ", B.to_string(), "\n");
-                name scope;
-
-                // if TLOS is one of them is the base token
-                if (B.to_string() == string("TLOS")) {
-                    scope = aux_get_scope_for_tokens(A, B);
-                } else if (A.to_string() == string("TLOS")) {
-                    scope = aux_get_scope_for_tokens(B, A);
-                } else {
-                    // if TLOS is NOT one of them, then alfabetic resolution
-                    if (A.to_string() < B.to_string()) {
-                        scope = aux_get_scope_for_tokens(A, B);
-                    } else {
-                        scope = aux_get_scope_for_tokens(B, A);
-                    }
-                }
-
-                PRINT(" ->scope: ", scope.to_string(), "\n");
-                
-                PRINT("eosio::dex::utils::aux_get_canonical_scope_for_symbols() ...\n");
-                return scope;
-            }  
 
             asset aux_extend_asset(const asset & quantity) {
                 PRINT("eosio::dex::utils::aux_extend_asset()\n");

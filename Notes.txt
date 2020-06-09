@@ -1,36 +1,10 @@
---- Probar esto ----
-Orden de venta: precio: 0.00510000 TLOS, cantidad 10000.00000000
-Orden de compra: precio: 0.00510000 TLOS, cantidad 1000.00000000 --> te genera un deal por 999.99999999
+-- TODO --
+- addtnkgroup debería tener un costo
+
+https://local.bloks.io/account/telos.decide?nodeUrl=localhost%3A8888&coreSymbol=TLOS&systemDomain=eosio&loadContract=true&tab=Tables&account=telos.decide&scope=telos.decide&limit=100&table=ballots
+
+https://local.bloks.io/account/telosmaindex?nodeUrl=localhost%3A8888&coreSymbol=TLOS&systemDomain=eosio&loadContract=true&tab=Tables&account=telosmaindex&scope=telosmaindex&limit=100
 
 
 
-
--- Que es necesario para que funcionen las Auras --
--- boardgamebox --
-  - items & containers (item-spec & container-spec)
-  - Token & Mastery
-  - BG-Box debería definir el token como un tipo de item con multiplicidad atlísima
-    - debería implementar un handler para cada evento del token standar y actualizar la representación de el resultado del transfer.
-
--- cardsntokens --
-
--- vapaeetokens --
-  - tokens
-    - el usuario pude definir que las acciones de token standar invoquen un evento en BG-BOX para que actualice los inventarios de los involucrados
-
-
-  - Auras
-  - Maestrías
-    - Skils
-      - Levels
-        - Requirements
-  - Tokens de Maestría
-    - Item abtracto
-    - Container abstracto
-    - Token
-  - Experiencia
-    dada una maestría, es una lista que dice para cada Skill, cual es el nivel actual
-    - ha de calcularse en cada intercambio de mastery-tokens y cada vez que s eenciende o apaga un aura.
-
-
-
+IDEA: al registrar el evento (los que se ven en el home) En el DEX debería agregar el cliente que el usuario está usando cuando generó el evento. Así cuando se miran los eventos recientes puede haber una columna con el logo del cliente

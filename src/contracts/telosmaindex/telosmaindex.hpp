@@ -1,12 +1,13 @@
 #pragma once
 #include <dex/base.hpp>
-#include <dex/modules/ui.hpp>
+#include <dex/dispatcher.spp>
+#include <dex/modules/client.hpp>
 #include <dex/modules/token.hpp>
 #include <dex/modules/exchange.hpp>
 #include <dex/modules/deposit.hpp>
 #include <dex/modules/dao.hpp>
 #include <dex/modules/maintenance.hpp>
-#include <vapaee/dispatcher.spp>
+#include <dex/modules/experience.hpp>
 
 using namespace eosio;
 using namespace std;
@@ -25,18 +26,18 @@ CONTRACT telosmaindex : public eosio::contract {
 
     public:
 
-        // Interface Module ---------------------------------------------------------------------
+        // Client Module ---------------------------------------------------------------------
         
-        ACTION addui (name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail) {
+        ACTION addclient (name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail) {
             MAINTENANCE();
-            PRINT("\nACTION telosmaindex.addui() ------------------\n");
-            eosio::dex::ui::action_add_ui(admin, receiver, params, title, website, brief, banner, thumbnail);
+            PRINT("\nACTION telosmaindex.addclient() ------------------\n");
+            eosio::dex::client::action_add_client(admin, receiver, params, title, website, brief, banner, thumbnail);
         };
         
-        ACTION updateui (uint64_t ui, name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail) {
+        ACTION updateclient (uint64_t client, name admin, name receiver, string params, string title, string website, string brief, string banner, string thumbnail) {
             MAINTENANCE();
-            PRINT("\nACTION telosmaindex.updateui() ------------------\n");
-            eosio::dex::ui::action_update_ui(ui, admin, receiver, params, title, website, brief, banner, thumbnail);
+            PRINT("\nACTION telosmaindex.updateclient() ------------------\n");
+            eosio::dex::client::action_update_client(client, admin, receiver, params, title, website, brief, banner, thumbnail);
         };
 
         // Token Module ---------------------------------------------------------------------
@@ -61,36 +62,41 @@ CONTRACT telosmaindex : public eosio::contract {
             eosio::dex::token::action_set_token_admin(sym_code, admin);
         };
 
-        ACTION setcurrency (const symbol_code & sym_code, bool is_currency) {
+        ACTION setcurrency (const symbol_code & sym_code, bool is_currency, uint64_t token_group) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.setcurrency() ------------------\n");
-            eosio::dex::token::action_set_token_as_currency(sym_code, is_currency);
+            eosio::dex::token::action_set_token_as_currency(sym_code, is_currency, token_group);
         };
 
-        ACTION settokendata (const symbol_code & symbol, uint64_t id, name action, name category, string text, string link) {
+        ACTION settokendata (const symbol_code & sym_code, uint64_t id, name action, string text, string link, name shownas) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.updatetoken() ------------------\n");
-            eosio::dex::token::action_set_token_data(symbol, id, action, category, text, link);
+            eosio::dex::token::action_set_token_data(sym_code, id, action, text, link, shownas);
         };
 
-        ACTION edittkevent (const symbol_code & symbol, name event, name action, name contract) {
+        ACTION edittkevent (const symbol_code & sym_code, name event, name action, name contract) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.edittkevent() ------------------\n");
-            eosio::dex::token::action_edit_token_event(symbol, event, action, contract);
+            eosio::dex::token::action_edit_token_event(sym_code, event, action, contract);
         };
 
-        ACTION addtnkgroup (name admin, string title, string website, string brief, string banner, string thumbnail, vector<symbol_code> currencies) {
-            MAINTENANCE();
+        ACTION addtnkgroup (name admin, string title, string website, string brief, string banner, string thumbnail) {
+            MAINTENANCE(); 
             PRINT("\nACTION telosmaindex.addtnkgroup() ------------------\n");
-            eosio::dex::token::action_add_token_group(admin, title, website, brief, banner, thumbnail, currencies);
+            eosio::dex::token::action_add_token_group(admin, title, website, brief, banner, thumbnail);
         };
         
-        ACTION uptnkgroup (uint64_t group_id, name admin, string title, string website, string brief, string banner, string thumbnail, vector<symbol_code> currencies) {
+        ACTION uptnkgroup (uint64_t group_id, name admin, string title, string website, string brief, string banner, string thumbnail) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.uptnkgroup() ------------------\n");
-            eosio::dex::token::action_update_token_group(group_id, admin, title, website, brief, banner, thumbnail, currencies);
+            eosio::dex::token::action_update_token_group(group_id, admin, title, website, brief, banner, thumbnail);
         };        
 
+        ACTION chnggroups (const symbol_code & sym_code, vector<uint64_t> groups) {
+            MAINTENANCE();
+            PRINT("\nACTION telosmaindex.chnggroups() ------------------\n");
+            eosio::dex::token::action_change_groups_for_a_token(sym_code, groups);
+        };    
         // Exchange Module ---------------------------------------------------------------------
 
         ACTION cancel(name owner, name type, const symbol_code & commodity, const symbol_code & currency, const std::vector<uint64_t> & orders) {
@@ -99,24 +105,24 @@ CONTRACT telosmaindex : public eosio::contract {
             eosio::dex::exchange::action_cancel(owner, type, commodity, currency, orders);
         };
 
-        ACTION order(name owner, name type, const asset & total, const asset & price, uint64_t ui) {
+        ACTION order(name owner, name type, const asset & total, const asset & price, uint64_t client) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.order() ------------------\n");
-            eosio::dex::exchange::action_order(owner, type, total, price, ui);
+            eosio::dex::exchange::action_order(owner, type, total, price, client);
         };
 
         // Deposit Module ---------------------------------------------------------------------
 
-        ACTION withdraw(name owner, const asset & quantity, uint64_t ui) {
+        ACTION withdraw(name owner, const asset & quantity, uint64_t client) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.withdraw() ------------------\n");
-            eosio::dex::deposit::action_withdraw(owner, quantity, ui);
+            eosio::dex::deposit::action_withdraw(owner, quantity, client);
         };
 
-        ACTION swapdeposit(name from, name to, const asset & quantity, bool trigger, string memo) {
+        ACTION swapdeposit(name from, name to, const asset & quantity, string memo) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.swapdeposit() ------------------\n");
-            eosio::dex::deposit::action_swapdeposit(from, to, quantity, trigger, memo);
+            eosio::dex::deposit::action_swapdeposit(from, to, quantity, memo);
         };
     
         // habdler for tokenaccount::transfer
@@ -148,16 +154,23 @@ CONTRACT telosmaindex : public eosio::contract {
         }
         
 
-        ACTION deps2earn(const uint64_t ui, const asset & quantity) {
+        ACTION deps2earn(const uint64_t client, const asset & quantity) {
             PRINT("\nACTION telosmaindex.deps2earn() ------------------\n");
-            eosio::dex::deposit::action_convert_deposits_to_earnings(ui, quantity);
+            eosio::dex::deposit::action_convert_deposits_to_earnings(client, quantity);
+        };
+
+        // Experience Module ---------------------------------------------------------------------
+        ACTION reward (name user, const asset & points, const asset & exp) {
+            MAINTENANCE();
+            PRINT("\nACTION telosmaindex.reward() ------------------\n");
+            eosio::dex::experience::action_reward_user(user, points, exp);
         };
 
         // Maintenance Module ---------------------------------------------------------------------
-        ACTION maintenance () {
+        ACTION maintenance (name credits_to) {
             MAINTENANCE();
             PRINT("\nACTION telosmaindex.maintenance() ------------------\n");
-            eosio::dex::maintenance::action_do_maintenance();
+            eosio::dex::maintenance::action_do_maintenance(credits_to);
         };
 
         // Global Module ---------------------------------------------------------------------

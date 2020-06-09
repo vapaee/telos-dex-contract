@@ -17,6 +17,7 @@ namespace eosio {
 
             const name decide = name("telos.decide");
             const name saving = name("eosio.saving");
+            const symbol treasury_symbol = symbol(symbol_code("VOTE"), 4);
 
             // telos.decide table structs ------------------
             // state config config config config config config config
@@ -80,6 +81,36 @@ namespace eosio {
                 indexed_by<name("byendtime"), const_mem_fun<ballot, uint64_t, &ballot::by_end_time>>
             > decide_ballots_table;
 
+            struct treasury {
+                asset supply; //current supply
+                asset max_supply; //maximum supply
+                name access; //public, private, invite, membership
+                name manager; //treasury manager
+
+                string title;
+                string description;
+                string icon;
+
+                uint32_t voters;
+                uint32_t delegates;
+                uint32_t committees;
+                uint32_t open_ballots;
+
+                bool locked; //locks all settings
+                name unlock_acct; //account name to unlock
+                name unlock_auth; //authorization name to unlock
+                map<name, bool> settings; //setting_name -> on/off
+
+                uint64_t primary_key() const { return supply.symbol.code().raw(); }
+                EOSLIB_SERIALIZE(treasury, 
+                    (supply)(max_supply)(access)(manager)
+                    (title)(description)(icon)
+                    (voters)(delegates)(committees)(open_ballots)
+                    (locked)(unlock_acct)(unlock_auth)(settings))
+            };
+            typedef multi_index<name("treasuries"), treasury> treasuries_table;
+
+
             decide_config aux_get_telos_decide_config() {
                 PRINT("eosio::dex::dao::aux_get_telos_decide_config()\n");
 
@@ -97,6 +128,13 @@ namespace eosio {
             name aux_get_available_ballot_name() {
                 decide_ballots_table ballots(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
                 return name(ballots.available_primary_key());
+            }
+
+            asset aux_get_telos_decide_treasury_supply(const symbol_code &sym_code) {
+                treasuries_table table(eosio::dex::dao::decide, eosio::dex::dao::decide.value);
+                auto treasury_ptr = table.find(sym_code.raw());
+                check(treasury_ptr != table.end(), create_error_symcode1(ERROR_AGTDTS_1, sym_code).c_str());
+                return treasury_ptr->supply;
             }
 
             // ---------------------------------------------
@@ -223,9 +261,21 @@ namespace eosio {
                 set(entry_stored);
             }
 
+            void state_set_kprune( uint32_t days) {
+                state entry_stored = get();
+                entry_stored.kprune = days;
+                set(entry_stored);
+            }
+
             void state_set_eprune( uint32_t enties) {
                 state entry_stored = get();
                 entry_stored.eprune = enties;
+                set(entry_stored);
+            }
+
+            void state_set_pprune( uint32_t enties) {
+                state entry_stored = get();
+                entry_stored.pprune = enties;
                 set(entry_stored);
             }
 
@@ -241,11 +291,16 @@ namespace eosio {
                 set(entry_stored);
             }
 
+            void state_set_approvalmin(float min) {
+                state entry_stored = get();
+                entry_stored.approvalmin = min;
+                set(entry_stored);
+            }
+
             bool aux_is_token_whitelisted(const symbol_code &sym_code) {
                 whitelist list(get_self(), get_self().value);
-                auto index = list.get_index<name("symbol")>();
-                auto itr = index.lower_bound(sym_code.raw());
-                if (itr != index.end()) {
+                auto itr = list.find(sym_code.raw());
+                if (itr != list.end()) {
                     return true;
                 }
                 return false;
@@ -259,7 +314,7 @@ namespace eosio {
                 blacklist list(get_self(), get_self().value); 
                 auto index = list.get_index<name("symbol")>();
                 auto itr = index.lower_bound(sym_code.raw());
-                for (auto itr = index.lower_bound(sym_code.raw()); itr != index.end(); itr++) {
+                for (itr = index.lower_bound(sym_code.raw()); itr != index.end(); itr++) {
                     if (itr->symbol == sym_code) {
                         if (itr->contract == contract) {
                             PRINT("eosio::dex::token::aux_is_token_blacklisted() ...\n");
@@ -291,15 +346,8 @@ namespace eosio {
                 PRINT(" ballot_name: ", ballot_name.to_string(), "\n");
                 
                 whitelist white_table(get_self(), get_self().value);
-                auto index = white_table.get_index<name("symbol")>();
-                auto wptr = index.lower_bound(symcode.raw());
-                for(; wptr != index.end(); wptr++) {
-                    if (wptr->symbol == symcode) {
-                        check(wptr->contract != contract, create_error_symcode1(ERROR_APBTBT_1, symcode).c_str());
-                    } else {
-                        break;
-                    }
-                }
+                auto wptr = white_table.find(symcode.raw());
+                check(wptr == white_table.end(), create_error_symcode1(ERROR_APBTBT_1, symcode).c_str());
 
                 // auto wptr = white_table.find(symcode.raw());
                 // check(wptr == white_table.end(), create_error_symcode1(ERROR_APBTBT_1, symcode).c_str());
@@ -330,7 +378,7 @@ namespace eosio {
                 PRINT("eosio::dex::dao::aux_check_ballot_can_be_created()\n");
 
                 time_point_sec _now = eosio::dex::global::get_now_time_point_sec();
-                PRINT(" _now: ", std::to_string((unsigned long)_now.utc_seconds), "\n");
+                PRINT(" _now:    ", std::to_string((unsigned long)_now.utc_seconds), "\n");
 
                 ballots list(get_self(), get_self().value);
                 auto index = list.get_index<name("finished")>();
@@ -344,7 +392,7 @@ namespace eosio {
                     if (itr->operation != operation) continue; 
 
                     // discard finished ballots
-                    if (itr->finished < _now) continue;
+                    if (itr->finished <= _now) continue;
 
                     bool are_the_same = true;
                     for (int i=0; i<itr->params.size(); i++) {
@@ -385,8 +433,11 @@ namespace eosio {
                     operation != name("takerfee")     && 
                     operation != name("setcurrency")  && 
                     operation != name("historyprune") &&
-                    operation != name("eventsprune") &&
+                    operation != name("hblockprune")  &&
+                    operation != name("eventsprune")  &&
+                    operation != name("pointsprune")  &&
                     operation != name("ballotsprune") &&
+                    operation != name("approvalmin")  &&
                     operation != name("regcost")
                 ) {
                     check(false, create_error_name1(ERROR_ASBO_2, operation).c_str());
@@ -405,29 +456,35 @@ namespace eosio {
                     name contract = aux_check_name_from_string(param2);
                 }
 
-                if (operation == name("makerfee")    || 
-                    operation == name("takerfee")
+                if (operation == name("approvalmin")  
                 ) {
                     PRINT(" checking 1 param...\n");
                     string param1 = params[0];
                     float value = aux_check_float_from_string(param1);
+                    // TODO: hay que chckear que esté entre 0 y 1
                     PRINT(" value OK!\n");
                 }
 
                 if (operation == name("historyprune")    || 
+                    operation == name("hblockprune")     ||
                     operation == name("eventsprune")     ||
+                    operation == name("pointsprune")     ||
                     operation == name("ballotsprune")
                 ) {
                     PRINT(" checking 1 param...\n");
                     string param1 = params[0];
                     uint32_t value = aux_check_integer_from_string(param1);
+                    PRINT(" value OK!\n");
                 }
 
-                if (operation == name("regcost")
+                if (operation == name("regcost")     ||
+                    operation == name("makerfee")    || 
+                    operation == name("takerfee")
                 ) {
                     PRINT(" checking 1 param...\n");
                     string param1 = params[0];
                     asset value = aux_check_asset_from_string(param1);
+                    PRINT(" value OK!\n");
                 }
 
                 PRINT(" params OK!\n");
@@ -456,14 +513,14 @@ namespace eosio {
                     std::make_tuple(get_self(), eosio::dex::dao::decide, ballot_fee, string("deposit"))
                 ).send();
 
-                // + at this point it should be a treasure created for VOTE token in telos decide contract
+                // + at this point it should be a treasury created for VOTE token in telos decide contract
                 // + at this point it this contract name should be registered as voter in that treasury
 
                 // create ballot on Telos Decide contract
                 name ballot_name = aux_get_available_ballot_name();
                 PRINT(" -> ballot_name ", ballot_name.to_string(), "\n");
                 name category = name("poll");
-                symbol treasury_symbol = symbol(symbol_code("VOTE"), 4);
+                symbol treasury_symbol = eosio::dex::dao::treasury_symbol;
                 name voting_method = name("1token1vote");
                 vector<name> initial_options = {name("yes"), name("no"), name("abstain")};
 
@@ -616,6 +673,11 @@ namespace eosio {
 
             void handler_ballot_result_for_savetoken(const ballots_table & ballot, bool approved, uint32_t total_voters) {
                 PRINT("eosio::dex::dao::handler_ballot_result_for_savetoken()\n");
+                PRINT(" ballot.ballot_name: ",ballot.ballot_name.to_string(),"\n");
+                PRINT(" ballot.params[0]: ",ballot.params[0],"\n");
+                PRINT(" ballot.params[1]: ",ballot.params[1],"\n");
+                PRINT(" approved: ",std::to_string(approved),"\n");
+                PRINT(" total_voters: ",std::to_string(total_voters),"\n");
 
                 string param1 = ballot.params[0];
                 string param2 = ballot.params[1];
@@ -623,16 +685,10 @@ namespace eosio {
                 name contract = aux_check_name_from_string(param2);          
 
                 whitelist list(get_self(), get_self().value);
-                auto index = list.get_index<name("symbol")>();
-                auto itr = index.lower_bound(sym_code.raw());
+                auto itr = list.find(sym_code.raw());
 
-                bool found = false;
-                for (; itr != index.end() && itr->symbol == sym_code;  itr++) {
-                    if (itr->contract == contract) {
-                        found = true;
-                        break;
-                    }
-                }
+                bool found = (itr != list.end());
+                PRINT(" -> found: ",std::to_string(found),"\n");
 
                 if (approved) {
                     if (!found) {
@@ -640,7 +696,6 @@ namespace eosio {
                         check(!blacklisted, create_error_symcode2(ERROR_HBRFS_1, itr->symbol, sym_code).c_str());
 
                         list.emplace(get_self(), [&](auto &a){
-                            a.id = list.available_primary_key();
                             a.symbol = sym_code;
                             a.contract = contract;
                             a.ballot = ballot.ballot_name;                            
@@ -743,7 +798,7 @@ namespace eosio {
                     permission_level{get_self(),name("active")},
                     get_self(),
                     name("setcurrency"),
-                    std::make_tuple(sym_code, true)
+                    std::make_tuple(sym_code, approved, (uint64_t)0)
                 ).send();                 
 
                 PRINT("eosio::dex::dao::handler_ballot_result_for_setcurrency() ...\n");
@@ -760,6 +815,19 @@ namespace eosio {
                 }
 
                 PRINT("eosio::dex::dao::handler_ballot_result_for_historyprune() ...\n");
+            }
+
+            void handler_ballot_result_for_hblockprune(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("eosio::dex::dao::handler_ballot_result_for_hblockprune()\n");
+
+                string param1 = ballot.params[0];
+                uint32_t value = aux_check_integer_from_string(param1);
+
+                if (approved) {
+                    state_set_kprune(value);
+                }
+
+                PRINT("eosio::dex::dao::handler_ballot_result_for_hblockprune() ...\n");
             }
 
             void handler_ballot_result_for_ballotsprune(const ballots_table & ballot, bool approved, uint32_t total_voters) {
@@ -785,7 +853,20 @@ namespace eosio {
                     state_set_eprune(value);
                 }
 
-                PRINT("eosio::dex::dao::handler_ballot_result_for_ballotsprune() ...\n");
+                PRINT("eosio::dex::dao::handler_ballot_result_for_eventsprune() ...\n");
+            }
+
+            void handler_ballot_result_for_pointsprune(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("eosio::dex::dao::handler_ballot_result_for_pointsprune()\n");
+
+                string param1 = ballot.params[0];
+                uint32_t value = aux_check_integer_from_string(param1);
+
+                if (approved) {
+                    state_set_pprune(value);
+                }
+
+                PRINT("eosio::dex::dao::handler_ballot_result_for_pointsprune() ...\n");
             }
 
             void handler_ballot_result_for_regcost(const ballots_table & ballot, bool approved, uint32_t total_voters) {
@@ -801,6 +882,19 @@ namespace eosio {
                 PRINT("eosio::dex::dao::handler_ballot_result_for_regcost() ...\n");
             }
 
+            void handler_ballot_result_for_approvalmin(const ballots_table & ballot, bool approved, uint32_t total_voters) {
+                PRINT("eosio::dex::dao::handler_ballot_result_for_approvalmin()\n");
+
+                string param1 = ballot.params[0];
+                float value = aux_check_float_from_string(param1);
+
+                if (approved) {
+                    state_set_approvalmin(value);
+                }
+
+                PRINT("eosio::dex::dao::handler_ballot_result_for_approvalmin() ...\n");
+            }
+
             void handler_ballot_result(name ballot_name, map<name, asset> final_results, uint32_t total_voters) {
                 PRINT("eosio::dex::dao::handler_ballot_result()\n");
                 PRINT(" ballot_name: ", ballot_name.to_string(), "\n");
@@ -809,6 +903,23 @@ namespace eosio {
                     PRINT(" final_results[",it->first.to_string(),"]: ", it->second.to_string(), "\n");
                 }                
                 PRINT(" total_voters: ", std::to_string((unsigned long)total_voters), "\n");
+
+                // was it approved???? ----------------
+                bool approved = final_results[name("yes")].amount > final_results[name("no")].amount;
+                bool accepted = true;
+                asset curr_supply = aux_get_telos_decide_treasury_supply(eosio::dex::dao::treasury_symbol.code());
+                float percent = eosio::dex::global::get().approvalmin;
+                asset participation = final_results[name("yes")] + final_results[name("no")] + final_results[name("abstain")];
+                if (participation.amount < percent * curr_supply.amount) {
+                    approved = false;
+                    accepted = false;
+                    PRINT(" NOT APPROVED because low participation ratio\n");
+                    PRINT(" approvalmin: ", std::to_string(percent), "\n");
+                    PRINT(" participation: ", ballot_name.to_string(), "\n");
+                    PRINT(" curr_supply: ", ballot_name.to_string(), "\n");
+                }
+                PRINT(" approved: ", approved ? "YES": "NO", "\n");
+                PRINT(" accepted: ", accepted ? "YES": "NO", "\n");
 
                 // search locally for the ballot data
                 ballots ball_table(get_self(), get_self().value);
@@ -820,47 +931,55 @@ namespace eosio {
                 
                 ball_table.modify(*ptr, same_payer, [&](auto &a){
                     a.finished = eosio::dex::global::get_now_time_point_sec();
+                    a.approved = approved;
+                    a.accepted = accepted;
+                    a.results = final_results;
                 });
-     
-                // was it approved
-                bool approved = final_results[name("yes")].amount > final_results[name("no")].amount;
 
-                PRINT(" approved: ", approved ? "YES": "NO", "\n");
-
-                auto ballot = *ptr;
-                switch(ballot.operation.value) {
-                    case name("savetoken").value:
-                        handler_ballot_result_for_savetoken(ballot, approved, total_voters);
-                        break;
-                    case name("bantoken").value:
-                        handler_ballot_result_for_bantoken(ballot, approved, total_voters);
-                        break;
-                    case name("makerfee").value:
-                        handler_ballot_result_for_makerfee(ballot, approved, total_voters);
-                        break;
-                    case name("takerfee").value:
-                        handler_ballot_result_for_takerfee(ballot, approved, total_voters);
-                        break;
-                    case name("setcurrency").value:
-                        handler_ballot_result_for_setcurrency(ballot, approved, total_voters);
-                        break;
-                    case name("historyprune").value:
-                        handler_ballot_result_for_historyprune(ballot, approved, total_voters);
-                        break;
-                    case name("eventsprune").value:
-                        handler_ballot_result_for_eventsprune(ballot, approved, total_voters);
-                        break;
-                    case name("ballotsprune").value:
-                        handler_ballot_result_for_ballotsprune(ballot, approved, total_voters);
-                        break;
-                    case name("regcost").value:
-                        handler_ballot_result_for_regcost(ballot, approved, total_voters);
-                        break;
-                    default:
-                        check(false, create_error_name1(ERROR_HBR_2, ballot.operation).c_str()); 
-                        break;
-                }
-                
+                if (accepted) {
+                    auto ballot = *ptr;
+                    switch(ballot.operation.value) {
+                        case name("savetoken").value:
+                            handler_ballot_result_for_savetoken(ballot, approved, total_voters);
+                            break;
+                        case name("bantoken").value:
+                            handler_ballot_result_for_bantoken(ballot, approved, total_voters);
+                            break;
+                        case name("makerfee").value:
+                            handler_ballot_result_for_makerfee(ballot, approved, total_voters);
+                            break;
+                        case name("takerfee").value:
+                            handler_ballot_result_for_takerfee(ballot, approved, total_voters);
+                            break;
+                        case name("setcurrency").value:
+                            handler_ballot_result_for_setcurrency(ballot, approved, total_voters);
+                            break;
+                        case name("historyprune").value:
+                            handler_ballot_result_for_historyprune(ballot, approved, total_voters);
+                            break;
+                        case name("hblockprune").value:
+                            handler_ballot_result_for_hblockprune(ballot, approved, total_voters);
+                            break;
+                        case name("eventsprune").value:
+                            handler_ballot_result_for_eventsprune(ballot, approved, total_voters);
+                            break;
+                        case name("pointsprune").value:
+                            handler_ballot_result_for_pointsprune(ballot, approved, total_voters);
+                            break;
+                        case name("ballotsprune").value:
+                            handler_ballot_result_for_ballotsprune(ballot, approved, total_voters);
+                            break;
+                        case name("approvalmin").value:
+                            handler_ballot_result_for_approvalmin(ballot, approved, total_voters);
+                            break;
+                        case name("regcost").value:
+                            handler_ballot_result_for_regcost(ballot, approved, total_voters);
+                            break;
+                        default:
+                            check(false, create_error_name1(ERROR_HBR_2, ballot.operation).c_str()); 
+                            break;
+                    }
+                }                
 
                 PRINT("eosio::dex::dao::handler_ballot_result() ...\n");
                 

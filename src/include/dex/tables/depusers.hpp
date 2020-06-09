@@ -1,7 +1,7 @@
 #include "./_aux.hpp"
 
         // TABLE depusers -----------
-        // scope: owner
+        // scope: contract
         TABLE depusers_table {
             name account;
             uint64_t primary_key() const { return account.value; }

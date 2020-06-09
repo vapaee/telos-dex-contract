@@ -13,6 +13,9 @@
             time_point_sec started;
             time_point_sec finished;
             string arguments; // answer to why does this ballot even exist
+            bool approved;
+            bool accepted;
+            map<name, asset> results;
             uint64_t primary_key() const { return ballot_name.value; }
             uint64_t by_ballotname_key() const { return ballot_name.value; }
             uint64_t by_operation_key() const { return operation.value; }

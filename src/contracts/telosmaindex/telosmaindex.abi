@@ -4,6 +4,44 @@
     "types": [],
     "structs": [
         {
+            "name": "addclient",
+            "base": "",
+            "fields": [
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "params",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "addtnkgroup",
             "base": "",
             "fields": [
@@ -30,10 +68,6 @@
                 {
                     "name": "thumbnail",
                     "type": "string"
-                },
-                {
-                    "name": "currencies",
-                    "type": "symbol_code[]"
                 }
             ]
         },
@@ -96,44 +130,6 @@
             ]
         },
         {
-            "name": "addui",
-            "base": "",
-            "fields": [
-                {
-                    "name": "admin",
-                    "type": "name"
-                },
-                {
-                    "name": "receiver",
-                    "type": "name"
-                },
-                {
-                    "name": "params",
-                    "type": "string"
-                },
-                {
-                    "name": "title",
-                    "type": "string"
-                },
-                {
-                    "name": "website",
-                    "type": "string"
-                },
-                {
-                    "name": "brief",
-                    "type": "string"
-                },
-                {
-                    "name": "banner",
-                    "type": "string"
-                },
-                {
-                    "name": "thumbnail",
-                    "type": "string"
-                }
-            ]
-        },
-        {
             "name": "balloton",
             "base": "",
             "fields": [
@@ -190,6 +186,18 @@
                 {
                     "name": "arguments",
                     "type": "string"
+                },
+                {
+                    "name": "approved",
+                    "type": "bool"
+                },
+                {
+                    "name": "accepted",
+                    "type": "bool"
+                },
+                {
+                    "name": "results",
+                    "type": "pair_name_asset[]"
                 }
             ]
         },
@@ -220,52 +228,6 @@
             ]
         },
         {
-            "name": "blockhistory_table",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "hour",
-                    "type": "uint64"
-                },
-                {
-                    "name": "price",
-                    "type": "asset"
-                },
-                {
-                    "name": "inverse",
-                    "type": "asset"
-                },
-                {
-                    "name": "entrance",
-                    "type": "asset"
-                },
-                {
-                    "name": "max",
-                    "type": "asset"
-                },
-                {
-                    "name": "min",
-                    "type": "asset"
-                },
-                {
-                    "name": "volume",
-                    "type": "asset"
-                },
-                {
-                    "name": "amount",
-                    "type": "asset"
-                },
-                {
-                    "name": "date",
-                    "type": "time_point_sec"
-                }
-            ]
-        },
-        {
             "name": "booksummary",
             "base": "",
             "fields": [
@@ -279,7 +241,7 @@
                 },
                 {
                     "name": "ascurrency",
-                    "type": "uint64"
+                    "type": "int32"
                 }
             ]
         },
@@ -306,6 +268,66 @@
                 {
                     "name": "orders",
                     "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "chnggroups",
+            "base": "",
+            "fields": [
+                {
+                    "name": "sym_code",
+                    "type": "symbol_code"
+                },
+                {
+                    "name": "groups",
+                    "type": "uint64[]"
+                }
+            ]
+        },
+        {
+            "name": "clients_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "params",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
                 }
             ]
         },
@@ -356,7 +378,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "ui",
+                    "name": "client",
                     "type": "uint64"
                 },
                 {
@@ -380,7 +402,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "symbol",
+                    "name": "sym_code",
                     "type": "symbol_code"
                 },
                 {
@@ -420,6 +442,20 @@
                 {
                     "name": "date",
                     "type": "time_point_sec"
+                }
+            ]
+        },
+        {
+            "name": "exp_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "exp",
+                    "type": "asset"
                 }
             ]
         },
@@ -496,6 +532,52 @@
             ]
         },
         {
+            "name": "historyblock_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "hour",
+                    "type": "uint64"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "inverse",
+                    "type": "asset"
+                },
+                {
+                    "name": "entrance",
+                    "type": "asset"
+                },
+                {
+                    "name": "max",
+                    "type": "asset"
+                },
+                {
+                    "name": "min",
+                    "type": "asset"
+                },
+                {
+                    "name": "volume",
+                    "type": "asset"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "date",
+                    "type": "time_point_sec"
+                }
+            ]
+        },
+        {
             "name": "hotfix",
             "base": "",
             "fields": [
@@ -519,48 +601,44 @@
             "fields": []
         },
         {
-            "name": "interfaces_table",
+            "name": "last24hs_table",
             "base": "",
             "fields": [
                 {
-                    "name": "id",
+                    "name": "label",
+                    "type": "name"
+                },
+                {
+                    "name": "price",
+                    "type": "asset"
+                },
+                {
+                    "name": "inverse",
+                    "type": "asset"
+                },
+                {
+                    "name": "entrance",
+                    "type": "asset"
+                },
+                {
+                    "name": "max",
+                    "type": "asset"
+                },
+                {
+                    "name": "min",
+                    "type": "asset"
+                },
+                {
+                    "name": "volume",
+                    "type": "asset"
+                },
+                {
+                    "name": "amount",
+                    "type": "asset"
+                },
+                {
+                    "name": "hour",
                     "type": "uint64"
-                },
-                {
-                    "name": "admin",
-                    "type": "name"
-                },
-                {
-                    "name": "receiver",
-                    "type": "name"
-                },
-                {
-                    "name": "params",
-                    "type": "string"
-                },
-                {
-                    "name": "title",
-                    "type": "string"
-                },
-                {
-                    "name": "website",
-                    "type": "string"
-                },
-                {
-                    "name": "brief",
-                    "type": "string"
-                },
-                {
-                    "name": "banner",
-                    "type": "string"
-                },
-                {
-                    "name": "thumbnail",
-                    "type": "string"
-                },
-                {
-                    "name": "state",
-                    "type": "string"
                 },
                 {
                     "name": "date",
@@ -571,7 +649,12 @@
         {
             "name": "maintenance",
             "base": "",
-            "fields": []
+            "fields": [
+                {
+                    "name": "credits_to",
+                    "type": "name"
+                }
+            ]
         },
         {
             "name": "markets_table",
@@ -616,7 +699,7 @@
                     "type": "asset"
                 },
                 {
-                    "name": "ui",
+                    "name": "client",
                     "type": "uint64"
                 }
             ]
@@ -665,6 +748,28 @@
                 },
                 {
                     "name": "value",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
+            "name": "points_table",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "week",
+                    "type": "uint32"
+                },
+                {
+                    "name": "owner",
+                    "type": "name"
+                },
+                {
+                    "name": "points",
                     "type": "asset"
                 }
             ]
@@ -730,10 +835,6 @@
                     "type": "time_point_sec"
                 },
                 {
-                    "name": "ballot",
-                    "type": "name"
-                },
-                {
                     "name": "data",
                     "type": "uint32"
                 },
@@ -748,6 +849,24 @@
             ]
         },
         {
+            "name": "reward",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "points",
+                    "type": "asset"
+                },
+                {
+                    "name": "exp",
+                    "type": "asset"
+                }
+            ]
+        },
+        {
             "name": "sell_order_table",
             "base": "",
             "fields": [
@@ -756,7 +875,7 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "ui",
+                    "name": "client",
                     "type": "uint64"
                 },
                 {
@@ -792,6 +911,10 @@
                 {
                     "name": "is_currency",
                     "type": "bool"
+                },
+                {
+                    "name": "token_group",
+                    "type": "uint64"
                 }
             ]
         },
@@ -800,7 +923,7 @@
             "base": "",
             "fields": [
                 {
-                    "name": "symbol",
+                    "name": "sym_code",
                     "type": "symbol_code"
                 },
                 {
@@ -812,16 +935,16 @@
                     "type": "name"
                 },
                 {
-                    "name": "category",
-                    "type": "name"
-                },
-                {
                     "name": "text",
                     "type": "string"
                 },
                 {
                     "name": "link",
                     "type": "string"
+                },
+                {
+                    "name": "shownas",
+                    "type": "name"
                 }
             ]
         },
@@ -842,12 +965,24 @@
                     "type": "int32"
                 },
                 {
+                    "name": "kprune",
+                    "type": "int32"
+                },
+                {
                     "name": "bprune",
                     "type": "int32"
                 },
                 {
                     "name": "eprune",
                     "type": "int32"
+                },
+                {
+                    "name": "pprune",
+                    "type": "int32"
+                },
+                {
+                    "name": "approvalmin",
+                    "type": "float32"
                 },
                 {
                     "name": "regcost",
@@ -880,58 +1015,8 @@
                     "type": "asset"
                 },
                 {
-                    "name": "trigger",
-                    "type": "bool"
-                },
-                {
                     "name": "memo",
                     "type": "string"
-                }
-            ]
-        },
-        {
-            "name": "tablesummary_table",
-            "base": "",
-            "fields": [
-                {
-                    "name": "label",
-                    "type": "name"
-                },
-                {
-                    "name": "price",
-                    "type": "asset"
-                },
-                {
-                    "name": "inverse",
-                    "type": "asset"
-                },
-                {
-                    "name": "entrance",
-                    "type": "asset"
-                },
-                {
-                    "name": "max",
-                    "type": "asset"
-                },
-                {
-                    "name": "min",
-                    "type": "asset"
-                },
-                {
-                    "name": "volume",
-                    "type": "asset"
-                },
-                {
-                    "name": "amount",
-                    "type": "asset"
-                },
-                {
-                    "name": "hour",
-                    "type": "uint64"
-                },
-                {
-                    "name": "date",
-                    "type": "time_point_sec"
                 }
             ]
         },
@@ -986,16 +1071,16 @@
                     "type": "uint64"
                 },
                 {
-                    "name": "category",
-                    "type": "name"
-                },
-                {
                     "name": "text",
                     "type": "string"
                 },
                 {
                     "name": "link",
                     "type": "string"
+                },
+                {
+                    "name": "shownas",
+                    "type": "name"
                 },
                 {
                     "name": "date",
@@ -1056,6 +1141,48 @@
             ]
         },
         {
+            "name": "updateclient",
+            "base": "",
+            "fields": [
+                {
+                    "name": "client",
+                    "type": "uint64"
+                },
+                {
+                    "name": "admin",
+                    "type": "name"
+                },
+                {
+                    "name": "receiver",
+                    "type": "name"
+                },
+                {
+                    "name": "params",
+                    "type": "string"
+                },
+                {
+                    "name": "title",
+                    "type": "string"
+                },
+                {
+                    "name": "website",
+                    "type": "string"
+                },
+                {
+                    "name": "brief",
+                    "type": "string"
+                },
+                {
+                    "name": "banner",
+                    "type": "string"
+                },
+                {
+                    "name": "thumbnail",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "updatetoken",
             "base": "",
             "fields": [
@@ -1106,48 +1233,6 @@
             ]
         },
         {
-            "name": "updateui",
-            "base": "",
-            "fields": [
-                {
-                    "name": "ui",
-                    "type": "uint64"
-                },
-                {
-                    "name": "admin",
-                    "type": "name"
-                },
-                {
-                    "name": "receiver",
-                    "type": "name"
-                },
-                {
-                    "name": "params",
-                    "type": "string"
-                },
-                {
-                    "name": "title",
-                    "type": "string"
-                },
-                {
-                    "name": "website",
-                    "type": "string"
-                },
-                {
-                    "name": "brief",
-                    "type": "string"
-                },
-                {
-                    "name": "banner",
-                    "type": "string"
-                },
-                {
-                    "name": "thumbnail",
-                    "type": "string"
-                }
-            ]
-        },
-        {
             "name": "uptnkgroup",
             "base": "",
             "fields": [
@@ -1178,10 +1263,6 @@
                 {
                     "name": "thumbnail",
                     "type": "string"
-                },
-                {
-                    "name": "currencies",
-                    "type": "symbol_code[]"
                 }
             ]
         },
@@ -1207,10 +1288,6 @@
             "name": "whitelist_table",
             "base": "",
             "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
                 {
                     "name": "symbol",
                     "type": "symbol_code"
@@ -1238,13 +1315,18 @@
                     "type": "asset"
                 },
                 {
-                    "name": "ui",
+                    "name": "client",
                     "type": "uint64"
                 }
             ]
         }
     ],
     "actions": [
+        {
+            "name": "addclient",
+            "type": "addclient",
+            "ricardian_contract": ""
+        },
         {
             "name": "addtnkgroup",
             "type": "addtnkgroup",
@@ -1256,11 +1338,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "addui",
-            "type": "addui",
-            "ricardian_contract": ""
-        },
-        {
             "name": "balloton",
             "type": "balloton",
             "ricardian_contract": ""
@@ -1268,6 +1345,11 @@
         {
             "name": "cancel",
             "type": "cancel",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "chnggroups",
+            "type": "chnggroups",
             "ricardian_contract": ""
         },
         {
@@ -1301,6 +1383,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "reward",
+            "type": "reward",
+            "ricardian_contract": ""
+        },
+        {
             "name": "setcurrency",
             "type": "setcurrency",
             "ricardian_contract": ""
@@ -1331,13 +1418,13 @@
             "ricardian_contract": ""
         },
         {
-            "name": "updatetoken",
-            "type": "updatetoken",
+            "name": "updateclient",
+            "type": "updateclient",
             "ricardian_contract": ""
         },
         {
-            "name": "updateui",
-            "type": "updateui",
+            "name": "updatetoken",
+            "type": "updatetoken",
             "ricardian_contract": ""
         },
         {
@@ -1367,8 +1454,8 @@
             "key_types": []
         },
         {
-            "name": "blockhistory",
-            "type": "blockhistory_table",
+            "name": "clients",
+            "type": "clients_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
@@ -1402,6 +1489,13 @@
             "key_types": []
         },
         {
+            "name": "exp",
+            "type": "exp_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "history",
             "type": "history_table",
             "index_type": "i64",
@@ -1416,8 +1510,15 @@
             "key_types": []
         },
         {
-            "name": "interfaces",
-            "type": "interfaces_table",
+            "name": "historyblock",
+            "type": "historyblock_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "last24hs",
+            "type": "last24hs_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
@@ -1432,6 +1533,13 @@
         {
             "name": "ordersummary",
             "type": "ordersummary_table",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "points",
+            "type": "points_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
@@ -1453,13 +1561,6 @@
         {
             "name": "state",
             "type": "state",
-            "index_type": "i64",
-            "key_names": [],
-            "key_types": []
-        },
-        {
-            "name": "tablesummary",
-            "type": "tablesummary_table",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

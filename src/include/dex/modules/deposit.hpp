@@ -1,11 +1,12 @@
 #pragma once
 #include <dex/base.hpp>
+#include <dex/constants.hpp>
 #include <dex/errors.hpp>
 #include <dex/tables.hpp>
 #include <dex/modules/utils.hpp>
 #include <dex/modules/record.hpp>
 #include <dex/modules/market.hpp>
-#include <dex/modules/ui.hpp>
+#include <dex/modules/client.hpp>
 
 namespace eosio {
     namespace dex {
@@ -162,7 +163,7 @@ namespace eosio {
                 PRINT("eosio::dex::deposit::aux_put_deposits_on_user_ram() ...\n");
             }
 
-            void aux_earn_micro_change(name owner, symbol orig, symbol extended, name ram_payer, uint64_t ui) {
+            void aux_earn_micro_change(name owner, symbol orig, symbol extended, name ram_payer, uint64_t client) {
                 PRINT("eosio::dex::deposit::aux_earn_micro_change()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" orig: ", orig.code().to_string(), "\n");
@@ -192,7 +193,7 @@ namespace eosio {
                         permission_level{get_self(),name("active")},
                         get_self(),
                         name("swapdeposit"),
-                        std::make_tuple(owner, get_self(), itr->amount, true, string(" withdraw micro-change fees: ") + itr->amount.to_string())
+                        std::make_tuple(owner, get_self(), itr->amount, string(" withdraw micro-change fees: ") + itr->amount.to_string())
                     ).send();
 
                     PRINT("     -- withdraw micro-change fees: ",  itr->amount.to_string(), " from ", owner.to_string(),"\n");
@@ -201,7 +202,7 @@ namespace eosio {
                         permission_level{get_self(),name("active")},
                         get_self(),
                         name("deps2earn"),
-                        std::make_tuple(ui, itr->amount)
+                        std::make_tuple(client, itr->amount)
                     ).send();
                     PRINT("     -- converting micro-chang fees ", itr->amount.to_string(), " to earnings\n");
                 }
@@ -209,15 +210,15 @@ namespace eosio {
                 PRINT("eosio::dex::deposit::aux_earn_micro_change() ...\n");
             }
 
-            void aux_transfer_earnings_to_ui(const uint64_t ui, const asset & quantity) {
-                PRINT("eosio::dex::deposit::aux_transfer_earnings_to_ui()\n");
+            void aux_transfer_earnings_to_client(const uint64_t ui, const asset & quantity) {
+                PRINT("eosio::dex::deposit::aux_transfer_earnings_to_client()\n");
                 PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
                 PRINT(" quantity: ", quantity.to_string(), "\n");
 
                 // get interface receiver account and params
-                interfaces uitable(get_self(), get_self().value);
+                clients uitable(get_self(), get_self().value);
                 auto ptr = uitable.find(ui);
-                check(ptr != uitable.end(), create_error_id1(ERROR_ATETU_1, ui).c_str());
+                check(ptr != uitable.end(), create_error_id1(ERROR_ATETC_1, ui).c_str());
                 name receiver = ptr->receiver;
                 string memo = ptr->params;
 
@@ -235,7 +236,7 @@ namespace eosio {
                 ).send();
                 PRINT("   transfer ", amount.to_string(), " to ", receiver.to_string(),"\n");
 
-                PRINT("eosio::dex::deposit::aux_transfer_earnings_to_ui() ...\n");
+                PRINT("eosio::dex::deposit::aux_transfer_earnings_to_client() ...\n");
             }            
 
             void aux_convert_deposits_to_earnings(const uint64_t ui, asset quantity) {
@@ -244,16 +245,16 @@ namespace eosio {
                 PRINT(" quantity: ", quantity.to_string(), "\n");
 
                 aux_substract_deposits(get_self(), quantity);
-                aux_transfer_earnings_to_ui(ui, quantity);
+                aux_transfer_earnings_to_client(ui, quantity);
 
                 PRINT("eosio::dex::deposit::aux_convert_deposits_to_earnings() ...\n");
             }            
 
-            void action_withdraw(name owner, const asset & quantity, uint64_t ui) {
+            void action_withdraw(name owner, const asset & quantity, uint64_t client) {
                 PRINT("eosio::dex::deposit::action_withdraw()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" quantity: ", quantity.to_string(), "\n");
-                PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
+                PRINT(" client: ", std::to_string((long unsigned) client), "\n");
 
                 // if is not an internal inline action then the user "owner" must have beed signed this transaction
                 if ( !has_auth( get_self() )) {
@@ -264,7 +265,7 @@ namespace eosio {
                 asset extended = aux_extend_asset(quantity);
                 aux_substract_deposits(owner, extended);
 
-                aux_earn_micro_change(owner, quantity.symbol, extended.symbol, owner, ui);
+                aux_earn_micro_change(owner, quantity.symbol, extended.symbol, owner, client);
 
                 // send tokens
                 name contract = name(0);
@@ -312,14 +313,24 @@ namespace eosio {
                 return found;
             }
 
-            void action_swapdeposit(name from, name to, const asset & quantity, bool trigger_event, string memo) {
+            void action_swapdeposit(name from, name to, const asset & quantity, string memo) {
                 PRINT("eosio::dex::deposit::action_swapdeposit()\n");
                 PRINT(" from: ", from.to_string(), "\n");
                 PRINT(" to: ", to.to_string(), "\n");
                 PRINT(" quantity: ", quantity.to_string(), "\n");
-                PRINT(" trigger_event: ", std::to_string(trigger_event), "\n");
                 PRINT(" memo: ", memo.c_str(), "\n");
-                
+
+                bool trigger_event = true;
+                if (
+                    string(TEXT_AGSO_1) == memo ||
+                    string(TEXT_ACSO_1) == memo ||
+                    string(TEXT_ACSO_2) == memo
+                ) {
+                    trigger_event = false;
+                }
+                PRINT(" -> trigger_event: ", std::to_string(trigger_event), "\n");
+
+
                 check( from != to, "cannot swap deposits to self" );
 
                 // if is not an internal inline action then the user "from" must have beed signed this transaction
@@ -367,13 +378,13 @@ namespace eosio {
                 PRINT("eosio::dex::deposit::action_swapdeposit() ...\n"); 
             }
             
-            void action_convert_deposits_to_earnings(const uint64_t ui, const asset & quantity) {
+            void action_convert_deposits_to_earnings(const uint64_t client, const asset & quantity) {
                 PRINT("eosio::dex::deposit::action_convert_deposits_to_earnings()\n");
-                PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
+                PRINT(" client: ", std::to_string((long unsigned) client), "\n");
                 PRINT(" quantity: ", quantity.to_string(), "\n");
                 require_auth(get_self());
 
-                aux_convert_deposits_to_earnings(ui, quantity);
+                aux_convert_deposits_to_earnings(client, quantity);
                 PRINT("eosio::dex::deposit::action_convert_deposits_to_earnings() ...\n");
             }
 

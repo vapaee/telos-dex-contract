@@ -6,6 +6,7 @@
 #include <dex/modules/dao.hpp>
 
 using namespace std;
+#define TOKEN_GROUP_ZERO 0
 
 namespace eosio {
     namespace dex {
@@ -51,7 +52,6 @@ namespace eosio {
                 ).send();
 
                 PRINT(" action addtnkgroup(0)\n");
-                vector<symbol_code> currencies;
                 action(
                     permission_level{get_self(),name("active")},
                     get_self(),
@@ -62,8 +62,7 @@ namespace eosio {
                         string("https://vapaee.io/exchange/tokens"),
                         briefg,                                // string brief
                         banner,
-                        group,
-                        currencies
+                        group
                     )
                 ).send();
 
@@ -72,7 +71,7 @@ namespace eosio {
                     permission_level{get_self(),name("active")},
                     get_self(),
                     name("setcurrency"),
-                    std::make_tuple(symbol_code("TLOS"), true)
+                    std::make_tuple(symbol_code("TLOS"), true, (uint64_t)0)
                 ).send();
 
 
@@ -88,6 +87,7 @@ namespace eosio {
                 PRINT(" precision: ", std::to_string((unsigned) precision), "\n");
                 PRINT(" admin: ", admin.to_string(), "\n");
                 
+                // check if tokens existe in token contract account name
                 stats statstable( contract, sym_code.raw() );
                 auto token_itr = statstable.find( sym_code.raw() );
                 check(token_itr != statstable.end(), create_error_symcode1(ERROR_AAT_1, sym_code).c_str());
@@ -109,7 +109,6 @@ namespace eosio {
                     a.icon      = "";
                     a.iconlg    = "";
                     a.tradeable = false;
-                    a.ballot    = name();
                     a.date      = eosio::dex::global::get_now_time_point_sec();
                     a.data      = 0;
                 });
@@ -158,13 +157,13 @@ namespace eosio {
 
                 tokens tokenstable(get_self(), get_self().value);
                 auto itr = tokenstable.find(sym_code.raw());
-                check(itr != tokenstable.end(), "Token not registered. You must register it first calling addtoken action");
+                check(itr != tokenstable.end(), create_error_symcode1(ERROR_AUTI_1, sym_code).c_str());
                 name admin = itr->admin;
-                check(has_auth(get_self()) || has_auth(admin), ERROR_AUTI_1);
+                check(has_auth(get_self()) || has_auth(admin), ERROR_AUTI_2);
 
                 // is it blacklisted?
                 check(!eosio::dex::dao::aux_is_token_blacklisted(itr->symbol, itr->contract), 
-                    create_error_symcode1(ERROR_AUTI_2, itr->symbol).c_str());
+                    create_error_symcode1(ERROR_AUTI_3, itr->symbol).c_str());
                 
 
                 tokenstable.modify( *itr, same_payer, [&]( auto& a ){
@@ -184,33 +183,80 @@ namespace eosio {
 
                 PRINT("eosio::dex::token::action_update_token_info() ...\n");
             }
-            
-            void action_set_token_as_currency (const symbol_code & sym_code, bool is_currency) {
-                PRINT("eosio::dex::token::action_set_token_as_currency()\n");
+
+            void action_change_groups_for_a_token(const symbol_code & sym_code, vector<uint64_t> groups) {
+                PRINT("eosio::dex::token::action_change_groups_for_a_token()\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
+                for (int i=0; i<groups.size(); i++) {
+                    PRINT(" groups[",i,"]: ", std::to_string((unsigned long) groups[i]), "\n");
+                }
+
+                tokens tokenstable(get_self(), get_self().value);
+                auto itr = tokenstable.find(sym_code.raw());
+                check(itr != tokenstable.end(), create_error_symcode1(ERROR_AUTI_1, sym_code).c_str());
+                name admin = itr->admin;
+                check(has_auth(get_self()) || has_auth(admin), ERROR_AUTI_2);
+
+                // is it blacklisted?
+                check(!eosio::dex::dao::aux_is_token_blacklisted(itr->symbol, itr->contract), 
+                    create_error_symcode1(ERROR_AUTI_3, itr->symbol).c_str());
+                
+                tokenstable.modify( *itr, same_payer, [&]( auto& a ){
+                    a.groups.clear();
+                    a.groups.assign(groups.begin(), groups.end());
+                    a.date = eosio::dex::global::get_now_time_point_sec();
+                });                                
+                PRINT("eosio::dex::token::action_change_groups_for_a_token() ...\n");
+            }
+
+            void action_set_token_as_currency (const symbol_code & sym_code, bool is_currency, uint64_t token_group) {
+                PRINT("eosio::dex::token::action_set_token_as_currency()\n");
+                PRINT(" sym_code:    ", sym_code.to_string(), "\n");
                 PRINT(" is_currency: ", std::to_string(is_currency), "\n");
+                PRINT(" token_group: ", std::to_string((unsigned long)token_group), "\n");
 
                 tokens tokenstable(get_self(), get_self().value);
                 auto itr = tokenstable.find(sym_code.raw());
                 check(itr != tokenstable.end(), create_error_symcode1(ERROR_ASTAC_1, sym_code).c_str());
-                
-                check(has_auth(get_self()), ERROR_ASTAC_2);
-
-                tokenstable.modify( *itr, same_payer, [&]( auto& a ){
-                    a.currency = is_currency;
-                });
 
                 tokengroups groupstable(get_self(), get_self().value);
-                auto ptr = groupstable.find(0);
-                check(ptr != groupstable.end(), ERROR_ASTAC_3);
+                auto ptr = groupstable.find(token_group);
+                check(ptr != groupstable.end(), create_error_id1(ERROR_ASTAC_2, token_group).c_str());
+                
+                if (TOKEN_GROUP_ZERO == token_group) {
+                    check(has_auth(get_self()), ERROR_ASTAC_3);
+                    PRINT(" -> tokens.modify().currency: ", itr->symbol.to_string(), "\n");
+                    tokenstable.modify( *itr, same_payer, [&]( auto& a ){
+                        a.currency = is_currency;
+                    });
+                } else {
+                    check(has_auth(ptr->admin), create_error_name1(ERROR_ASTAC_4, ptr->admin).c_str());
+                    check(has_auth(itr->admin), create_error_name1(ERROR_ASTAC_5, itr->admin).c_str());
+                }
 
-                check(std::find(ptr->currencies.begin(), ptr->currencies.end(), sym_code) == ptr->currencies.end(),
-                    create_error_symcode1(ERROR_ASTAC_4, sym_code).c_str());
+                bool belongs_to_currencies = std::find(ptr->currencies.begin(), ptr->currencies.end(), sym_code) != ptr->currencies.end();
+                PRINT(" -> belongs_to_currencies: ", std::to_string(belongs_to_currencies),"\n");
+                if (is_currency) {
+                    check(!belongs_to_currencies,
+                        create_error_symcode1(ERROR_ASTAC_6, sym_code).c_str());
+                } else {
+                    check(belongs_to_currencies,
+                        create_error_symcode1(ERROR_ASTAC_7, sym_code).c_str());
+                }
 
-                PRINT(" tokengroups.modify() adding ",sym_code.to_string(),"\n");
-                groupstable.modify(*ptr, same_payer, [&](auto &a){
-                    a.currencies.push_back(sym_code);
-                });
+                if (is_currency) {
+                    PRINT(" -> tokengroups.modify() adding ",sym_code.to_string(),"\n");
+                    groupstable.modify(*ptr, same_payer, [&](auto &a){
+                        a.currencies.push_back(sym_code);
+                    });
+                } else {
+                    PRINT(" -> tokengroups.modify() removing ",sym_code.to_string(),"\n");
+                    groupstable.modify(*ptr, same_payer, [&](auto &a){
+                        std::vector<symbol_code> newlist;
+                        std::copy_if (a.currencies.begin(), a.currencies.end(), std::back_inserter(newlist), [&](symbol_code sym){return sym!=sym_code;} );
+                        a.currencies = newlist;
+                    });
+                }
 
                 PRINT("eosio::dex::token::action_set_token_as_currency() ...\n");
             }
@@ -234,12 +280,12 @@ namespace eosio {
                 PRINT("eosio::dex::token::action_set_token_admin() ...\n");
             }
 
-            void action_set_token_data (const symbol_code & sym_code, uint64_t id, name action, name category, string text, string link) {
+            void action_set_token_data (const symbol_code & sym_code, uint64_t id, name action, string text, string link, name shownas) {
                 PRINT("eosio::dex::token::action_set_token_data()\n");
                 PRINT(" sym_code: ", sym_code.to_string(), "\n");
                 PRINT(" id: ", std::to_string((unsigned long) id), "\n");
                 PRINT(" action: ", action.to_string(), "\n");
-                PRINT(" category: ", category.to_string(), "\n");
+                PRINT(" shownas: ", shownas.to_string(), "\n");
                 PRINT(" text: ", text.c_str(), "\n");
                 PRINT(" link: ", link.c_str(), "\n"); 
 
@@ -260,7 +306,7 @@ namespace eosio {
                 if (action == name("add")) {
                     tokendatatable.emplace( ram_payer, [&]( auto& a ){
                         a.id        = tokendatatable.available_primary_key();
-                        a.category  = category;
+                        a.shownas  = shownas;
                         a.text      = text;
                         a.link      = link;
                         a.date      = eosio::dex::global::get_now_time_point_sec();
@@ -278,7 +324,7 @@ namespace eosio {
                         });
                     } else {
                         tokendatatable.modify(*itr, same_payer, [&](auto& a){
-                            a.category  = category;
+                            a.shownas  = shownas;
                             a.text      = text;
                             a.link      = link;
                             a.date      = eosio::dex::global::get_now_time_point_sec();
@@ -346,7 +392,7 @@ namespace eosio {
 
             // token groups ----------
 
-            void action_add_token_group(name admin, string title, string website, string brief, string banner, string thumbnail, vector<symbol_code> currencies) {
+            void action_add_token_group(name admin, string title, string website, string brief, string banner, string thumbnail) {
                 PRINT("eosio::dex::token::action_add_token_group()\n");
                 PRINT(" admin: ", admin.to_string(), "\n");
                 PRINT(" title: ", title.c_str(), "\n");
@@ -354,9 +400,6 @@ namespace eosio {
                 PRINT(" brief: ", brief.c_str(), "\n");
                 PRINT(" banner: ", banner.c_str(), "\n");
                 PRINT(" thumbnail: ", thumbnail.c_str(), "\n");
-                for (int i=0; i<currencies.size(); i++) {
-                    PRINT(" currencies[",i,"]: ", currencies[i].to_string(), "\n");
-                }
 
                 // admin must exist
                 check( is_account( admin ), create_error_name1(ERROR_AATG_1, admin).c_str());
@@ -380,7 +423,6 @@ namespace eosio {
                     a.brief      = brief;
                     a.banner     = banner;
                     a.thumbnail  = thumbnail;
-                    a.currencies = currencies;
                 });
 
                 PRINT(" -> tokengroups.emplace() ", title, " with id ", std::to_string((unsigned) id), "\n");
@@ -388,7 +430,7 @@ namespace eosio {
                 PRINT("eosio::dex::token::action_add_token_group() ...\n");
             }
 
-            void action_update_token_group(uint64_t group_id, name admin, string title, string website, string brief, string banner, string thumbnail, vector<symbol_code> currencies) {
+            void action_update_token_group(uint64_t group_id, name admin, string title, string website, string brief, string banner, string thumbnail) {
                 PRINT("eosio::dex::token::action_update_token_group()\n");
                 PRINT(" group_id: ", std::to_string((unsigned) group_id), "\n");
                 PRINT(" admin: ", admin.to_string(), "\n");
@@ -397,9 +439,6 @@ namespace eosio {
                 PRINT(" brief: ", brief.c_str(), "\n");
                 PRINT(" banner: ", banner.c_str(), "\n");
                 PRINT(" thumbnail: ", thumbnail.c_str(), "\n");
-                for (int i=0; i<currencies.size(); i++) {
-                    PRINT(" currencies[",i,"]: ", currencies[i].to_string(), "\n");
-                }
 
                 // admin must exist
                 check( is_account( admin ), create_error_name1(ERROR_AUTG_1, admin).c_str());
@@ -424,7 +463,6 @@ namespace eosio {
                     a.brief     = brief;
                     a.banner    = banner;
                     a.thumbnail = thumbnail;
-                    a.currencies = currencies;
                 });
 
                 PRINT(" -> tokengroups.modify(): \n");

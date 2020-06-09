@@ -231,9 +231,9 @@ namespace eosio {
 
                 // find out last price
                 asset last_price = price;
-                tablesummary summary(get_self(), can_market);
-                auto ptr = summary.find(name("lastone").value);
-                if (ptr != summary.end()) {
+                last24hs l24table(get_self(), can_market);
+                auto ptr = l24table.find(name("lastone").value);
+                if (ptr != l24table.end()) {
                     last_price = ptr->price;
                 }
 
@@ -243,10 +243,10 @@ namespace eosio {
                 int  hora = hour % 24;
                 name label = aux_create_label_for_hour(hora);
                 
-                // save table summary (price & volume/h)
-                ptr = summary.find(label.value);
-                if (ptr == summary.end()) {
-                    summary.emplace(get_self(), [&](auto & a) {
+                // save table l24table (price & volume/h)
+                ptr = l24table.find(label.value);
+                if (ptr == l24table.end()) {
+                    l24table.emplace(get_self(), [&](auto & a) {
                         a.label = label;
                         a.price = price;
                         a.inverse = inverse;
@@ -262,7 +262,7 @@ namespace eosio {
                     });
                 } else {
                     if (ptr->hour == hour) {
-                        summary.modify(*ptr, get_self(), [&](auto & a){
+                        l24table.modify(*ptr, get_self(), [&](auto & a){
                             a.price = price;
                             a.inverse = inverse;
                             a.volume += payment;
@@ -273,7 +273,7 @@ namespace eosio {
                         });
                     } else {
                         check(ptr->hour < hour, "ERROR: inconsistency in hour property");
-                        summary.modify(*ptr, get_self(), [&](auto & a){
+                        l24table.modify(*ptr, get_self(), [&](auto & a){
                             a.price = price;
                             a.inverse = inverse;
                             a.volume = payment;
@@ -290,7 +290,7 @@ namespace eosio {
                 }
 
 
-                ptr = summary.find(label.value);
+                ptr = l24table.find(label.value);
                 asset volume = ptr->volume;
                 asset total = ptr->amount;
                 asset entrance = ptr->entrance;
@@ -298,9 +298,9 @@ namespace eosio {
                 asset max = ptr->max;
 
                 // save current block
-                ptr = summary.find(name("lastone").value);
-                if (ptr == summary.end()) {
-                    summary.emplace(get_self(), [&](auto & a) {
+                ptr = l24table.find(name("lastone").value);
+                if (ptr == l24table.end()) {
+                    l24table.emplace(get_self(), [&](auto & a) {
                         a.label = name("lastone");
                         a.price = price;
                         a.inverse = inverse;
@@ -313,7 +313,7 @@ namespace eosio {
                         a.max = max;
                     });
                 } else {
-                    summary.modify(*ptr, get_self(), [&](auto & a){
+                    l24table.modify(*ptr, get_self(), [&](auto & a){
                         a.price = price;
                         a.inverse = inverse;
                         a.volume = volume;
@@ -326,8 +326,8 @@ namespace eosio {
                     });
                 }
 
-                // save table summary (price & volume/h)
-                blockhistory blocktable(get_self(), can_market);
+                // save table l24table (price & volume/h)
+                historyblock blocktable(get_self(), can_market);
                 uint64_t bh_id = blocktable.available_primary_key();
                 auto index = blocktable.template get_index<name("hour")>();
                 auto bptr = index.find(hour);
@@ -359,12 +359,12 @@ namespace eosio {
                 }
 
 
-                // update deals (history table) & blocks (blockhistory table) count for scope table
-                ordersummary o_summary(get_self(), get_self().value);
-                auto orders_itr = o_summary.find(can_market);
+                // update deals (history table) & blocks (historyblock table) count for scope table
+                ordersummary summary(get_self(), get_self().value);
+                auto orders_itr = summary.find(can_market);
 
-                check(orders_itr != o_summary.end(), (string("Why is this entry missing? ") + scope.to_string() + string(" canonical market: ") + std::to_string((unsigned long)can_market)).c_str());
-                o_summary.modify(*orders_itr, same_payer, [&](auto & a){
+                check(orders_itr != summary.end(), (string("Why is this entry missing? ") + scope.to_string() + string(" canonical market: ") + std::to_string((unsigned long)can_market)).c_str());
+                summary.modify(*orders_itr, same_payer, [&](auto & a){
                     a.deals = h_id+1;
                     a.blocks = bh_id+1;
 

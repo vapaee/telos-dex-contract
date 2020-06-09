@@ -13,7 +13,6 @@
 #define ERROR_ACSO_1 "ERR-ACSO-01: ordersummary table does not exist for that scope: "
 #define ERROR_ACSO_2 "ERR-ACSO-02: symbol mismatch: "
 
-
 // aux_generate_sell_order
 #define ERROR_AGSO_1 "ERR-AGSO-01: symbol mismatch: "
 #define ERROR_AGSO_2 "ERR-AGSO-02: symbol mismatch: "
@@ -24,7 +23,9 @@
 #define ERROR_AGSO_7 "ERR-AGSO-07: symbol mismatch: "
 #define ERROR_AGSO_8 "ERR-AGSO-08: symbol mismatch: "
 
+
 // Deposits Module --------------------
+
 // action_withdraw
 #define ERROR_AW_1 "ERR-AW-01: : can't find contract's name for token: "
 
@@ -62,25 +63,26 @@
 #define ERROR_AGTFM_1 "ERR-AGTFM-01: not market found: "
 
 
+// Client Module -------------------------
 
+// aux_assert_client_is_valid
+#define ERROR_AACIV_1 "ERR-AACIV-01: client not found: "
 
-// UI Module -------------------------
+// action_add_client
+#define ERROR_AAC_1 "ERR-AAC-01: receiver account does not exist: "
+#define ERROR_AAC_2 "ERR-AAC-02: admin account does not exist: "
+#define ERROR_AAC_3 "ERR-AAC-03: admin signature needed: "
 
-// action_add_ui
-#define ERROR_AAU_1 "ERR-AAU-01: receiver account does not exist: "
-#define ERROR_AAU_2 "ERR-AAU-02: admin account does not exist: "
-#define ERROR_AAU_3 "ERR-AAU-03: admin signature needed: "
+// action_update_client
+#define ERROR_AUC_1 "ERR-AUC-01: receiver account does not exist: "
+#define ERROR_AUC_2 "ERR-AUC-02: admin account does not exist: "
+#define ERROR_AUC_3 "ERR-AUC-03: admin signature needed: "
 
-// action_update_ui
-#define ERROR_AUU_1 "ERR-AUU-01: receiver account does not exist: "
-#define ERROR_AUU_2 "ERR-AUU-02: admin account does not exist: "
-#define ERROR_AUU_3 "ERR-AUU-03: admin signature needed: "
+// aux_check_client_exists
+#define ERROR_ACCE_1 "ERR-ACCE-01: interface not found with this id: "
 
-// aux_check_ui_exists
-#define ERROR_ACUE_1 "ERR-ACUE-01: interface not found with this id: "
-
-// action_update_ui
-#define ERROR_ATETU_1 "ERR-ATETU-01: interface not found with this id: "
+// aux_transfer_earnings_to_client
+#define ERROR_ATETC_1 "ERR-ATETC-01: interface not found with this id: "
 
 // aux_get_real_asset
 #define ERROR_AGEA_1 "ERR-AGEA-01: precision mismatch: "
@@ -90,8 +92,14 @@
 // Token Module ----------------------
 
 // action_update_token_info
-#define ERROR_AUTI_1 "ERR-AUTI-01: only admin or token's admin can modify the token main info: " 
-#define ERROR_AUTI_2 "ERR-AUTI-02: the token is currently blacklisted: " 
+#define ERROR_AUTI_1 "ERR-AUTI-01: Token not registered. You must register it first calling addtoken action: " 
+#define ERROR_AUTI_2 "ERR-AUTI-02: only admin or token's admin can modify the token main info: " 
+#define ERROR_AUTI_3 "ERR-AUTI-03: the token is currently blacklisted: " 
+
+// action_change_groups_for_a_token
+#define ERROR_ACGFAT_1 "ERR-ACGFAT-01: Token not registered. You must register it first calling addtoken action: " 
+#define ERROR_ACGFAT_2 "ERR-ACGFAT-02: only admin or token's admin can modify the token main info: " 
+#define ERROR_ACGFAT_3 "ERR-ACGFAT-03: the token is currently blacklisted: " 
 
 // action_add_token
 #define ERROR_AAT_1 "ERR-AAT-01: Token with symbol not exists: " 
@@ -113,12 +121,24 @@
 
 // action_set_token_as_currency
 #define ERROR_ASTAC_1 "ERR-ASTAC-01: Token not registered. You must register it first calling setcurrency action: " 
-#define ERROR_ASTAC_2 "ERR-ASTAC-02: Only contract account can modify the token.currency status" 
-#define ERROR_ASTAC_3 "ERR-ASTAC-03: Token group zero not found: " 
-#define ERROR_ASTAC_4 "ERR-ASTAC-04: Token is already present in token group zero as currency: " 
+#define ERROR_ASTAC_2 "ERR-ASTAC-02: Token group not found: " 
+#define ERROR_ASTAC_3 "ERR-ASTAC-03: Only contract account can modify the token group zero currency list" 
+#define ERROR_ASTAC_4 "ERR-ASTAC-04: Only token group admin can modify currency list: " 
+#define ERROR_ASTAC_5 "ERR-ASTAC-05: Only token admin can set this token as currency: " 
+#define ERROR_ASTAC_6 "ERR-ASTAC-06: Token is already present in token group as currency: " 
+#define ERROR_ASTAC_7 "ERR-ASTAC-07: Token is not present in token group as currency: " 
 
+
+// Experience Module ------------------------
+// action_reward_user
+#define ERROR_ARU_1 "ERR-ARU-01: this is a private action and must be signed by contract account"
+#define ERROR_ARU_2 "ERR-ARU-02: points asset symbol code does not match with internal representation: "
+#define ERROR_ARU_3 "ERR-ARU-03: points asset symbol precision does not match with internal representation: "
+#define ERROR_ARU_4 "ERR-ARU-04: exp asset symbol code does not match with internal representation: "
+#define ERROR_ARU_5 "ERR-ARU-05: exp asset symbol precision does not match with internal representation: "
 
 // Maintenance Module ------------------------
+
 // aux_maintenance_from_history
 #define ERROR_AMFH_1 "ERR-AMFH-01: inconsistancy during maintenance. Trying to prune history (key, scope): "
 
@@ -161,6 +181,9 @@
 // aux_get_telos_decide_config
 #define ERROR_AGTDC_1 "ERR-AGTDC-01: Can't find Telos Decide config in contract: "
 
+// aux_get_telos_decide_treasure_supply
+#define ERROR_AGTDTS_1 "ERR-AGTDTS-01: Can't find Telos Decide treasury for given symbol code: "
+
 // aux_is_token_blacklisted
 #define ERROR_AITB_1 "ERR-AITB-01: Token is not registered: " 
 
@@ -169,7 +192,7 @@
 #define ERROR_HBRFSC_2 "ERR-HBRFSC-02: Token's contract differs from given contract: " 
 
 // aux_process_ballot_to_ban_token
-#define ERROR_APBTBT_1 "ERR-APBTBT-01: This token can't be banned because it belongs to the DEX token white list: " 
+#define ERROR_APBTBT_1 "ERR-APBTBT-01: This token can't be banned because it belongs to the DEX token whitelist: " 
 #define ERROR_APBTBT_2 "ERR-APBTBT-02: Token contract does not has a stats table: " 
 #define ERROR_APBTBT_3 "ERR-APBTBT-03: This token is already blacklisted: " 
 

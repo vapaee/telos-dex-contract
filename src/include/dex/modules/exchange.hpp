@@ -1,20 +1,22 @@
 #pragma once
 #include <dex/base.hpp>
 #include <dex/errors.hpp>
+#include <dex/constants.hpp>
 #include <dex/tables.hpp>
 #include <dex/modules/error.hpp>
 #include <dex/modules/utils.hpp>
 #include <dex/modules/record.hpp>
 #include <dex/modules/market.hpp>
-#include <dex/modules/ui.hpp>
+#include <dex/modules/client.hpp>
 #include <dex/modules/deposit.hpp>
+#include <dex/modules/experience.hpp>
 
 namespace eosio {
     namespace dex {
 
         using namespace error;
         using namespace utils;
-        using namespace ui;
+        using namespace client;
         using namespace record;
         using namespace market;
         using namespace deposit;
@@ -104,7 +106,7 @@ namespace eosio {
                         permission_level{get_self(),name("active")},
                         get_self(),
                         name("swapdeposit"),
-                        std::make_tuple(get_self(), owner, return_amount, false, string("order canceled, payment returned"))
+                        std::make_tuple(get_self(), owner, return_amount, string(TEXT_ACSO_1))
                     ).send();
                     aux_trigger_event(return_amount.symbol.code(), name("cancel"), owner, get_self(), return_amount, _asset, _asset);
                     
@@ -115,10 +117,17 @@ namespace eosio {
                         permission_level{get_self(),name("active")},
                         get_self(),
                         name("withdraw"),
-                        std::make_tuple(owner, return_real_amount, itr->ui)
+                        std::make_tuple(owner, return_real_amount, itr->client)
                     ).send();
                     aux_trigger_event(return_real_amount.symbol.code(), name("withdraw"), owner, get_self(), return_real_amount, _asset, _asset);
                     
+                    // we do some maintenance
+                    action(
+                        permission_level{get_self(),name("active")},
+                        get_self(),
+                        name("maintenance"),
+                        std::make_tuple(owner)
+                    ).send();
                 }
 
                 userorders buyerorders(get_self(), owner.value);
@@ -204,7 +213,57 @@ namespace eosio {
                 return result;
             }
                         
-            void aux_generate_sell_order(bool inverted, name owner, uint64_t market_buy, uint64_t market_sell, asset total, asset payment, asset price, asset inverse, name ram_payer, uint64_t sell_ui) {
+            void aux_reward_users(name maker, name taker, const asset &tlos_volume) {
+                PRINT("eosio::dex::exchange::aux_reward_users()\n");
+                PRINT(" maker: ", maker.to_string(), "\n");
+                PRINT(" taker: ", taker.to_string(), "\n");
+                PRINT(" tlos_volume: ", tlos_volume.to_string(), "\n");
+
+                double unit = (double)pow(10.0, tlos_volume.symbol.precision());
+                double realamount = ( (double)tlos_volume.amount / unit );
+                
+                PRINT(" -> realamount: ", std::to_string(realamount), "\n");
+                if (tlos_volume.amount > 0) {
+                    uint64_t mpts = (uint64_t) (realamount * 1.0);
+                    uint64_t mexp = (uint64_t) (realamount * 0.5);
+                    uint64_t tpts = (uint64_t) (realamount * 2.0);
+                    uint64_t texp = (uint64_t) (realamount * 1.0);
+
+                    PRINT(" -> mpts: ", std::to_string((unsigned long)mpts), "\n");
+                    PRINT(" -> mexp: ", std::to_string((unsigned long)mexp), "\n");
+                    PRINT(" -> tpts: ", std::to_string((unsigned long)tpts), "\n");
+                    PRINT(" -> texp: ", std::to_string((unsigned long)texp), "\n");
+
+                    asset maker_points = asset(mpts, eosio::dex::experience::POINTS_SYMBOL);
+                    asset maker_exp    = asset(mexp, eosio::dex::experience::EXP_SYMBOL);
+                    asset taker_points = asset(tpts, eosio::dex::experience::POINTS_SYMBOL);
+                    asset taker_exp    = asset(texp, eosio::dex::experience::EXP_SYMBOL);
+
+                    PRINT(" -> maker_points: ", maker_points.to_string(), "\n");
+                    PRINT(" -> maker_exp:    ", maker_exp.to_string(), "\n");
+                    PRINT(" -> taker_points: ", taker_points.to_string(), "\n");
+                    PRINT(" -> taker_exp:    ", taker_exp.to_string(), "\n");
+
+                    // reward taker 
+                    action(
+                        permission_level{get_self(),name("active")},
+                        get_self(),
+                        name("reward"),
+                        std::make_tuple(taker, taker_points, taker_exp)
+                    ).send();
+
+                    // reward maker
+                    action(
+                        permission_level{get_self(),name("active")},
+                        get_self(),
+                        name("reward"),
+                        std::make_tuple(maker, maker_points, maker_exp)
+                    ).send();
+                }
+                PRINT("eosio::dex::exchange::aux_reward_users()\n");
+            }
+
+            void aux_generate_sell_order(bool inverted, name owner, uint64_t market_buy, uint64_t market_sell, asset total, asset payment, asset price, asset inverse, name ram_payer, uint64_t sell_client) {
                 PRINT("eosio::dex::exchange::aux_generate_sell_order()\n");
                 PRINT(" inverted: ", std::to_string(inverted), "\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
@@ -215,7 +274,7 @@ namespace eosio {
                 PRINT(" price: ", price.to_string(), "\n");        // price: 2.50000000 CNT
                 PRINT(" inverse: ", inverse.to_string(), "\n");    // inverse: 0.40000000 TLOS
                 PRINT(" ram_payer: ", ram_payer.to_string(), "\n");
-                PRINT(" sell_ui: ", std::to_string((long unsigned) sell_ui), "\n");
+                PRINT(" sell_client: ", std::to_string((long unsigned) sell_client), "\n");
                 
                 sellorders buytable(get_self(),  market_buy);
                 sellorders selltable(get_self(), market_sell);
@@ -242,7 +301,7 @@ namespace eosio {
                 asset current_total;
                 asset current_payment = payment;
                 name maker, taker;
-                uint64_t maker_ui, taker_ui;
+                uint64_t maker_client, taker_client;
                 // asset inverse = vapaee::utils::inverse(price, total.symbol);
                 sell_order_table order;
                 
@@ -261,20 +320,21 @@ namespace eosio {
     
                 uint64_t total_unit = pow(10.0, total.symbol.precision());
                 uint64_t price_unit = pow(10.0, price.symbol.precision());
-
+                int deals = 0;
                 // iterate over a list or buy order from the maximun price down
                 for (auto b_ptr = buy_index.begin(); b_ptr != buy_index.end(); b_ptr = buy_index.begin()) {
                     check(b_ptr->price.symbol == inverse.symbol,
                         create_error_asset2(ERROR_AGSO_1, b_ptr->price, inverse).c_str());
                     PRINT(" compare: (price<=inverse) ??  - (", b_ptr->price.to_string(), " <= ", inverse.to_string(), ") ??? \n");
                     if (b_ptr->price.amount <= inverse.amount) {
-                        // transaction !!!
+                        deals++;
+                        // ------ DEAL !!!------
                         current_price = b_ptr->price;   // TLOS
-                        PRINT("TRANSACTION!! price: ", current_price.to_string(),"\n");
+                        PRINT("------ DEAL!!------ price: ", current_price.to_string(),"\n");
                         maker = b_ptr->owner;
-                        maker_ui = b_ptr->ui;
+                        maker_client = b_ptr->client;
                         taker = owner;
-                        taker_ui = sell_ui;
+                        taker_client = sell_client;
                         PRINT("              maker: ", maker.to_string() ,"\n");
                         PRINT("      current_price: ", current_price.to_string() ,"\n");
                         PRINT("       b_ptr->total: ", b_ptr->total.to_string(), " > remaining: ", remaining.to_string()," ?\n");
@@ -284,7 +344,7 @@ namespace eosio {
 
                         if (b_ptr->total > remaining) { // CNT
                             // maker wants more that the user is selling -> reduces maker order amount
-                            current_total = remaining;  // CNT
+                            current_total = remaining;  // CNT                          
                             current_payment.amount = utils::multiply(remaining, b_ptr->inverse);
 
                             // // this code is useful to hot-debugging
@@ -301,6 +361,7 @@ namespace eosio {
                                 a.total   -= remaining;          // CNT
                                 a.selling -= current_payment;    // TLOS
                             });
+
                             PRINT("    payment (1): ", current_payment.to_string(),"\n");
 
                             // decrese the total in registry for this incompleted order
@@ -390,7 +451,7 @@ namespace eosio {
                             permission_level{get_self(),name("active")},
                             get_self(),
                             name("swapdeposit"),
-                            std::make_tuple(taker, maker, maker_gains, true, string("exchange made for ") + current_payment.to_string())
+                            std::make_tuple(taker, maker, maker_gains, string("exchange made for ") + current_payment.to_string())
                         ).send();
                         PRINT("     -- transfer ", maker_gains.to_string(), " to ", maker.to_string()," (maker)\n");
 
@@ -402,7 +463,7 @@ namespace eosio {
                                 permission_level{get_self(),name("active")},
                                 get_self(),
                                 name("swapdeposit"),
-                                std::make_tuple(taker, get_self(), maker_fee, true, string("exchange made for ") + current_total.to_string())
+                                std::make_tuple(taker, get_self(), maker_fee, string("exchange made for ") + current_total.to_string())
                             ).send();
                             PRINT("     -- charge fees ", maker_fee.to_string(), " to ", maker.to_string()," (maker)\n");
                         }
@@ -412,7 +473,7 @@ namespace eosio {
                             permission_level{get_self(),name("active")},
                             get_self(),
                             name("swapdeposit"),
-                            std::make_tuple(get_self(), taker, taker_gains, true, string("exchange made for ") + current_total.to_string())
+                            std::make_tuple(get_self(), taker, taker_gains, string("exchange made for ") + current_total.to_string())
                         ).send();
                         PRINT("     -- transfer ", taker_gains.to_string(), " to ", taker.to_string()," (taker)\n");
 
@@ -423,9 +484,9 @@ namespace eosio {
                                 permission_level{get_self(),name("active")},
                                 get_self(),
                                 name("deps2earn"),
-                                std::make_tuple(taker_ui, taker_fee)
+                                std::make_tuple(taker_client, taker_fee)
                             ).send();
-                            PRINT("     -- sending fees ", taker_fee.to_string(), " to ", std::to_string((unsigned long)taker_ui)," (taker_ui)\n");
+                            PRINT("     -- sending fees ", taker_fee.to_string(), " to ", std::to_string((unsigned long)taker_client)," (taker_client)\n");
                         }
 
                         // The taker_fee were already included in the contract's deposits, so no swap was needed.
@@ -435,9 +496,9 @@ namespace eosio {
                                 permission_level{get_self(),name("active")},
                                 get_self(),
                                 name("deps2earn"),
-                                std::make_tuple(maker_ui, maker_fee)
+                                std::make_tuple(maker_client, maker_fee)
                             ).send();
-                            PRINT("     -- sending fees ", maker_fee.to_string(), " to ", std::to_string((unsigned long)maker_ui)," (maker_ui)\n");
+                            PRINT("     -- sending fees ", maker_fee.to_string(), " to ", std::to_string((unsigned long)maker_client)," (maker_client)\n");
                         }
                         // saving the transaction in history
                         current_inverse = utils::inverse(current_price, current_payment.symbol);
@@ -454,7 +515,7 @@ namespace eosio {
                             permission_level{get_self(),name("active")},
                             get_self(),
                             name("withdraw"),
-                            std::make_tuple(maker, maker_gains_real,  maker_ui)
+                            std::make_tuple(maker, maker_gains_real,  maker_client)
                         ).send();
                         aux_trigger_event(maker_gains_real.symbol.code(), name("withdraw"), maker, get_self(), maker_gains_real, _asset, _asset);
                         
@@ -464,9 +525,20 @@ namespace eosio {
                             permission_level{get_self(),name("active")},
                             get_self(),
                             name("withdraw"),
-                            std::make_tuple(taker, taker_gains_real, taker_ui)
+                            std::make_tuple(taker, taker_gains_real, taker_client)
                         ).send();
                         aux_trigger_event(taker_gains_real.symbol.code(), name("withdraw"), taker, get_self(), taker_gains_real, _asset, _asset);    
+
+
+                        // experience ------
+                        asset tlos_volume;
+                        if (current_total.symbol.code() == eosio::dex::SYS_TKN_CODE) {
+                            tlos_volume = current_total;
+                        } else if (current_payment.symbol.code() == eosio::dex::SYS_TKN_CODE) {
+                            tlos_volume = current_payment;
+                        }
+
+                        aux_reward_users(maker, taker, tlos_volume);
 
                     } else {
                         break;
@@ -487,7 +559,7 @@ namespace eosio {
                         permission_level{get_self(),name("active")},
                         get_self(),
                         name("swapdeposit"),
-                        std::make_tuple(owner, get_self(), remaining, false, string("future payment for order"))
+                        std::make_tuple(owner, get_self(), remaining, string(TEXT_AGSO_1))
                     ).send();
 
                     aux_trigger_event(remaining.symbol.code(), name("order"), owner, get_self(), remaining, payment, price);
@@ -508,7 +580,7 @@ namespace eosio {
                         a.inverse = inverse;
                         a.total = payment;
                         a.selling = remaining;
-                        a.ui = sell_ui;
+                        a.client = sell_client;
                     });
 
                     // register new order in the orders table
@@ -563,18 +635,32 @@ namespace eosio {
                     }
 
                     PRINT("  sellorders.emplace(): ", std::to_string((unsigned long long) id), "\n");
+
+
+                    // we do some maintenance
+                    if (deals == 0) {
+                        action(
+                            permission_level{get_self(),name("active")},
+                            get_self(),
+                            name("maintenance"),
+                            std::make_tuple(owner)
+                        ).send();
+
+                        // make the user pay for his/her experience RAM storage
+                        eosio::dex::experience::aux_make_user_rampayer(owner);                        
+                    }
                 }
                 
                 PRINT("eosio::dex::exchange::aux_generate_sell_order() ...\n");
             }
 
-            void aux_generate_order(name owner, name type, asset total, asset price, name ram_payer, uint64_t ui) {
+            void aux_generate_order(name owner, name type, asset total, asset price, name ram_payer, uint64_t client) {
                 PRINT("eosio::dex::exchange::aux_generate_order()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" type: ", type.to_string(), "\n");
                 PRINT(" total: ", total.to_string(), "\n");
                 PRINT(" price: ", price.to_string(), "\n");
-                PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
+                PRINT(" client: ", std::to_string((long unsigned) client), "\n");
                 
                 require_auth(owner);
 
@@ -599,14 +685,14 @@ namespace eosio {
 
                 aux_register_event(owner, name(type.to_string() + ".order"), total.to_string() + "|" + price.to_string() );
 
-                // Check user interface is valid and registered
-                eosio::dex::ui::aux_assert_ui_is_valid(ui);
+                // Check client is valid and registered
+                eosio::dex::client::aux_assert_client_is_valid(client);
 
 
                 if (type == name("sell")) {
-                    aux_generate_sell_order(false, owner, market_sell, market_buy, total, payment, price, inverse, ram_payer, ui);
+                    aux_generate_sell_order(false, owner, market_sell, market_buy, total, payment, price, inverse, ram_payer, client);
                 } else if (type == name("buy")) {
-                    aux_generate_sell_order(true, owner, market_buy, market_sell, payment, total, inverse, price, ram_payer, ui);
+                    aux_generate_sell_order(true, owner, market_buy, market_sell, payment, total, inverse, price, ram_payer, client);
                 } else {
                     check(false, (string("type must be 'sell' or 'buy' in lower case, got: ") + type.to_string()).c_str());
                 }
@@ -614,17 +700,16 @@ namespace eosio {
                 PRINT("eosio::dex::exchange::aux_generate_order() ...\n");
             }
 
-
-            void action_order(name owner, name type, const asset & total, const asset & price, uint64_t ui) {
+            void action_order(name owner, name type, const asset & total, const asset & price, uint64_t client) {
                 PRINT("eosio::dex::exchange::action_order()\n");
                 PRINT(" owner: ", owner.to_string(), "\n");
                 PRINT(" type: ", type.to_string(), "\n");      
                 PRINT(" total: ", total.to_string(), "\n");      
                 PRINT(" price: ", price.to_string(), "\n");      
-                PRINT(" ui: ", std::to_string((long unsigned) ui), "\n");
+                PRINT(" client: ", std::to_string((long unsigned) client), "\n");
                 require_auth(owner);
 
-                aux_generate_order(owner, type, total, price, owner, ui);
+                aux_generate_order(owner, type, total, price, owner, client);
 
                 PRINT("eosio::dex::exchange::action_order() ...\n");      
             }

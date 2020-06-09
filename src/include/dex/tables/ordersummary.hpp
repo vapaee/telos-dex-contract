@@ -4,7 +4,7 @@
         struct booksummary {
             asset total;
             int orders;
-            uint64_t ascurrency;
+            int ascurrency;
         };
 
         // TABLE ordersummary -----------

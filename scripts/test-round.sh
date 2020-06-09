@@ -16,11 +16,16 @@
 
 ./6_deposits.sh
 
-echo "pause..."
-sleep 4
-echo "alice sells -----------------------------"
-cleos push action telosmaindex order '["alice", "sell", "100.00000000 CNT", "1.00000000 TLOS",0]' -p alice
 
+echo "alice sells -----------------------------"
+cleos push action telosmaindex order '["alice", "sell", "10000.00000000 CNT", "0.00510000 TLOS", 0]' -p alice
+
+echo "pause..."
 sleep 2
 echo "bob buys --------------------------------"
-cleos push action telosmaindex order '["bob", "buy", "100.00000000 CNT", "1.00000000 TLOS",1]' -p bob
+cleos push action telosmaindex order '["bob", "buy", "1000.00000000 CNT", "0.00510000 TLOS", 0]' -p bob
+
+
+
+
+cleos get table telosmaindex 0 history

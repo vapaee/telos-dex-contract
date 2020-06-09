@@ -2,9 +2,9 @@
 
         
         // ------------------------------------
-        // TABLE interfaces (registered Telos DEX UI) -----------
+        // TABLE clients (registered Telos DEX UI) -----------
         // scope: contract
-        TABLE interfaces_table {
+        TABLE clients_table {
             uint64_t id;
             name admin;    // whoever register or manage this UI
             name receiver; // where to send earnings from fees
@@ -14,14 +14,13 @@
             string brief;
             string banner;    // big wide image
             string thumbnail; // small image
-            string state;  // this is for future use. We can ban, suspend, promote, reward, or whatever concept we (as a DAO) want to apply to each ui.
             time_point_sec date;
             uint64_t primary_key() const { return id; }
             uint64_t by_receiver_key() const { return receiver.value; }
         };
 
-        typedef eosio::multi_index< "interfaces"_n, interfaces_table,
-            indexed_by<"receiver"_n, const_mem_fun<interfaces_table, uint64_t, &interfaces_table::by_receiver_key>>
-        > interfaces;
+        typedef eosio::multi_index< "clients"_n, clients_table,
+            indexed_by<"receiver"_n, const_mem_fun<clients_table, uint64_t, &clients_table::by_receiver_key>>
+        > clients;
         // ------------------------------------
         

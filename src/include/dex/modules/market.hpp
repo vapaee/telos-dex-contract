@@ -60,7 +60,11 @@ namespace eosio {
                         symbol_code currency = ptr->currencies[j];
 
                         if (currency == A) {
-                            return true;
+                            for (int k=0; k<atk_itr->groups.size(); k++) {
+                                if (atk_itr->groups[k] == group) {
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
@@ -68,6 +72,59 @@ namespace eosio {
                 return false;
                 PRINT("eosio::dex::market::aux_is_A_currency_in_any_B_groups() ...\n");
             }
+
+            name aux_get_canonical_scope_for_symbols(const symbol_code & A, const symbol_code & B) {
+                PRINT("eosio::dex::market::aux_get_canonical_scope_for_symbols()\n");
+                PRINT(" A: ", A.to_string(), "\n");
+                PRINT(" B: ", B.to_string(), "\n");
+                name scope;
+                name scope_AB = aux_get_scope_for_tokens(A, B);
+                name scope_BA = aux_get_scope_for_tokens(B, A);
+
+                tokens tokenstable(get_self(), get_self().value);
+                auto tokenA = tokenstable.find(A.raw());
+                auto tokenB = tokenstable.find(B.raw());                
+
+
+                // if TLOS is one of them is the base token
+                if (B == eosio::dex::SYS_TKN_CODE) {
+                    scope = scope_AB;
+                } else if (A == eosio::dex::SYS_TKN_CODE) {
+                    scope = scope_BA;
+                } else {
+                    
+                    // let's see if one of them is currency in token group zero
+                    if (tokenA->currency && !tokenB->currency) {
+                        scope = scope_BA;
+                    } else if (tokenB->currency && !tokenA->currency) {
+                        scope = scope_AB;
+                    } else {
+                        // let's see if one of them is currency for the other one in any token group
+                        bool A_is_currency_for_B = aux_is_A_currency_in_any_B_groups(A, B);
+                        bool B_is_currency_for_A = aux_is_A_currency_in_any_B_groups(B, A);
+                        if (A_is_currency_for_B && !B_is_currency_for_A) {
+                            scope = scope_BA;
+                        } else if (A_is_currency_for_B && !B_is_currency_for_A) {
+                            scope = scope_AB;
+                        } else {
+                            // At this point this market should not be allowed unless both tokens are currencies at the same time
+                            // in that las case we need to answer so let's do it alphabetically
+                            // PS: in this function we don't care if the market can be created.
+                            if (A.to_string() < B.to_string()) {
+                                scope = aux_get_scope_for_tokens(A, B);
+                            } else {
+                                scope = aux_get_scope_for_tokens(B, A);
+                            }
+                        }
+                    }
+
+                }
+
+                PRINT(" ->scope: ", scope.to_string(), "\n");
+                
+                PRINT("eosio::dex::market::aux_get_canonical_scope_for_symbols() ...\n");
+                return scope;
+            } 
 
             bool aux_is_it_allowed_to_cerate_this_market(const symbol_code & A, const symbol_code & B) {
                 PRINT("eosio::dex::market::aux_is_it_allowed_to_cerate_this_market()\n");

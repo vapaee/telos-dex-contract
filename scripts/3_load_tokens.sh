@@ -155,11 +155,11 @@ cleos push action yanggangcoin transfer '["token.issuer", "kate", "1000.0000 YAN
 echo "-------- vapaeetokens (CNT) ---------"
 cleos set contract vapaeetokens $PWD -p vapaeetokens@active
 cleos push action vapaeetokens create '[ "token.issuer", "500000000.0000 CNT"]' -p vapaeetokens@active
-cleos push action vapaeetokens issue '["token.issuer", "10000.0000 CNT", "memo CNT"]' -p token.issuer@active
-cleos push action vapaeetokens transfer '["token.issuer", "alice", "1000.0000 CNT", "memo CNT"]' -p token.issuer@active
-cleos push action vapaeetokens transfer '["token.issuer", "bob", "1000.0000 CNT", "memo CNT"]' -p token.issuer@active
-cleos push action vapaeetokens transfer '["token.issuer", "tom", "1000.0000 CNT", "memo CNT"]' -p token.issuer@active
-cleos push action vapaeetokens transfer '["token.issuer", "kate", "1000.0000 CNT", "memo CNT"]' -p token.issuer@active
+cleos push action vapaeetokens issue '["token.issuer", "100000.0000 CNT", "memo CNT"]' -p token.issuer@active
+cleos push action vapaeetokens transfer '["token.issuer", "alice", "10000.0000 CNT", "memo CNT"]' -p token.issuer@active
+cleos push action vapaeetokens transfer '["token.issuer", "bob", "10000.0000 CNT", "memo CNT"]' -p token.issuer@active
+cleos push action vapaeetokens transfer '["token.issuer", "tom", "10000.0000 CNT", "memo CNT"]' -p token.issuer@active
+cleos push action vapaeetokens transfer '["token.issuer", "kate", "10000.0000 CNT", "memo CNT"]' -p token.issuer@active
 
 echo "-------- vapaeetokens (BOX) ---------"
 cleos set contract vapaeetokens $PWD -p vapaeetokens@active
@@ -227,12 +227,12 @@ echo "-- register ACORN --"
 cleos push action telosmaindex addtoken '["acornaccount","ACORN",4,"token.issuer", "ACORN", "http://acorns.fun", "", "", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/acorn.svg", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/acorn-lg.png","personal contact","group contact",true]' -p token.issuer
 echo "-- register YANG --" 
 cleos push action telosmaindex addtoken '["yanggangcoin","YANG",4,"token.issuer", "Yang Gang Coin", "https://www.yang2020.com/", "Together, We Can Build a New Kind of Economy, One That Puts People First.", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/uploads/yang-banner.jpg", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/yang-coin.png", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/yang-coin-lg.png","personal contact","group contact",true]' -p token.issuer
-cleos push action telosmaindex settokendata '["YANG", 0, "add", "twitter", "Official Twitter Account", "https://twitter.com/andrewyang"]' -p token.issuer
+cleos push action telosmaindex settokendata '["YANG", 0, "add", "Official Twitter Account", "https://twitter.com/andrewyang", "twitter"]' -p token.issuer
 
 
 echo "-- register FUTBOL --" 
 cleos push action telosmaindex addtoken '["futboltokens","FUTBOL",4,"token.issuer", "Fútbol Tokens", "http://futboltokens.online/", "Collect the best football trading cards and win prizes", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/uploads/futboltokens-banner.jpg", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/futboltokens.png", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/futboltokens.png","personal contact","group contact",true]' -p token.issuer
-cleos push action telosmaindex settokendata '["FUTBOL", 0, "add", "youtube", "Video en español", "https://www.youtube.com/watch?v=4fYHjH5ylnA"]' -p token.issuer
+cleos push action telosmaindex settokendata '["FUTBOL", 0, "add", "Video en español", "https://www.youtube.com/watch?v=4fYHjH5ylnA", "youtube"]' -p token.issuer
 
 echo "-- register LEGEND --" 
 cleos push action telosmaindex addtoken '["teloslegends","LEGEND",0,"token.issuer", "Telos Legends", "http://futboltokens.online/", "Collect the best football trading cards and win prizes", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/uploads/legend-banner.png", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/legend.png", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/legend-lg.png",false]' -p token.issuer
@@ -258,10 +258,10 @@ cleos push action telosmaindex addtoken '["stablecoin.z","EZAR",2,"token.issuer"
 
 echo "-- register CNT --"
 cleos push action telosmaindex addtoken '["vapaeetokens", "CNT", 4, "token.issuer", "Cards & Tokens", "http://cardsandtokens.com", "A platform where you can create themed albums and trading cards to collect and play making money in the process.", "assets/img/cards-and-tokens-1200x400.jpeg", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/cnt.svg", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/cnt-lg.svg","personal contact","group contact",true]' -p token.issuer
-cleos push action telosmaindex settokendata '["CNT", 0, "add", "youtube", "Promo video", "https://youtu.be/YSVJgKsSobA"]' -p telosmaindex@active
-cleos push action telosmaindex settokendata '["CNT", 0, "add", "twitter", "Membership cards", "https://twitter.com/TokensCards/status/1109668817175748608"]' -p token.issuer
-cleos push action telosmaindex settokendata '["CNT", 0, "add", "youtube", "Demo video", "https://www.youtube.com/watch?v=jhL1KyifGEs&list=PLIv5p7BTy5wxqwqs0fGyjtOahoO3YWX0x&index=1"]' -p token.issuer
-cleos push action telosmaindex settokendata '["CNT", 0, "add", "twitter", "The CNT token airdrop", "https://twitter.com/TokensCards/status/1105088865994452993"]' -p token.issuer
+cleos push action telosmaindex settokendata '["CNT", 0, "add", "Promo video", "https://youtu.be/YSVJgKsSobA", "youtube"]' -p telosmaindex@active
+cleos push action telosmaindex settokendata '["CNT", 0, "add", "Membership cards", "https://twitter.com/TokensCards/status/1109668817175748608", "twitter"]' -p token.issuer
+cleos push action telosmaindex settokendata '["CNT", 0, "add", "Demo video", "https://www.youtube.com/watch?v=jhL1KyifGEs&list=PLIv5p7BTy5wxqwqs0fGyjtOahoO3YWX0x&index=1", "youtube"]' -p token.issuer
+cleos push action telosmaindex settokendata '["CNT", 0, "add", "The CNT token airdrop", "https://twitter.com/TokensCards/status/1105088865994452993", "twitter"]' -p token.issuer
 
 echo "-- register BOX --" 
 cleos push action telosmaindex addtoken '["vapaeetokens", "BOX", 4, "token.issuer", , "Board Game Box", "https://vapaee.io/bgbox", "", "", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/box.png", "https://raw.githubusercontent.com/vapaee/vapaee.io-website/master/www/assets/logos/box-lg.png","personal contact","group contact",true]' -p token.issuer
