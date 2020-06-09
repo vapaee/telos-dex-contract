@@ -18,7 +18,7 @@ DEX stands for Decentralized Exchange but is often given the meaning of running 
 Decentralization not only applies to the way we run code but also to the way we own public systems and take care of them as a community.
 
 Telos DEX is served as a DAO, which stands for Decentralized Autonomous Organization, to provide the community with the ability of well-organized decision-making tools to adjust the internal functionalities by voting using Telos Decide. 
-- read more about [DAO](../../doc/tech/DAO.md).
+- read more about [DAO](./doc/tech/DAO.md).
 
 ## Telos core service
 This smart contract wants to be included in the Telos-core set of contracts and start to be part of the basic services that Telos has to offer. This not only includes putting the contract in the repository but also the contract account in mainnet must be multi-sig by the BPs.
@@ -33,12 +33,12 @@ If you want to know what Telos DEX has to offer you, it depends on who you are.
   Token creators can register their tokens in Telos DEX, adding all kinds of information and images to show on the token's page.    
   Each registered token will be automáticaly added to the *token group zero*, which is the main default group. All the tokens in that group can be traded only using currency tokens (like TLOS).   
   However, when a token creator has many tokens to register and one of them is the currency for the others, a new Token group can be created and all those tokens added, so they can be traded against their specific currency token, without splitting the liquidity for other tokens.    
-  - read more about [Currencies & Token Groups](../../doc/tech/Currencies.md).
+  - read more about [Currencies & Token Groups](./doc/tech/Currencies.md).
 
 - ### Interface creators
   Developers and publishers can register their app, website, or smart contract to be a client for this DEX, bringing all the information and images to be shown on the client's page. The client can be complete, having all the tokens available to trade or can be partial, allowing a specific set of markets for its users.    
   Combining client registration with the token group creation, a game (with many resources and its own currency) can have an inside-app-exchange only for the tokens of the game and let Telos DEX deal with the hard work, all without compromising the liquidity of other tokens in the same DEX.   
-  - read more about [Currencies & Token Groups](../../doc/tech/Currencies.md).
+  - read more about [Currencies & Token Groups](./doc/tech/Currencies.md).
 
 - ### Telos community members
   This DEX works as a DAO and the token that count for voting is TLOS, using Telos Decide. So if you hold TLOS in your wallet, you already own this contract.

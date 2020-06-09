@@ -8,3 +8,6 @@ https://local.bloks.io/account/telosmaindex?nodeUrl=localhost%3A8888&coreSymbol=
 
 
 IDEA: al registrar el evento (los que se ven en el home) En el DEX debería agregar el cliente que el usuario está usando cuando generó el evento. Así cuando se miran los eventos recientes puede haber una columna con el logo del cliente
+
+https://github.com/vapaee/telos-dex-contract/doc/tech/DAO.md
+https://github.com/vapaee/telos-dex-contract/blob/master/doc/tech/DAO.md
