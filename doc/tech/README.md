@@ -23,4 +23,5 @@ This document explains the model design used to simplify the balance between res
 ### [DAO](./DAO.md)
 Telos DEX will operate as a DAO (Decentralized Autonomous Organization). That means that all TLOS token holders can vote on ballots (using Telos Decide) to determine if they want to change some configuration in the system or not.
 
-
+### [Maintenance](./Maintenance.md)
+Since all historical data is stored in RAM, a maintenance task is needed to be executed constantly to slowly prune this data dropping expired entries. All users who help to execute this task are rewarded with not-transferable scores (Points and Experience) giving gamification features to this DEX.

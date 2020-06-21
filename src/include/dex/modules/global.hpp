@@ -80,13 +80,13 @@ namespace eosio {
                 check(!states.exists(), ERROR_AIC_1);
 
                 state new_state;
-                new_state.taker_fee = asset(2500000, fee_symbol);
-                new_state.maker_fee = asset(1500000, fee_symbol);
-                new_state.hprune = 365; // 365 days old history entry should be considered expired and must be deleted
-                new_state.kprune = 365; // 365 days old history block entry should be considered expired and must be deleted
-                new_state.bprune = 100; // no more than 100 entries allowed in the ballots table.
-                new_state.eprune = 60; // 60 days old event should be considered expired and must be deleted
-                new_state.pprune = 6;  // 6 weeks old points should be considered expired and must be deleted
+                new_state.taker_fee = asset(2500000, fee_symbol); // 2.5% fees for market takers
+                new_state.maker_fee = asset(1000000, fee_symbol); // 1.0% fees for market makers
+                new_state.hprune = 365;       // 365 days old history entry should be considered expired and must be deleted
+                new_state.kprune = 365;       // 365 days old history block entry should be considered expired and must be deleted
+                new_state.bprune = 1000;      // no more than 1000 entries allowed in the ballots table.
+                new_state.eprune = 60;        // 60 days old event should be considered expired and must be deleted
+                new_state.pprune = 6;         // 6 weeks old points should be considered expired and must be deleted
                 new_state.approvalmin = 0.25; // 25% of participation must be reached in order to approve a ballot
                 new_state.regcost = asset(1000000, system_symbol);
                 new_state.next_market = 0;

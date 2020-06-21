@@ -1,6 +1,6 @@
 # telos-dex-contract
 Telos DEX smart contract source code   
-current version: v4.2.0
+current version: v4.2.1
 
 ## Telos DEX
 Telos DEX is the first truly decentralized exchange on Telos blockchain running completely on chain (100% smart contract). This project started as a private initiative but in its fourth version was separated from the original project and rewritten to achieve maximum decentralization incorporating DAO functionalities using the main TLOS token to vote using Telos Decide.
@@ -66,8 +66,15 @@ This document explains the model design used to simplify the balance between res
 ### [DAO](./doc/tech/DAO.md)
 Telos DEX will operate as a DAO (Decentralized Autonomous Organization). That means that all TLOS token holders can vote on ballots (using Telos Decide) to determine if they want to change some configuration in the system or not.
 
+### [Maintenance](./doc/tech/Maintenance.md)
+Since all historical data is stored in RAM, a maintenance task is needed to be executed constantly to slowly prune this data dropping expired entries. All users who help to execute this task are rewarded with not-transferable scores (Points and Experience) giving gamification features to this DEX.
+
 
 ----------------------
+
+## versions
+### v4.2.1 - Documentation (and minor updates)
+- Maintenance and Score Documentatio
 
 ## versions
 ### v4.2.0 - Rewards & Enhancements
