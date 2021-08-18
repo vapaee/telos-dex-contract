@@ -1,0 +1,9 @@
+TOPTARGETS := all clean deploy
+SUBDIRS := contracts
+
+$(TOPTARGETS): $(SUBDIRS)
+
+$(SUBDIRS):
+	$(MAKE) -C $@ $(MAKECMDGOALS)
+
+.PHONY: $(TOPTARGETS) $(SUBDIRS)
